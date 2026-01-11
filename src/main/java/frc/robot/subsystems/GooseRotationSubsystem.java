@@ -69,6 +69,14 @@ public class GooseRotationSubsystem extends SubsystemBase {
     m_pidController.setFF(m_kFF);
     m_pidController.setOutputRange(m_kMinOutput, m_kMaxOutput);
 
+    if (GooseRotationConstants.kUseSmartMotion)
+    {
+      m_pidController.setSmartMotionMaxVelocity(GooseRotationConstants.kMaxVelocity, GooseRotationConstants.kSmartMotionSlot);
+      m_pidController.setSmartMotionMinOutputVelocity(GooseRotationConstants.kMinVelocity, GooseRotationConstants.kSmartMotionSlot);
+      m_pidController.setSmartMotionMaxAccel(GooseRotationConstants.kMaxAcceleration, GooseRotationConstants.kSmartMotionSlot);
+      m_pidController.setSmartMotionAllowedClosedLoopError(GooseRotationConstants.kMaxError, GooseRotationConstants.kSmartMotionSlot);
+    }
+    
     // display PID coefficients on SmartDashboard
     SmartDashboard.putNumber("P Gain", m_kP);
     SmartDashboard.putNumber("I Gain", m_kI);
@@ -104,7 +112,14 @@ public class GooseRotationSubsystem extends SubsystemBase {
     double setpoint = getMotorPositionFromAngle(angleDegrees);
     SmartDashboard.putNumber("Set Degress", m_angleSet);
     SmartDashboard.putNumber("Set Reference", setpoint);
-    m_pidController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
+    if(GooseRotationConstants.kUseSmartMotion)
+    {
+      m_pidController.setReference(setpoint, CANSparkBase.ControlType.kSmartMotion);
+    }
+    else
+    {
+      m_pidController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
+    }
   }
 
   public double getSetPointAngle()
