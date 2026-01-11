@@ -25,6 +25,7 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final Optional<IntakeSubsystem> m_intakeSubsystem;
   private final Optional<CoralSubsystem> m_coralSubsystem;
+  private final Optional<ShooterSubsystem> m_shooterSubsystem;
   private final Optional<ElevatorSubsystem> m_elevatorSubsystem;
   private final Optional<AlgaeSubsystem> m_algaeSubsystem;
 
@@ -88,6 +90,10 @@ public class RobotContainer {
   private final JoystickButton m_coralStopMotorsButton =
     new JoystickButton(m_operatorController, OperatorConstants.kCoralStop);
 
+  private final JoystickButton m_shooterButton = 
+    new JoystickButton(m_operatorController, OperatorConstants.kShooterShoot);
+
+
   private ElevatorManualSpeed m_manualSpeedCommand;
 
   // Keep track of time for SmartDashboard updates.
@@ -99,6 +105,7 @@ public class RobotContainer {
 
     m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
     m_coralSubsystem = getSubsystem(CoralSubsystem.class);
+    m_shooterSubsystem = getSubsystem(ShooterSubsystem.class);
     m_elevatorSubsystem = getSubsystem(ElevatorSubsystem.class); 
     m_algaeSubsystem = getSubsystem(AlgaeSubsystem.class); 
 
@@ -198,6 +205,7 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean("Intake Subsystem", m_intakeSubsystem.isPresent());
     SmartDashboard.putBoolean("Coral Subsystem", m_coralSubsystem.isPresent());
+    SmartDashboard.putBoolean("Shooter Subsystem", m_shooterSubsystem.isPresent());
     SmartDashboard.putBoolean("Elevator Subsystem", m_elevatorSubsystem.isPresent());
     SmartDashboard.putBoolean("Algae Subsystem", m_algaeSubsystem.isPresent());
 
@@ -207,6 +215,12 @@ public class RobotContainer {
       // the robot.
 
       // TODO: Bind intake commands and controls.
+    }
+
+    if (m_shooterSubsystem.isPresent())
+    {
+      ShooterSubsystem shooterSubsystem = m_shooterSubsystem.get();
+      // Poopoo
     }
 
     if (m_coralSubsystem.isPresent())

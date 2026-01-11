@@ -5,17 +5,15 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.*;
-import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.ArcadeDriveCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.SPI;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.kauailabs.navx.frc.AHRS;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class DriveSubsystem extends SubsystemBase
 {
@@ -23,11 +21,10 @@ public class DriveSubsystem extends SubsystemBase
   private final TalonFX m_leftBackMotor   = new TalonFX(DrivetrainConstants.kLeftBackMotorCANID);
   private final TalonFX m_rightFrontMotor = new TalonFX(DrivetrainConstants.kRightFrontMotorCANID);
   private final TalonFX m_rightBackMotor  = new TalonFX(DrivetrainConstants.kRightBackMotorCANID);
-  private final AHRS m_NavX               = new AHRS(SPI.Port.kMXP);
   private DifferentialDrive m_Drivetrain;
   private double m_leftSpeed  = 0.0;
   private double m_rightSpeed = 0.0;
-  private double m_speedDivider = 1.0;
+  private double m_speedDivider = 2.5; // Default 1.0
   private double m_modeMultiplier = 1.0;
   private boolean m_driveStraight = false;
 
@@ -42,28 +39,24 @@ public class DriveSubsystem extends SubsystemBase
     m_rightFrontMotor.setInverted(true);
     m_rightBackMotor.setInverted(true);
 
+    // Set all motors to brake mode for safety. In the default, coast mode,
+    // the robot takes very much longer to stop if the joystick is released or
+    // and emergency stop occurs. In this mode, it stops very quickly.
+    m_leftFrontMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_leftBackMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_rightFrontMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_rightBackMotor.setNeutralMode(NeutralModeValue.Brake);
+
     /* Set back motors to follow the front motors. */
     m_leftBackMotor.setControl(new Follower(m_leftFrontMotor.getDeviceID(), false));
     m_rightBackMotor.setControl(new Follower(m_rightFrontMotor.getDeviceID(), false));
 
     m_Drivetrain = new DifferentialDrive(m_leftFrontMotor, m_rightFrontMotor);
-
-    
-    // Set gyro 0 angle to point forward.
-    m_NavX.reset();
-    m_NavX.zeroYaw();
   }
 
-  public void initDefaultCommand(Joystick leftJoystick, Joystick rightJoystick, Boolean bArcadeDrive)
+  public void initDefaultCommand(Joystick leftJoystick)
   {
-    if (bArcadeDrive)
-    {
-      setDefaultCommand(new ArcadeDriveCommand(this, leftJoystick));
-    }
-    else
-    {
-      setDefaultCommand(new TankDriveCommand(this, leftJoystick, rightJoystick));
-    }
+    setDefaultCommand(new ArcadeDriveCommand(this, leftJoystick));
   }
 
   // Sets left and right motors to set speeds to support tank drive models.
@@ -116,11 +109,6 @@ public class DriveSubsystem extends SubsystemBase
     {
       return m_rightSpeed;
     }
-  }
-
-  public double getHeading()
-  {
-    return (double)m_NavX.getYaw();
   }
 
   @Override
