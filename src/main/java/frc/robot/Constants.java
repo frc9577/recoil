@@ -69,9 +69,13 @@ package frc.robot;
     public static final int kIntakeElevatorPosition = 2; // Button B
     public static final int kIncreaseElevatorLevel = 4; // Button Y
 
+    // In the future when disabling buttons, please comment out the command bind
+    // under the configureBindings function in the RobotContrainer. - Owen
     public static final int kCoralIntake = 6; // Right Bumper
     public static final int kCoralOuttake = 5; // Left Bumper
     public static final int kCoralStop = 9; // Left Thumbstick Button
+
+    public static final int kShooterShoot = 5; // Left Bumper
 
     public static final int kAlageIntake = 8; // START
     public static final int kAlageOutput = 7; // BACK
@@ -147,6 +151,25 @@ package frc.robot;
     public static final int kTicksPerUpdate = 10;
   }
 
+  public static class ShooterConstants {
+    public static final int kIntakeMotorCANID = 40;
+    public static final int kOutputMotorCANID = 41;
+
+    public static final double kMotorIntakeSpeed = 1.0;
+    public static final double kMotorOutputSpeed = -1.0;
+
+    // number of ticks between sensor change and motor stop
+    public static final int kEndIntakeMaxCount = 6; // ~0.125 second(s)
+    public static final int kEndOutputMaxCount = 50; // 1 second(s)
+
+    // Line Break? sensor to detect coral in the middle
+    public static final int kSensorChannel = 0;
+    public static final boolean kSensorFalseIsEmpty = false;
+
+    // SmartDashboard update frequency for coral subsystem state in 20ms counts.
+    public static final int kTicksPerUpdate = 10;
+  }
+
   public static class AlgaeConstants {
     public static final int kMotorCANID = 50;
     public static final int kMotorCurrentLimit = 7;
@@ -159,7 +182,7 @@ package frc.robot;
     public static final boolean kSensorFalseIsEmpty = true;
 
     // number of ticks between sensor change and motor stop
-    public static final int kEndIntakeMaxCount = 0; // 0 second(s)
+    public static final int kEndIntakeMaxCount = 15; // 0 second(s)
     public static final int kEndOutputMaxCount = 100; // 2 second(s)
 
     public static final double kIntakeSpeed = 1;
@@ -188,8 +211,8 @@ package frc.robot;
 
     public static final double kElevatorIntakePosition = 0.0;
     public static final double kElevatorL2Position = 0.46; // 0.45-0.47??
-    public static final double kElevatorL3Position = 0.82;
-    public static final double kElevatorL4Position = 1.51;
+    public static final double kElevatorL3Position = 0.93;
+    public static final double kElevatorL4Position = 1.53;
 
     // The distance travelled for a single rotation of the Kraken output shaft.
     // 64 to 1 gear box, pulley is 47.75mm diameter (0.15m circumference),
@@ -198,10 +221,5 @@ package frc.robot;
 
     // SmartDashboard update frequency for elevator subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;
-  }
-
-  public static class DrivetrainConstants {
-    public static final int kLeftMotorCANID = 10;
-    public static final int kRightMotorCANID = 20;
   }
 }
