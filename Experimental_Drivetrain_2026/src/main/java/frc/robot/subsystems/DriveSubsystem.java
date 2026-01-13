@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPLTVController;
@@ -155,7 +156,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Setting as a follwer
     m_optionalRightMotor.setControl(
-      new Follower(m_rightMotor.getDeviceID(), false)
+      new Follower(m_rightMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
 
     m_optionalLeftMotor = optionalLeft;
@@ -173,7 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Setting as follower
     m_optionalLeftMotor.setControl(
-      new Follower(m_leftMotor.getDeviceID(), false)
+      new Follower(m_leftMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
   }
 
@@ -200,8 +201,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     // set motor voltage based on CTRE example
 
-    double desiredLeftRotationsPerSecond =(leftMPS/Constants.DrivetrainConstants.kWheelCircumference)/Constants.DrivetrainConstants.kDrivetrainGearRatio;
-    double desiredRightRotationsPerSecond =(rightMPS/Constants.DrivetrainConstants.kWheelCircumference)/Constants.DrivetrainConstants.kDrivetrainGearRatio;
+    double desiredLeftRotationsPerSecond =(leftMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
+    double desiredRightRotationsPerSecond =(rightMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
 
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(desiredLeftRotationsPerSecond));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(desiredRightRotationsPerSecond));
