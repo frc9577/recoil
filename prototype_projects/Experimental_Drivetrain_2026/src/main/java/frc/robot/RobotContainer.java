@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -37,8 +38,8 @@ public class RobotContainer {
   private final Optional<DriveSubsystem> m_driveSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  //private final CommandXboxController m_driverController =
-  //    new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController =
+      new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.trackWidthMeters);
@@ -114,8 +115,8 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     if (m_driveSubsystem.isPresent())
     {
-      //DriveSubsystem driveSubsystem = m_driveSubsystem.get();
-      //driveSubsystem.initDefaultCommand(m_driverController);
+      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+      driveSubsystem.initDefaultCommand(m_driverController);
     }
   }
 
@@ -143,6 +144,10 @@ public class RobotContainer {
     //   // cancelling on release.
     //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
     // }
+  }
+
+  public void teleopInit() {
+    configureDefaultCommands();
   }
 
   /**

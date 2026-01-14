@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.commands.DifferentailDriveFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
 //import frc.robot.utils.PIDControl;
 
@@ -137,6 +138,15 @@ public class DriveSubsystem extends SubsystemBase {
     
     // Gyro setup
     m_gyro.zeroYaw();
+
+    // Init Smartdashboard
+    SmartDashboard.putNumber("Left Set", 0);
+    SmartDashboard.putNumber("Right Set", 0);    
+    SmartDashboard.putNumber("Left MPS", getMotorSpeedMPS(true));
+    SmartDashboard.putNumber("Right MPS", getMotorSpeedMPS(false));
+    SmartDashboard.putNumber("DB Left Set", 0);
+    SmartDashboard.putNumber("DB Right Set", 0);
+    SmartDashboard.putBoolean("Dashboard Control", false);
   }
 
   public void setFollowers(TalonFX optionalRight, TalonFX optionalLeft) {
@@ -180,7 +190,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void initDefaultCommand(CommandXboxController Controller)
   {
-    setDefaultCommand(new DifferentialDriveCommand(this, Controller));
+    boolean useDashboard = SmartDashboard.getBoolean("Dashboard Control", false);
+    if (useDashboard == true) {
+      setDefaultCommand(new DifferentailDriveFromDashboard(this));
+    } else {
+      setDefaultCommand(new DifferentialDriveCommand(this, Controller));
+    }
   }
 
   public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS)
@@ -201,8 +216,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     // set motor voltage based on CTRE example
 
-    double desiredLeftRotationsPerSecond =(leftMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
-    double desiredRightRotationsPerSecond =(rightMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
+    double desiredLeftRotationsPerSecond =(leftSpeedMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
+    double desiredRightRotationsPerSecond =(rightSpeedMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
 
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(desiredLeftRotationsPerSecond));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(desiredRightRotationsPerSecond));
@@ -267,6 +282,12 @@ public class DriveSubsystem extends SubsystemBase {
   public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed){
     m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
                             relativeChassisSpeed.omegaRadiansPerSecond);
+  }
+
+  // For Auto, needs to be in an auto command execute, so we can use the PID without 
+  // differential drive timeing out.
+  public void callDrivetrainFeed() {
+    m_Drivetrain.feed();
   }
 
   @Override
