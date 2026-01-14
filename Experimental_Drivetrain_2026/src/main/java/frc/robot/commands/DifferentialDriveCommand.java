@@ -7,6 +7,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;
 
 /** An example command that uses an example subsystem. */
 public class DifferentialDriveCommand extends Command {
@@ -33,11 +34,22 @@ public class DifferentialDriveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // This will stop the differential drive saftey warning
+    m_subsystem.callDrivetrainFeed();
+
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
     double leftSpeed  = -m_driveController.getLeftY();
     double rightSpeed = -m_driveController.getRightY();
+
+    // Set the deadband
+    if (Math.abs(leftSpeed) < OperatorConstants.kDriverControllerDeadband) {
+      leftSpeed = 0;
+    }
+    if (Math.abs(rightSpeed) < OperatorConstants.kDriverControllerDeadband) {
+      rightSpeed = 0;
+    }
 
     leftSpeed  *= Constants.DrivetrainConstants.maxVelocityMPS;
     rightSpeed *= Constants.DrivetrainConstants.maxVelocityMPS;
