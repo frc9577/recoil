@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DifferentailDriveFromDashboard extends Command {
@@ -30,11 +29,8 @@ public class DifferentailDriveFromDashboard extends Command {
         // This will stop the differential drive saftey warning
         m_subsystem.callDrivetrainFeed();
 
-        double leftSpeed  = SmartDashboard.getNumber("DB Left Set", 0);
-        double rightSpeed = SmartDashboard.getNumber("DB Right Set", 0);
-
-        leftSpeed  *= Constants.DrivetrainConstants.maxVelocityMPS;
-        rightSpeed *= Constants.DrivetrainConstants.maxVelocityMPS;
+        double leftSpeed  = SmartDashboard.getNumber("DB Left Set (MPS)", 0);
+        double rightSpeed = SmartDashboard.getNumber("DB Right Set (MPS)", 0);
 
         m_subsystem.setDifferentialSpeeds( leftSpeed, rightSpeed );
     }

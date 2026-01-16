@@ -68,11 +68,9 @@ public final class Constants {
     public static final double kA_angular = 0.1141; // TODO: We need to measure this!
     public static final double PeakVoltage = 10.0;
 
-    public static final int maxVelocity = 30; // rps/s
-    public static final int maxAcceleration = 50; // rps
-
-    // Constants used by differential drive command.
-    public static final double maxVelocityMPS = 1.0; 
+    public static final double maxVelocity = 30; // rps/s
+    public static final double maxAcceleration = 50; // rps
+    public static final double maxVelocityMPS = DrivetrainConstants.maxVelocity * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
 
     // For Auto Potentially
     public static boolean kLeftPositiveMovesForward = true;

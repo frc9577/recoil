@@ -59,6 +59,9 @@ public class RobotContainer {
   private TalonFXFactory m_TalonFXFactory = new TalonFXFactory();
   private DriveSubsystemFactory m_DriveSubsystemFactory = new DriveSubsystemFactory();
 
+  // Keep track of time for SmartDashboard updates.
+  static int m_iTickCount = 0;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Init DriveSubsystem
@@ -81,27 +84,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
   }
-
-  // Tom wrote this cool template to make the optional subsystem creation code in
-  // the constructor above a lot clearer. This is what clever coding looks like.
-  // Owen: I added the ability to pass object args through this for dependency injection,
-  // I hope this does not break anything or commited a coding sin or somthing
-  // private static <SSC> Optional<SSC> getSubsystem(Class<SSC> subsystemClass, Object... args) {
-  //   Optional<SSC> iss;
-  //   try {
-
-  //     iss = Optional.ofNullable(subsystemClass.getDeclaredConstructor().newInstance(args));
-  //   } catch (Exception e) {
-  //     iss = Optional.empty();
-  //     // This is not tested! - Owen
-  //     DriverStation.reportWarning(
-  //       String.format(
-  //       "The %s was not found!", subsystemClass.getName()), 
-  //       false
-  //     );
-  //   }
-  //   return iss;
-  // }
 
   private void configureAutos() {
     // Init Autos (/home/lvuser/deploy/pathplanner/autos)
@@ -144,6 +126,20 @@ public class RobotContainer {
     //   // cancelling on release.
     //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
     // }
+  }
+
+  // This function is called every 20mS.
+  public void UpdateSmartDashboard() {
+    // Drive subsystem
+    if(m_driveSubsystem.isPresent() && (m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0)
+    {
+      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+
+      SmartDashboard.putNumber("Left Speed (MPS)", driveSubsystem.getMotorSpeedMPS(true));
+      SmartDashboard.putNumber("Right Speed (MPS)", driveSubsystem.getMotorSpeedMPS(false));
+    }
+
+    m_iTickCount++;
   }
 
   public void teleopInit() {
