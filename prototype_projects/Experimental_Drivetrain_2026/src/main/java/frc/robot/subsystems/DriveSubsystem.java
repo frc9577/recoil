@@ -48,9 +48,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   private DifferentialDrive m_Drivetrain;
 
-  private double m_leftSpeed  = 0.0;
-  private double m_rightSpeed = 0.0;
-
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final AHRS m_gyro;
@@ -198,42 +195,30 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS)
-  {
-    // NOTE: We are making our own custom input modifications
-    //m_leftSpeed = Math.pow(m_leftSpeed, 3);
-    //m_rightSpeed = Math.pow(m_rightSpeed, 3);
-    // NOTE: Notes can be useful for conveying information
+  // TODO: Work on a naming scheme for conversion functions
 
-    SmartDashboard.putNumber("Left Set", leftSpeedMPS);
-    SmartDashboard.putNumber("Right Set", rightSpeedMPS);
-
-    double leftMPS = getMotorSpeedMPS(true);
-    double rightMPS = getMotorSpeedMPS(false);
-    
-    SmartDashboard.putNumber("Left MPS", leftMPS);
-    SmartDashboard.putNumber("Right MPS", rightMPS);
-
-    // set motor voltage based on CTRE example
-
-    double desiredLeftRotationsPerSecond =(leftSpeedMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
-    double desiredRightRotationsPerSecond =(rightSpeedMPS/DrivetrainConstants.kWheelCircumference)/DrivetrainConstants.kDrivetrainGearRatio;
-
-    m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(desiredLeftRotationsPerSecond));
-    m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(desiredRightRotationsPerSecond));
-
+  // This converts rotations per second to meters per second.
+  public double ConvertRPStoMPS(double RPS) {
+    return RPS * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
   }
 
-  public double getSpeed(boolean bLeft)
+  // This converts meters per second to rotations per second.
+  // This is the inverse function of the one above, calculated it myself. - Owen
+  public double ConvertMPStoRPS(double MPS) {
+    return (MPS / DrivetrainConstants.kDrivetrainGearRatio) / DrivetrainConstants.kWheelCircumference;
+  }
+
+  // This sets the differential speeds based on a desired MPS speed.
+  public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS)
   {
-    if (bLeft)
-    {
-      return m_leftSpeed;
-    }
-    else
-    {
-      return m_rightSpeed;
-    }
+    SmartDashboard.putNumber("Left Target (MPS)", leftSpeedMPS);
+    SmartDashboard.putNumber("Right Target (MPS)", rightSpeedMPS);
+
+    double leftSpeedRPS = ConvertMPStoRPS(leftSpeedMPS);
+    double rightSpeedRPS = ConvertMPStoRPS(rightSpeedMPS);
+
+    m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
+    m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
   }
 
   // Wrapping robot position inside of getposition
@@ -253,15 +238,14 @@ public class DriveSubsystem extends SubsystemBase {
     double MPS;
     if (bLeft)
     {
-      MPS = m_leftMotor.getVelocity().getValueAsDouble() * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
+      MPS = ConvertRPStoMPS(m_leftMotor.getVelocity().getValueAsDouble());
     }
     else 
     {
-      MPS = m_rightMotor.getVelocity().getValueAsDouble() * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
+      MPS = ConvertRPStoMPS(m_rightMotor.getVelocity().getValueAsDouble());
     }
     return MPS;
   }
-
 
   // Returns a robot relative ChassisSpeeds object based on the avrg linear velocity
   // in meters per second and avrg anglear velocity in readians per second
@@ -284,8 +268,8 @@ public class DriveSubsystem extends SubsystemBase {
                             relativeChassisSpeed.omegaRadiansPerSecond);
   }
 
-  // For Auto, needs to be in an auto command execute, so we can use the PID without 
-  // differential drive timeing out.
+  // Needs to be called in any PID actions execute loop.
+  // This is because the drivetrain times out during PID control.
   public void callDrivetrainFeed() {
     m_Drivetrain.feed();
   }
