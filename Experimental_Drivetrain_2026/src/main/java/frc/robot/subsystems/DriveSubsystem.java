@@ -33,7 +33,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DifferentailDriveFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
-//import frc.robot.utils.PIDControl;
 
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;
@@ -51,16 +50,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final AHRS m_gyro;
-
-  // PIDControl m_leftPidControl = new PIDControl(
-  //   m_leftMotor, 
-  //   DrivetrainConstants.kLeftPositiveMovesForward
-  // );
-
-  // PIDControl m_rightPidControl = new PIDControl(
-  //   m_rightMotor, 
-  //   DrivetrainConstants.kRightPositiveMovesForward
-  // );
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, AHRS gyro, TalonFX rightMotor, TalonFX leftMotor) { 
