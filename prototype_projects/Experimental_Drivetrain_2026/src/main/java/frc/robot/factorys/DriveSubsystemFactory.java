@@ -24,7 +24,6 @@ public class DriveSubsystemFactory {
         DriveSubsystem driveSubsystem = new DriveSubsystem(poseEstimator, kinematics, gyro, rightLead.get(),
                 leftLead.get());
 
-        // TODO: This code is being ran even when the followers dont exist.
         if (rightFollower.isPresent() && leftFollower.isPresent()) {
             driveSubsystem.setFollowers(rightFollower.get(), leftFollower.get());
         }
