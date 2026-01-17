@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,14 +34,44 @@ public class ArcadeDriveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // TODO: This code is not correct for arcade drive, comeback and rewrite it - Owen
+
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
-    // TODO: This code is not correct for arcade drive, comeback and rewrite it - Owen
-    m_subsystem.setDifferentialSpeeds(
-      -m_driveController.getRightY(), 
-      -m_driveController.getLeftX()
-    );
+    double speedInput = -m_driveController.getRightY();
+    double turnInput  = m_driveController.getLeftX();
+
+    // Set the deadband
+    if (Math.abs(speedInput) < OperatorConstants.kDriverControllerDeadband) {
+      speedInput = 0;
+    }
+    if (Math.abs(turnInput) < OperatorConstants.kDriverControllerDeadband) {
+      turnInput = 0;
+    }
+
+    double leftSpeed = speedInput + turnInput;
+    double rightSpeed = speedInput - turnInput;
+
+    // Find the maximum possible value of (throttle + turn) along the vector
+    // that the joystick is pointing, then desaturate the wheel speeds
+    double greaterInput = Math.max(Math.abs(speedInput), Math.abs(turnInput));
+    double lesserInput = Math.min(Math.abs(speedInput), Math.abs(turnInput));
+    if (greaterInput == 0.0) {
+      m_subsystem.setDifferentialSpeeds(
+        0, 
+        0
+      );
+    } else {
+      double saturatedInput = (greaterInput + lesserInput) / greaterInput;
+      leftSpeed /= saturatedInput;
+      rightSpeed /= saturatedInput;
+
+      m_subsystem.setDifferentialSpeeds(
+        leftSpeed * DrivetrainConstants.kMaxVelocityMPS, 
+        rightSpeed * DrivetrainConstants.kMaxVelocityMPS
+      );
+    }
   }
 
   // Called once the command ends or is interrupted.

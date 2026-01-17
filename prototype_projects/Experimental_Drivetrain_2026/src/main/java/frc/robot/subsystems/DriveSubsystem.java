@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.DifferentailDriveFromDashboard;
+import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -103,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
-    SmartDashboard.putBoolean("Dashboard Control", false);
+    SmartDashboard.putBoolean("Use Arcade", true);
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -156,9 +156,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void initDefaultCommand(CommandXboxController Controller)
   {
-    boolean useDashboard = SmartDashboard.getBoolean("Dashboard Control", false);
-    if (useDashboard == true) {
-      setDefaultCommand(new DifferentailDriveFromDashboard(this));
+    boolean useArcade = SmartDashboard.getBoolean("Use Arcade", true);
+    if (useArcade == true) {
+      setDefaultCommand(new ArcadeDriveCommand(this, Controller));
     } else {
       setDefaultCommand(new DifferentialDriveCommand(this, Controller));
     }
