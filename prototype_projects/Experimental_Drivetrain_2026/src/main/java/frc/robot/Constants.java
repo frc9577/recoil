@@ -68,9 +68,8 @@ public final class Constants {
     public static final double kA_angular = 0.1141; // TODO: We need to measure this!
     public static final double PeakVoltage = 10.0;
 
-    public static final double maxVelocity = 30; // rps/s
-    public static final double maxAcceleration = 50; // rps
-    public static final double maxVelocityMPS = DrivetrainConstants.maxVelocity * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
+    public static final double maxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
+    public static final double maxAccelerationMPS2 = 5.0; // M/S^2
 
     // For Auto Potentially
     public static boolean kLeftPositiveMovesForward = true;
