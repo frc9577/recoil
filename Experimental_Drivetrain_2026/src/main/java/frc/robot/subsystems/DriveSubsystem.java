@@ -7,6 +7,9 @@
 package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.Console;
+
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -34,6 +37,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DifferentailDriveFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
 
+//TODO: Uncomment differential drive once velocity issues are fixed.
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;
   private TalonFX m_optionalRightMotor;
@@ -45,7 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final VelocityVoltage m_leftVelocityVoltage = new VelocityVoltage(0).withSlot(0);
   private final VelocityVoltage m_rightVelocityVoltage = new VelocityVoltage(0).withSlot(0);
 
-  private DifferentialDrive m_Drivetrain;
+  //private DifferentialDrive m_Drivetrain;
 
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
@@ -60,35 +64,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotor = leftMotor;
 
     // Right Motor
-    TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
-    rightMotorConfig.Slot0.kV = DrivetrainConstants.kV;
-    rightMotorConfig.Slot0.kS = DrivetrainConstants.kS;
-    rightMotorConfig.Slot0.kP = DrivetrainConstants.kP;
-    rightMotorConfig.Slot0.kI = DrivetrainConstants.kI; // No output for integrated error
-    rightMotorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
-    rightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-    rightMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
-
-    m_rightMotor.getConfigurator().apply(rightMotorConfig);    
+    setConfig(m_rightMotor, InvertedValue.Clockwise_Positive); 
     SendableRegistry.setName(m_rightMotor, "DriveSubsystem", "rightMotor");
 
     // Left Motor
-    TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration();
-    leftMotorConfig.Slot0.kV = DrivetrainConstants.kV;
-    leftMotorConfig.Slot0.kS = DrivetrainConstants.kS;
-    leftMotorConfig.Slot0.kP = DrivetrainConstants.kP;
-    leftMotorConfig.Slot0.kI = DrivetrainConstants.kI; // No output for integrated error
-    leftMotorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
-    leftMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    leftMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-
-    leftMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
-
-    m_leftMotor.getConfigurator().apply(leftMotorConfig);
+    setConfig(m_leftMotor, InvertedValue.CounterClockwise_Positive); 
     SendableRegistry.setName(m_leftMotor, "DriveSubsystem", "leftMotor");
 
     // Zeroing the encoders
@@ -96,8 +76,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightMotor.setPosition(0);
 
     // Setting up the drive train
-    m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
-    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");   
+    //m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
+    //SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");   
 
     // Init Autobuilder
     AutoBuilder.configure(
@@ -120,55 +100,63 @@ public class DriveSubsystem extends SubsystemBase {
       }, 
       this
     );
-    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
+    //SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
     
     // Gyro setup
     m_gyro.zeroYaw();
 
     // Init Smartdashboard
-    SmartDashboard.putNumber("Left Set", 0);
-    SmartDashboard.putNumber("Right Set", 0);    
-    SmartDashboard.putNumber("Left MPS", getMotorSpeedMPS(true));
-    SmartDashboard.putNumber("Right MPS", getMotorSpeedMPS(false));
-    SmartDashboard.putNumber("DB Left Set", 0);
-    SmartDashboard.putNumber("DB Right Set", 0);
+    SmartDashboard.putNumber("DB Left Set (MPS)", 0);
+    SmartDashboard.putNumber("DB Right Set (MPS)", 0);
+    SmartDashboard.putNumber("Left Target (MPS)", 0);
+    SmartDashboard.putNumber("Right Target (MPS)", 0);    
+    SmartDashboard.putNumber("Left Speed (MPS)", getMotorSpeedMPS(true));
+    SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
+    SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
+    SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
     SmartDashboard.putBoolean("Dashboard Control", false);
   }
 
-  public void setFollowers(TalonFX optionalRight, TalonFX optionalLeft) {
-    m_optionalRightMotor = optionalRight;
-  
-    // Setting up Config
-    TalonFXConfiguration optionalRightMotorConfig = new TalonFXConfiguration();
-    //check
-    optionalRightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    optionalRightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+  private void setConfig(TalonFX motor, InvertedValue Inverted) {
+    TalonFXConfiguration motorConfig = new TalonFXConfiguration();
+    motorConfig.Slot0.kS = DrivetrainConstants.kS;
+    motorConfig.Slot0.kV = DrivetrainConstants.kV;
+    motorConfig.Slot0.kP = DrivetrainConstants.kP;
+    motorConfig.Slot0.kI = DrivetrainConstants.kI; // No output for integrated error
+    motorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
 
-    optionalRightMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
+    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    motorConfig.MotorOutput.Inverted = Inverted;
+
+    motorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
     .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
 
-    // Saving
-    m_optionalRightMotor.getConfigurator().apply(optionalRightMotorConfig);
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = motor.getConfigurator().apply(motorConfig);
+      System.out.println("config attempt #" + (i+1) + ": " + status.toString());
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+  }
 
-    // Setting as a follwer
+  public void setFollowers(TalonFX optionalRight, TalonFX optionalLeft) {
+    // Right Motor
+    m_optionalRightMotor = optionalRight;
+  
+    System.out.println("orm");
+    setConfig(m_optionalRightMotor, InvertedValue.Clockwise_Positive);
     m_optionalRightMotor.setControl(
       new Follower(m_rightMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
 
+    // Left Motor
     m_optionalLeftMotor = optionalLeft;
 
-    // Setting up Config
-    TalonFXConfiguration optionalLeftMotorConfig = new TalonFXConfiguration();
-    optionalLeftMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    optionalLeftMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-
-    optionalLeftMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
-
-    // Saving
-    m_optionalLeftMotor.getConfigurator().apply(optionalLeftMotorConfig);
-
-    // Setting as follower
+    System.out.println("olm");
+    setConfig(m_optionalLeftMotor, InvertedValue.CounterClockwise_Positive);
     m_optionalLeftMotor.setControl(
       new Follower(m_leftMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
@@ -206,6 +194,9 @@ public class DriveSubsystem extends SubsystemBase {
     double leftSpeedRPS = ConvertMPStoRPS(leftSpeedMPS);
     double rightSpeedRPS = ConvertMPStoRPS(rightSpeedMPS);
 
+    SmartDashboard.putNumber("Left Target (RPS)", leftSpeedRPS);
+    SmartDashboard.putNumber("Right Target (RPS)", rightSpeedRPS);
+
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
   }
@@ -222,17 +213,24 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator.resetPose(newPose);
   }
 
-  public double getMotorSpeedMPS(boolean bLeft) 
+  public double getMotorSpeedRPS(boolean bLeft) 
   {
-    double MPS;
+    double RPS;
     if (bLeft)
     {
-      MPS = ConvertRPStoMPS(m_leftMotor.getVelocity().getValueAsDouble());
+      RPS = m_leftMotor.getVelocity().getValueAsDouble();
     }
     else 
     {
-      MPS = ConvertRPStoMPS(m_rightMotor.getVelocity().getValueAsDouble());
+      RPS = m_rightMotor.getVelocity().getValueAsDouble();
     }
+    return RPS;
+  }
+
+  public double getMotorSpeedMPS(boolean bLeft) 
+  {
+    double RPS = getMotorSpeedRPS(bLeft);
+    double MPS = ConvertRPStoMPS(RPS);
     return MPS;
   }
 
@@ -253,14 +251,14 @@ public class DriveSubsystem extends SubsystemBase {
   // Gives the drivetrain a new drive command based on a robot relative
   // chassis speed object.
   public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed){
-    m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
-                            relativeChassisSpeed.omegaRadiansPerSecond);
+    //m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
+    //                        relativeChassisSpeed.omegaRadiansPerSecond);
   }
 
   // Needs to be called in any PID actions execute loop.
   // This is because the drivetrain times out during PID control.
   public void callDrivetrainFeed() {
-    m_Drivetrain.feed();
+    //m_Drivetrain.feed();
   }
 
   @Override
