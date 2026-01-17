@@ -128,7 +128,7 @@ public class RobotContainer {
     // }
   }
 
-  // This function is called every 20mS.
+  // This function is called every 20mS.  
   public void UpdateSmartDashboard() {
     // Drive subsystem
     if(m_driveSubsystem.isPresent() && (m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0)
@@ -137,6 +137,8 @@ public class RobotContainer {
 
       SmartDashboard.putNumber("Left Speed (MPS)", driveSubsystem.getMotorSpeedMPS(true));
       SmartDashboard.putNumber("Right Speed (MPS)", driveSubsystem.getMotorSpeedMPS(false));
+      SmartDashboard.putNumber("Left Speed (RPS)", driveSubsystem.getMotorSpeedRPS(true));
+      SmartDashboard.putNumber("Right Speed (RPS)", driveSubsystem.getMotorSpeedRPS(false));
     }
 
     m_iTickCount++;

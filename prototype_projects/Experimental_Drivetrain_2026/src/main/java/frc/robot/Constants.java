@@ -58,15 +58,15 @@ public final class Constants {
     public static final double kTurnDivider = 2;
     public static final double kSpeedDivider = 2.5;
 
-    // These numbers came from sys id program
-    public static final double kV = 1.8747; // Add x V output to overcome static friction
-    public static final double kS = 0.15316; // A velocity target of 1 rps results in xV output
-    public static final double kP = 0.5; //2.7562; // An error of 1 rotation results in x V output
+    // These numbers came from the ctre example then tweaked
+    public static final double kS = 0.1; // A velocity target of 1 rps results in xV output
+    public static final double kV = 0.12; // Add x V output to overcome static friction
+    public static final double kP = 0.11; // An error of 1 rotation results in x V output
     public static final double kI = 0.0;
     public static final double kD = 0.0; // A velocity of 1 rps results in x V output
     public static final double kA_linear = 0.1141; // Voltage needed to induce a given accel. in the motor shaft
     public static final double kA_angular = 0.1141; // TODO: We need to measure this!
-    public static final double PeakVoltage = 10.0;
+    public static final double PeakVoltage = 8.0;
 
     public static final double maxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
     public static final double maxAccelerationMPS2 = 5.0; // M/S^2
