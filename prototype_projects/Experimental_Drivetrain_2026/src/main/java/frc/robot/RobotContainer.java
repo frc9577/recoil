@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -42,7 +41,7 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
-  private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.trackWidthMeters);
+  private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
 
   // Pose Estimators
   private DifferentialDrivePoseEstimator m_DrivePoseEstimator = new DifferentialDrivePoseEstimator(
@@ -87,7 +86,7 @@ public class RobotContainer {
 
   private void configureAutos() {
     // Init Autos (/home/lvuser/deploy/pathplanner/autos)
-    ArrayList<Command> autoCommands = AutoCommands.getAutoCommands(m_driveSubsystem);
+    AutoCommands.getAutoCommands(m_driveSubsystem);
 
     // Init Chooser
     autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
@@ -139,6 +138,9 @@ public class RobotContainer {
       SmartDashboard.putNumber("Right Speed (MPS)", driveSubsystem.getMotorSpeedMPS(false));
       SmartDashboard.putNumber("Left Speed (RPS)", driveSubsystem.getMotorSpeedRPS(true));
       SmartDashboard.putNumber("Right Speed (RPS)", driveSubsystem.getMotorSpeedRPS(false));
+
+      SmartDashboard.putNumber("Left Distance (m)", driveSubsystem.getMotorPositionMeters(true));
+      SmartDashboard.putNumber("Right Distance (m)", driveSubsystem.getMotorPositionMeters(false));
     }
 
     m_iTickCount++;

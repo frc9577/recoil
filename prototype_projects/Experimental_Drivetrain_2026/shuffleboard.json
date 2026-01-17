@@ -1,7 +1,7 @@
 {
   "tabPane": [
     {
-      "title": "Dashboard Testing",
+      "title": "Teleop Dashboard Testing",
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
@@ -149,38 +149,12 @@
               "_glyph": 148,
               "_showGlyph": false
             }
-          },
-          "6,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Right Target (RPS)",
-              "_title": "/SmartDashboard/Right Target (RPS)",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Left Target (RPS)",
-              "_title": "/SmartDashboard/Left Target (RPS)",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
           }
         }
       }
     },
     {
-      "title": "Tab 2",
+      "title": "Auto Testing",
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
@@ -197,43 +171,112 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/current RPS",
-              "_title": "/SmartDashboard/current RPS",
+              "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
+              "_title": "SmartDashboard/Left Target (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "3,0": {
+          "3,2": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/desired RPS",
-              "_title": "/SmartDashboard/desired RPS",
+              "_source0": "network_table:///SmartDashboard/Left Speed (MPS)",
+              "_title": "SmartDashboard/Left Speed (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "4,0": {
+          "4,2": {
             "size": [
-              9,
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Speed (MPS)",
+              "_title": "SmartDashboard/Right Speed (MPS)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
+              "_title": "SmartDashboard/Right Target (MPS)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Chooser",
+              "_title": "SmartDashboard/Auto Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              8,
               4
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/desired RPS",
-              "_source1": "network_table:///SmartDashboard/current RPS",
+              "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
+              "_source1": "network_table:///SmartDashboard/Left Speed (MPS)",
+              "_source2": "network_table:///SmartDashboard/Left Distance (m)",
               "_title": "Graph",
               "_glyph": 148,
               "_showGlyph": false,
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
               "Y-axis/Automatic bounds": false,
-              "Y-axis/Upper bound": 50.0,
-              "Y-axis/Lower bound": -50.0,
-              "Y-axis/Unit": "rps"
+              "Y-axis/Upper bound": 3.0,
+              "Y-axis/Lower bound": -3.0,
+              "Y-axis/Unit": "m",
+              "Visible data/SmartDashboard/Left Distance (m)": true,
+              "Visible data/SmartDashboard/Left Speed (MPS)": true,
+              "Visible data/SmartDashboard/Left Target (MPS)": true
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Distance (m)",
+              "_title": "SmartDashboard/Left Distance (m)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Distance (m)",
+              "_title": "SmartDashboard/Right Distance (m)",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }

@@ -19,14 +19,20 @@ import edu.wpi.first.math.system.plant.DCMotor;
  */
 public final class Constants {
   public static class AutoConstants {
-    // Module Config Stuff
-    public static final double kMaxDriveVelocityMPS = 40.0; // This is what SysID is saying i dont think its going 90 mph
-    public static final double kWheelCOF = 1.0;
-    public static final int kNumMotors = 4;
-    public static final double kDriveCurrentLimit = 10.0;
+    public static final double kMaxDriveVelocityMPS = 40.0; // true max speed of the robot mps
+    public static final double kWheelCOF = 1.0; // no data for this, bsed it
+
+    public static final double kMassKG = 15.0;
+    //public static final double kMOI = (1/12)  * kMassKG * ((DrivetrainConstants.kLengthMeters*DrivetrainConstants.kLengthMeters) + (DrivetrainConstants.kWidthMeters*DrivetrainConstants.kWidthMeters)); // Moment of Intertia
+    public static final double kMOI = kMassKG * (DrivetrainConstants.kTrackWidthMeters/2) * (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
+
+    public static final double kDriveCurrentLimit = 10.0; // amps
+
+    // These values may change per bot, we might want to populate these on init w/ accurate data
+    public static final int kNumMotors = 4; // # of motors in a gearbox
 
     public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(kNumMotors);
-    public static final ModuleConfig kMoudleConfig = new ModuleConfig(
+    public static final ModuleConfig kModuleConfig = new ModuleConfig(
       DrivetrainConstants.kWheelRadiusMeters, 
       kMaxDriveVelocityMPS, 
       kWheelCOF, 
@@ -35,12 +41,8 @@ public final class Constants {
       kNumMotors
     );
 
-    // Robot Config Stuff
-    // TODO: Run SYS ID and fill in!
-    public static final double kMassKG = 15.0;
-    public static final double kMOI = kMassKG * (DrivetrainConstants.trackWidthMeters/2) * (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
-
-    public static final RobotConfig kRobotConfig = new RobotConfig(kMassKG, kMOI, kMoudleConfig, DrivetrainConstants.trackWidthMeters);
+    public static final RobotConfig kRobotConfig = new RobotConfig(kMassKG, kMOI, kModuleConfig, DrivetrainConstants.kTrackWidthMeters);
+    // populate on init possibility end here
   }
 
   public static class OperatorConstants {
@@ -82,11 +84,11 @@ public final class Constants {
     public static final double kDrivetrainGearRatio = 0.2;
     public static final double kWheelRadiusMeters = (4.0 / 2.0) * 0.0254; // Four Inch Wheels
     public static final double kWheelCircumference = 2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
+    public static final double kWidthMeters = 0.760;
+    public static final double kLengthMeters = 0.760;
+    public static final double kTrackWidthMeters = 29.0 * 0.0254;//0.74; 
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;
-
-    // The track width in meters.
-    public static final double trackWidthMeters = 29.0 * 0.0254; 
   }
 }

@@ -34,9 +34,6 @@ public class DifferentialDriveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // This will stop the differential drive saftey warning
-    m_subsystem.callDrivetrainFeed();
-
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.

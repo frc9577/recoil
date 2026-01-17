@@ -11,7 +11,6 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -27,7 +26,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,8 +44,6 @@ public class DriveSubsystem extends SubsystemBase {
   /* Start at velocity 0, use slot 0 */
   private final MotionMagicVelocityVoltage m_leftVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
   private final MotionMagicVelocityVoltage m_rightVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
-
-  private DifferentialDrive m_Drivetrain;
 
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
@@ -71,11 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Zeroing the encoders
     m_leftMotor.setPosition(0);
-    m_rightMotor.setPosition(0);
-
-    // Setting up the drive train
-    m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
-    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");   
+    m_rightMotor.setPosition(0); 
 
     // Init Autobuilder
     AutoBuilder.configure(
@@ -98,7 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
       }, 
       this
     );
-    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
     
     // Gyro setup
     m_gyro.zeroYaw();
@@ -175,15 +166,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   // TODO: Work on a naming scheme for conversion functions
 
-  // This converts rotations per second to meters per second.
-  public double ConvertRPStoMPS(double RPS) {
-    return RPS * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
+  // This converts rotations of the motor shaft to meters travled.
+  public double ConvertRotationsToMeters(double rotations) {
+    return rotations * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
   }
 
-  // This converts meters per second to rotations per second.
+  // This converts meters travled to rotations of the motor shaft.
   // This is the inverse function of the one above, calculated it myself. - Owen
-  public double ConvertMPStoRPS(double MPS) {
-    return (MPS / DrivetrainConstants.kDrivetrainGearRatio) / DrivetrainConstants.kWheelCircumference;
+  public double ConvertMetersToRotations(double meters) {
+    return (meters / DrivetrainConstants.kDrivetrainGearRatio) / DrivetrainConstants.kWheelCircumference;
   }
 
   // This sets the differential speeds based on a desired MPS speed.
@@ -192,11 +183,13 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Target (MPS)", leftSpeedMPS);
     SmartDashboard.putNumber("Right Target (MPS)", rightSpeedMPS);
 
-    double leftSpeedRPS = ConvertMPStoRPS(leftSpeedMPS);
-    double rightSpeedRPS = ConvertMPStoRPS(rightSpeedMPS);
+    double leftSpeedRPS = ConvertMetersToRotations(leftSpeedMPS);
+    double rightSpeedRPS = ConvertMetersToRotations(rightSpeedMPS);
 
     SmartDashboard.putNumber("Left Target (RPS)", leftSpeedRPS);
     SmartDashboard.putNumber("Right Target (RPS)", rightSpeedRPS);
+
+    System.out.println(leftSpeedMPS + " // "+leftSpeedRPS);
 
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
@@ -231,8 +224,21 @@ public class DriveSubsystem extends SubsystemBase {
   public double getMotorSpeedMPS(boolean bLeft) 
   {
     double RPS = getMotorSpeedRPS(bLeft);
-    double MPS = ConvertRPStoMPS(RPS);
+    double MPS = ConvertRotationsToMeters(RPS);
     return MPS;
+  }
+
+  // Gets the distance travled by the motor in meters
+  public double getMotorPositionMeters(boolean bLeft) {
+    double posRotations;
+    if (bLeft == true) {
+      posRotations = m_leftMotor.getPosition().getValueAsDouble();
+    } else {
+      posRotations = m_rightMotor.getPosition().getValueAsDouble();
+    }
+
+    double posMeters = ConvertRotationsToMeters(posRotations);
+    return posMeters;
   }
 
   // Returns a robot relative ChassisSpeeds object based on the avrg linear velocity
@@ -252,24 +258,23 @@ public class DriveSubsystem extends SubsystemBase {
   // Gives the drivetrain a new drive command based on a robot relative
   // chassis speed object.
   public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed){
-    m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
-                           relativeChassisSpeed.omegaRadiansPerSecond);
-  }
+    DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(relativeChassisSpeed);
 
-  // Needs to be called in any PID actions execute loop.
-  // This is because the drivetrain times out during PID control.
-  public void callDrivetrainFeed() {
-    m_Drivetrain.feed();
+    setDifferentialSpeeds(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run 
 
+    double lPositionMeters = getMotorPositionMeters(true);
+    double rPositionMeters = getMotorPositionMeters(false);
+
     m_poseEstimator.update(
-        m_gyro.getRotation2d(), 
-        m_leftMotor.getPosition().getValueAsDouble(), 
-        m_rightMotor.getPosition().getValueAsDouble());
+      m_gyro.getRotation2d(), 
+      lPositionMeters,
+      rPositionMeters
+    );
   }
 
   @Override
