@@ -7,8 +7,6 @@
 package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.io.Console;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -37,7 +35,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DifferentailDriveFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
 
-//TODO: Uncomment differential drive once velocity issues are fixed.
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;
   private TalonFX m_optionalRightMotor;
@@ -49,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final VelocityVoltage m_leftVelocityVoltage = new VelocityVoltage(0).withSlot(0);
   private final VelocityVoltage m_rightVelocityVoltage = new VelocityVoltage(0).withSlot(0);
 
-  //private DifferentialDrive m_Drivetrain;
+  private DifferentialDrive m_Drivetrain;
 
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
@@ -76,8 +73,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightMotor.setPosition(0);
 
     // Setting up the drive train
-    //m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
-    //SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");   
+    m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
+    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");   
 
     // Init Autobuilder
     AutoBuilder.configure(
@@ -100,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
       }, 
       this
     );
-    //SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
+    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
     
     // Gyro setup
     m_gyro.zeroYaw();
@@ -146,7 +143,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Right Motor
     m_optionalRightMotor = optionalRight;
   
-    System.out.println("orm");
     setConfig(m_optionalRightMotor, InvertedValue.Clockwise_Positive);
     m_optionalRightMotor.setControl(
       new Follower(m_rightMotor.getDeviceID(), MotorAlignmentValue.Aligned)
@@ -155,7 +151,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Left Motor
     m_optionalLeftMotor = optionalLeft;
 
-    System.out.println("olm");
     setConfig(m_optionalLeftMotor, InvertedValue.CounterClockwise_Positive);
     m_optionalLeftMotor.setControl(
       new Follower(m_leftMotor.getDeviceID(), MotorAlignmentValue.Aligned)
@@ -251,14 +246,14 @@ public class DriveSubsystem extends SubsystemBase {
   // Gives the drivetrain a new drive command based on a robot relative
   // chassis speed object.
   public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed){
-    //m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
-    //                        relativeChassisSpeed.omegaRadiansPerSecond);
+    m_Drivetrain.arcadeDrive(relativeChassisSpeed.vxMetersPerSecond, 
+                           relativeChassisSpeed.omegaRadiansPerSecond);
   }
 
   // Needs to be called in any PID actions execute loop.
   // This is because the drivetrain times out during PID control.
   public void callDrivetrainFeed() {
-    //m_Drivetrain.feed();
+    m_Drivetrain.feed();
   }
 
   @Override

@@ -8,13 +8,12 @@ public class TalonFXFactory {
     public TalonFXFactory() {}
 
     public Optional<TalonFX> construct(int CANID) {
-        Optional<TalonFX> newMotor;
-        try {
-            newMotor = Optional.of(new TalonFX(CANID));
-        } catch (Exception e) {
-            newMotor = Optional.empty();
-        }
+        TalonFX talon = new TalonFX(CANID);
 
-        return newMotor;
+        if (talon.isConnected()) {
+            return Optional.of(talon);
+        } else {
+            return Optional.empty();
+        }
     }
 }
