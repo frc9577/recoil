@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ArcadeDriveCommand;
+import frc.robot.commands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -103,7 +104,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
-    SmartDashboard.putBoolean("Use Arcade", true);
+    SmartDashboard.putBoolean("PID Arcade", true);
+    SmartDashboard.putBoolean("No PID Arcade", false);
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -154,11 +156,16 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
+  // TODO: Make a list chooser.
   public void initDefaultCommand(CommandXboxController Controller)
   {
-    boolean useArcade = SmartDashboard.getBoolean("Use Arcade", true);
+    boolean useArcade = SmartDashboard.getBoolean("PID Arcade", true);
+    boolean useNoPID = SmartDashboard.getBoolean("No PID Arcade", false);
+
     if (useArcade == true) {
       setDefaultCommand(new ArcadeDriveCommand(this, Controller));
+    } else if (useNoPID == true) {
+      setDefaultCommand(new ArcadeDriveCommandNoPID(this, Controller));
     } else {
       setDefaultCommand(new DifferentialDriveCommand(this, Controller));
     }
@@ -191,6 +198,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
+  }
+
+  // pass in -1 to 1 for the motor speed with no closed loop control.
+  public void setDifferentialSpeedNoPid(double left, double right) {
+    m_leftMotor.set(left);
+    m_rightMotor.set(right);
   }
 
   // Wrapping robot position inside of getposition
