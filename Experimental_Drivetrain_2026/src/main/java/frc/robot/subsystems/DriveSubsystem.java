@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -43,8 +44,8 @@ public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_optionalLeftMotor; 
 
   /* Start at velocity 0, use slot 0 */
-  private final VelocityVoltage m_leftVelocityVoltage = new VelocityVoltage(0).withSlot(0);
-  private final VelocityVoltage m_rightVelocityVoltage = new VelocityVoltage(0).withSlot(0);
+  private final MotionMagicVelocityVoltage m_leftVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
+  private final MotionMagicVelocityVoltage m_rightVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
 
   private DifferentialDrive m_Drivetrain;
 
@@ -61,11 +62,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotor = leftMotor;
 
     // Right Motor
-    setConfig(m_rightMotor, InvertedValue.Clockwise_Positive); 
+    setConfig(m_rightMotor, InvertedValue.CounterClockwise_Positive); 
     SendableRegistry.setName(m_rightMotor, "DriveSubsystem", "rightMotor");
 
     // Left Motor
-    setConfig(m_leftMotor, InvertedValue.CounterClockwise_Positive); 
+    setConfig(m_leftMotor, InvertedValue.Clockwise_Positive); 
     SendableRegistry.setName(m_leftMotor, "DriveSubsystem", "leftMotor");
 
     // Zeroing the encoders
@@ -118,6 +119,7 @@ public class DriveSubsystem extends SubsystemBase {
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     motorConfig.Slot0.kS = DrivetrainConstants.kS;
     motorConfig.Slot0.kV = DrivetrainConstants.kV;
+    motorConfig.Slot0.kA = DrivetrainConstants.kA_linear;
     motorConfig.Slot0.kP = DrivetrainConstants.kP;
     motorConfig.Slot0.kI = DrivetrainConstants.kI; // No output for integrated error
     motorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
@@ -125,8 +127,12 @@ public class DriveSubsystem extends SubsystemBase {
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     motorConfig.MotorOutput.Inverted = Inverted;
 
-    motorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
+    motorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.kPeakVoltage))
+    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.kPeakVoltage));
+
+    var motionMagicConfigs = motorConfig.MotionMagic;
+    motionMagicConfigs.MotionMagicAcceleration = DrivetrainConstants.kMotionMagicAcceleration;
+    motionMagicConfigs.MotionMagicJerk = DrivetrainConstants.kMotionMagicJerk;
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -143,7 +149,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Right Motor
     m_optionalRightMotor = optionalRight;
   
-    setConfig(m_optionalRightMotor, InvertedValue.Clockwise_Positive);
+    setConfig(m_optionalRightMotor, InvertedValue.CounterClockwise_Positive);
     m_optionalRightMotor.setControl(
       new Follower(m_rightMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
@@ -151,7 +157,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Left Motor
     m_optionalLeftMotor = optionalLeft;
 
-    setConfig(m_optionalLeftMotor, InvertedValue.CounterClockwise_Positive);
+    setConfig(m_optionalLeftMotor, InvertedValue.Clockwise_Positive);
     m_optionalLeftMotor.setControl(
       new Follower(m_leftMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );

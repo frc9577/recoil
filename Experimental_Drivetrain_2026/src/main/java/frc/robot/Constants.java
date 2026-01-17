@@ -64,12 +64,15 @@ public final class Constants {
     public static final double kP = 0.11; // An error of 1 rotation results in x V output
     public static final double kI = 0.0;
     public static final double kD = 0.0; // A velocity of 1 rps results in x V output
-    public static final double kA_linear = 0.1141; // Voltage needed to induce a given accel. in the motor shaft
-    public static final double kA_angular = 0.1141; // TODO: We need to measure this!
-    public static final double PeakVoltage = 8.0;
+    public static final double kA_linear = 0.01; // Voltage needed to induce a given accel. in the motor shaft
+    public static final double kA_angular = 0.01; // TODO: We need to measure this!
+    public static final double kPeakVoltage = 8.0;
 
-    public static final double maxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
-    public static final double maxAccelerationMPS2 = 5.0; // M/S^2
+    public static final double kMaxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
+    public static final double kMaxAccelerationMPS2 = 5.0; // M/S^2
+
+    public static final double kMotionMagicAcceleration = 100.0; // Higher number --> Faster (50.0 = ~1s to max)
+    public static final double kMotionMagicJerk = 4000.0;
 
     // For Auto Potentially
     public static boolean kLeftPositiveMovesForward = true;
