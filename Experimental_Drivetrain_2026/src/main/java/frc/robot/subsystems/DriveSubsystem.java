@@ -189,8 +189,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Target (RPS)", leftSpeedRPS);
     SmartDashboard.putNumber("Right Target (RPS)", rightSpeedRPS);
 
-    System.out.println(leftSpeedMPS + " // "+leftSpeedRPS);
-
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
   }
