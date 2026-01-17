@@ -51,8 +51,8 @@ public class DifferentialDriveCommand extends Command {
       rightSpeed = 0;
     }
 
-    leftSpeed  *= DrivetrainConstants.maxVelocityMPS;
-    rightSpeed *= DrivetrainConstants.maxVelocityMPS;
+    leftSpeed  *= DrivetrainConstants.kMaxVelocityMPS;
+    rightSpeed *= DrivetrainConstants.kMaxVelocityMPS;
 
     m_subsystem.setDifferentialSpeeds( leftSpeed, rightSpeed );
   }

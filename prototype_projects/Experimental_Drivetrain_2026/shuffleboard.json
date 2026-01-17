@@ -114,7 +114,7 @@
               "_title": "Graph",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
+              "Graph/Visible time": 10.0,
               "Graph/X-axis auto scrolling": true,
               "Y-axis/Automatic bounds": false,
               "Y-axis/Upper bound": 3.0,
