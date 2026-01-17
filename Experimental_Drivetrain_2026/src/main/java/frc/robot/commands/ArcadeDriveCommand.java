@@ -35,6 +35,7 @@ public class ArcadeDriveCommand extends Command {
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
+    // TODO: This code is not correct for arcade drive, comeback and rewrite it - Owen
     m_subsystem.setDifferentialSpeeds(
       -m_driveController.getRightY(), 
       -m_driveController.getLeftX()

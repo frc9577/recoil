@@ -26,9 +26,6 @@ public class DifferentailDriveFromDashboard extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // This will stop the differential drive saftey warning
-        m_subsystem.callDrivetrainFeed();
-
         double leftSpeed  = SmartDashboard.getNumber("DB Left Set (MPS)", 0);
         double rightSpeed = SmartDashboard.getNumber("DB Right Set (MPS)", 0);
 
