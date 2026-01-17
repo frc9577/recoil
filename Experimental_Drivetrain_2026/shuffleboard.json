@@ -37,19 +37,6 @@
               "_showGlyph": false
             }
           },
-          "3,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/Dashboard Control",
-              "_title": "SmartDashboard/Dashboard Control",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "3,3": {
             "size": [
               1,
@@ -146,6 +133,19 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Speed (RPS)",
               "_title": "SmartDashboard/Left Speed (RPS)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/Use Arcade",
+              "_title": "SmartDashboard/Use Arcade",
               "_glyph": 148,
               "_showGlyph": false
             }
