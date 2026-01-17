@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -18,6 +17,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.sim.PhysicsSim;
 
 /**
@@ -27,9 +27,8 @@ import frc.robot.sim.PhysicsSim;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final CANBus canbus = new CANBus("canivore");
-  private final TalonFX m_fx = new TalonFX(0, canbus);
-  private final TalonFX m_fllr = new TalonFX(1, canbus);
+  private final TalonFX m_fx = new TalonFX(10);
+  private final TalonFX m_fllr = new TalonFX(20);
 
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, use slot 0 */
@@ -51,11 +50,11 @@ public class Robot extends TimedRobot {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
-    configs.Slot0.kS = 0.1; // To account for friction, add 0.1 V of static feedforward
-    configs.Slot0.kV = 0.12; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
-    configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11 V output
-    configs.Slot0.kI = 0; // No output for integrated error
-    configs.Slot0.kD = 0; // No output for error derivative
+      configs.Slot0.kS = 0.1; // To account for friction, add 0.1 V of static feedforward
+      configs.Slot0.kV = 0.12; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
+      configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11 V output
+      configs.Slot0.kI = 0; // No output for integrated error
+      configs.Slot0.kD = 0; // No output for error derivative
     // Peak output of 8 volts
     configs.Voltage.withPeakForwardVoltage(Volts.of(8))
       .withPeakReverseVoltage(Volts.of(-8));
@@ -80,6 +79,9 @@ public class Robot extends TimedRobot {
     }
 
     m_fllr.setControl(new Follower(m_fx.getDeviceID(), MotorAlignmentValue.Aligned));
+
+    SmartDashboard.putNumber("desired RPS", 0);
+    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
   }
 
   @Override
@@ -113,6 +115,9 @@ public class Robot extends TimedRobot {
       /* Disable the motor instead */
       m_fx.setControl(m_brake);
     }
+
+    SmartDashboard.putNumber("desired RPS", desiredRotationsPerSecond);
+    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
   }
 
   @Override
