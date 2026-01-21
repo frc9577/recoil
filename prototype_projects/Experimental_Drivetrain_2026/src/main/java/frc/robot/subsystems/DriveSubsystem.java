@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.commands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -105,7 +104,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
     SmartDashboard.putBoolean("PID Arcade", true);
-    SmartDashboard.putBoolean("No PID Arcade", false);
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -160,12 +158,9 @@ public class DriveSubsystem extends SubsystemBase {
   public void initDefaultCommand(CommandXboxController Controller)
   {
     boolean useArcade = SmartDashboard.getBoolean("PID Arcade", true);
-    boolean useNoPID = SmartDashboard.getBoolean("No PID Arcade", false);
 
     if (useArcade == true) {
       setDefaultCommand(new ArcadeDriveCommand(this, Controller));
-    } else if (useNoPID == true) {
-      setDefaultCommand(new ArcadeDriveCommandNoPID(this, Controller));
     } else {
       setDefaultCommand(new DifferentialDriveCommand(this, Controller));
     }

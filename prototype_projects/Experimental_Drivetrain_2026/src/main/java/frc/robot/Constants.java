@@ -23,6 +23,8 @@ public final class Constants {
     public static final double kWheelCOF = 1.0; // no data for this, bsed it
 
     public static final double kMassKG = 15.0;
+
+    // Uncommenting this causes the weird x y rotion error.
     //public static final double kMOI = (1/12)  * kMassKG * ((DrivetrainConstants.kLengthMeters*DrivetrainConstants.kLengthMeters) + (DrivetrainConstants.kWidthMeters*DrivetrainConstants.kWidthMeters)); // Moment of Intertia
     public static final double kMOI = kMassKG * (DrivetrainConstants.kTrackWidthMeters/2) * (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
 

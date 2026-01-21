@@ -101,7 +101,7 @@
               "_title": "Graph",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
+              "Graph/Visible time": 10.0,
               "Graph/X-axis auto scrolling": true,
               "Y-axis/Automatic bounds": false,
               "Y-axis/Upper bound": 3.0,
@@ -172,7 +172,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
-              "_title": "SmartDashboard/Left Target (MPS)",
+              "_title": "/SmartDashboard/Left Target (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -185,7 +185,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Speed (MPS)",
-              "_title": "SmartDashboard/Left Speed (MPS)",
+              "_title": "/SmartDashboard/Left Speed (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -198,7 +198,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Speed (MPS)",
-              "_title": "SmartDashboard/Right Speed (MPS)",
+              "_title": "/SmartDashboard/Right Speed (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -211,7 +211,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
-              "_title": "SmartDashboard/Right Target (MPS)",
+              "_title": "/SmartDashboard/Right Target (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -224,7 +224,7 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto Chooser",
-              "_title": "SmartDashboard/Auto Chooser",
+              "_title": "/SmartDashboard/Auto Chooser",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -274,7 +274,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Distance (m)",
-              "_title": "SmartDashboard/Right Distance (m)",
+              "_title": "/SmartDashboard/Right Distance (m)",
               "_glyph": 148,
               "_showGlyph": false
             }
