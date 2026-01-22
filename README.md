@@ -20,11 +20,11 @@ This repository uses a modified feature branch workflow. Where all big features 
 
 ### prettier
 
-We use prittier and the prettier java plugin to format all our files. To use prettier, install it and the extension using npm.
+We use prettier and the prettier java plugin to format all our files. To use prettier, install it and the extension using npm.
 
-1. Install nvm. On windows we use [nvm-windows](https://github.com/coreybutler/nvm-windows). On linux use `apt install node-13`
+1. Install nvm. On windows we use [nvm-windows](https://github.com/coreybutler/nvm-windows) followed by `nvm install 25.4.0` and `nvm use 25.4.0`. On linux follow community provided instructions to install npm.
 2. Install prettier and prettier-java-plugin using npm in the project working directory: `npm install prettier prettier-java-plugin`
-3. Run prettier using 'prettier -w --plugin prettier-java-plugin .`
+3. Run prettier using `prettier -w --plugin prettier-java-plugin .`
 
 ### Main:
 
