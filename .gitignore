@@ -1,3 +1,6 @@
+# .vscode directories
+.vscode
+
 # Compiled class file
 *.class
 
