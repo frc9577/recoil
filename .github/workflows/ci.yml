@@ -2,7 +2,7 @@
 # This workflow file is based on this WPILib Reference with modifications: https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/robot-code-ci.html
 name: robot_ci
 
-# This action runs on all pull requests into main and when the result of the pull request is merged.
+# This action runs on all pull requests into the branches indicated below and when the result of the pull request is merged.
 on: 
   pull_request:
     branches:
@@ -20,7 +20,7 @@ defaults:
   run:
     working-directory: ./2026-Rebuilt
 
-# We define one job called 'ci' which runs the gradle build. A separate ruleset in the repository will make this a commit gate by requiring the job to pass
+# We define one job called 'ci' which runs the gradle build. A separate ruleset in the repository will make this a commit gate for main by requiring the job to pass
 # In the job, we tell the orchestrator to run on a github provided ubuntu 22.04 instance and to use the WPILib provided docker container
 # Using that docker container makes the build look like a developer machine install with WPILib available
 # The job then runs gradlew build
