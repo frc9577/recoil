@@ -7,9 +7,11 @@ on:
   pull_request:
     branches:
       - main
+      - development
   push:
     branches:
       - main
+      - development
 
 # The concurrency setting prevents multiple runs of this workflow on the same ref/hash
 concurrency: ${{ github.workflow }}-${{ github.ref }}
