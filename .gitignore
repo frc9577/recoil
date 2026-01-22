@@ -1,6 +1,11 @@
 # .vscode directories
 .vscode
 
+# npm packages
+node_modules
+package.json
+package-lock.json
+
 # Compiled class file
 *.class
 
