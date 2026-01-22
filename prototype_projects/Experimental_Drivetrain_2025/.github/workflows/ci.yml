@@ -3,7 +3,7 @@
 name: robot_ci
 
 # This action runs on all pull requests into main and when the result of the pull request is merged.
-on: 
+on:
   pull_request:
     branches:
       - main
