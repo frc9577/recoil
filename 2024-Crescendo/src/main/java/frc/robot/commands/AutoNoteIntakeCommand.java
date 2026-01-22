@@ -7,6 +7,7 @@ import frc.robot.subsystems.NoteHandlingSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class AutoNoteIntakeCommand extends Command {
+
   private final NoteHandlingSubsystem m_subsystem;
   private double m_speed = 0.0;
 

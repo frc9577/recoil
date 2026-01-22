@@ -4,12 +4,13 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.CoralConstants;
 import frc.robot.subsystems.CoralSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class CoralOutputCommand extends Command {
+
   private final CoralSubsystem m_subsystem;
   private int m_endCounter = -1;
 
@@ -36,9 +37,7 @@ public class CoralOutputCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -51,7 +50,7 @@ public class CoralOutputCommand extends Command {
   @Override
   public boolean isFinished() {
     if (m_subsystem.hasCoral() == false) {
-        m_endCounter++;
+      m_endCounter++;
     }
 
     return (m_endCounter >= CoralConstants.kEndOutputMaxCount);

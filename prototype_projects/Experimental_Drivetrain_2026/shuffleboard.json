@@ -12,10 +12,7 @@
         "titleType": 0,
         "tiles": {
           "3,1": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/DB Left Set (MPS)",
@@ -25,10 +22,7 @@
             }
           },
           "4,1": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/DB Right Set (MPS)",
@@ -38,10 +32,7 @@
             }
           },
           "3,3": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Speed (MPS)",
@@ -51,10 +42,7 @@
             }
           },
           "4,3": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Speed (MPS)",
@@ -64,10 +52,7 @@
             }
           },
           "4,2": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
@@ -77,10 +62,7 @@
             }
           },
           "3,2": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
@@ -90,10 +72,7 @@
             }
           },
           "5,0": {
-            "size": [
-              8,
-              4
-            ],
+            "size": [8, 4],
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
@@ -112,10 +91,7 @@
             }
           },
           "4,4": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Speed (RPS)",
@@ -125,10 +101,7 @@
             }
           },
           "3,4": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Speed (RPS)",
@@ -138,10 +111,7 @@
             }
           },
           "3,0": {
-            "size": [
-              2,
-              1
-            ],
+            "size": [2, 1],
             "content": {
               "_type": "Toggle Switch",
               "_source0": "network_table:///SmartDashboard/Use Arcade",
@@ -165,10 +135,7 @@
         "titleType": 0,
         "tiles": {
           "3,1": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
@@ -178,10 +145,7 @@
             }
           },
           "3,2": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Speed (MPS)",
@@ -191,10 +155,7 @@
             }
           },
           "4,2": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Speed (MPS)",
@@ -204,10 +165,7 @@
             }
           },
           "4,1": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
@@ -217,10 +175,7 @@
             }
           },
           "3,0": {
-            "size": [
-              2,
-              1
-            ],
+            "size": [2, 1],
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto Chooser",
@@ -230,10 +185,7 @@
             }
           },
           "5,0": {
-            "size": [
-              8,
-              4
-            ],
+            "size": [8, 4],
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Left Distance (m)",
@@ -254,10 +206,7 @@
             }
           },
           "3,3": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left Distance (m)",
@@ -267,10 +216,7 @@
             }
           },
           "4,3": {
-            "size": [
-              1,
-              1
-            ],
+            "size": [1, 1],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Right Distance (m)",

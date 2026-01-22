@@ -7,6 +7,7 @@ import frc.robot.subsystems.CoralSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class CoralSpeedCommand extends Command {
+
   private final CoralSubsystem m_subsystem;
   private double m_intakeSpeed = 0.0;
   private double m_outputSpeed = 0.0;
@@ -16,10 +17,13 @@ public class CoralSpeedCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public CoralSpeedCommand(CoralSubsystem subsystem, double inputSpeed, double outputSpped) 
-  {
+  public CoralSpeedCommand(
+    CoralSubsystem subsystem,
+    double inputSpeed,
+    double outputSpped
+  ) {
     m_subsystem = subsystem;
-    
+
     m_intakeSpeed = inputSpeed;
     m_outputSpeed = outputSpped;
 
@@ -36,9 +40,7 @@ public class CoralSpeedCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

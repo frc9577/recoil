@@ -19,6 +19,7 @@ import frc.robot.Constants.RobotConstants;
  * project.
  */
 public class Robot extends TimedRobot {
+
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
@@ -38,9 +39,12 @@ public class Robot extends TimedRobot {
     // Start the driver camera streaming.
     MjpegServer server = CameraServer.addServer("Driver Camera");
     UsbCamera camera = new UsbCamera("Driver Camera", 0);
-    camera.setResolution(RobotConstants.kDriverCameraResolutionX, RobotConstants.kDriverCameraResolutionY);
+    camera.setResolution(
+      RobotConstants.kDriverCameraResolutionX,
+      RobotConstants.kDriverCameraResolutionY
+    );
     camera.setFPS(RobotConstants.kDriverCameraFPS);
-    
+
     server.setSource(camera);
   }
 

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * control RPM.
  */
 public class Robot extends TimedRobot {
+
   private static final int kMotorPort = 0;
   private static final int kEncoderAChannel = 0;
   private static final int kEncoderBChannel = 1;
@@ -36,16 +37,20 @@ public class Robot extends TimedRobot {
   private final Joystick m_joystick = new Joystick(0);
 
   private final PWMSparkMax m_flywheelMotor = new PWMSparkMax(kMotorPort);
-  private final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
+  private final Encoder m_encoder = new Encoder(
+    kEncoderAChannel,
+    kEncoderBChannel
+  );
 
-  private final BangBangController m_bangBangController = new BangBangController();
+  private final BangBangController m_bangBangController =
+    new BangBangController();
 
   // Gains are for example purposes only - must be determined for your own robot!
   public static final double kFlywheelKs = 0.0001; // V
   public static final double kFlywheelKv = 0.000195; // V/RPM
   public static final double kFlywheelKa = 0.0003; // V/(RPM/s)
   private final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kFlywheelKs, kFlywheelKv, kFlywheelKa);
+    new SimpleMotorFeedforward(kFlywheelKs, kFlywheelKv, kFlywheelKa);
 
   // Simulation classes help us simulate our robot
 
@@ -55,12 +60,16 @@ public class Robot extends TimedRobot {
 
   // 1/2 MR²
   private static final double kFlywheelMomentOfInertia =
-      0.5 * Units.lbsToKilograms(1.5) * Math.pow(Units.inchesToMeters(4), 2);
+    0.5 * Units.lbsToKilograms(1.5) * Math.pow(Units.inchesToMeters(4), 2);
 
   private final DCMotor m_gearbox = DCMotor.getNEO(1);
 
   private final LinearSystem<N1, N1, N1> m_plant =
-      LinearSystemId.createFlywheelSystem(m_gearbox, kFlywheelGearing, kFlywheelMomentOfInertia);
+    LinearSystemId.createFlywheelSystem(
+      m_gearbox,
+      kFlywheelGearing,
+      kFlywheelMomentOfInertia
+    );
 
   private final FlywheelSim m_flywheelSim = new FlywheelSim(m_plant, m_gearbox);
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
@@ -74,19 +83,22 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // Scale setpoint value between 0 and maxSetpointValue
-    double setpoint =
-        Math.max(
-            0.0,
-            m_joystick.getRawAxis(0)
-                * Units.rotationsPerMinuteToRadiansPerSecond(kMaxSetpointValue));
+    double setpoint = Math.max(
+      0.0,
+      m_joystick.getRawAxis(0) *
+        Units.rotationsPerMinuteToRadiansPerSecond(kMaxSetpointValue)
+    );
 
     // Set setpoint and measurement of the bang-bang controller
-    double bangOutput = m_bangBangController.calculate(m_encoder.getRate(), setpoint) * 12.0;
+    double bangOutput =
+      m_bangBangController.calculate(m_encoder.getRate(), setpoint) * 12.0;
 
     // Controls a motor with the output of the BangBang controller and a
     // feedforward. The feedforward is reduced slightly to avoid overspeeding
     // the shooter.
-    m_flywheelMotor.setVoltage(bangOutput + 0.9 * m_feedforward.calculate(setpoint));
+    m_flywheelMotor.setVoltage(
+      bangOutput + 0.9 * m_feedforward.calculate(setpoint)
+    );
   }
 
   /** Update our simulation. This should be run every robot loop in simulation. */
@@ -94,7 +106,9 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     // To update our simulation, we set motor voltage inputs, update the
     // simulation, and write the simulated velocities to our simulated encoder
-    m_flywheelSim.setInputVoltage(m_flywheelMotor.get() * RobotController.getInputVoltage());
+    m_flywheelSim.setInputVoltage(
+      m_flywheelMotor.get() * RobotController.getInputVoltage()
+    );
     m_flywheelSim.update(0.02);
     m_encoderSim.setRate(m_flywheelSim.getAngularVelocityRadPerSec());
   }

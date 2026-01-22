@@ -4,13 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ArcadeDriveCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private XboxController m_driveController;
 
@@ -19,7 +20,10 @@ public class ArcadeDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDriveCommand(DriveSubsystem subsystem, XboxController driveController)  {
+  public ArcadeDriveCommand(
+    DriveSubsystem subsystem,
+    XboxController driveController
+  ) {
     m_subsystem = subsystem;
     m_driveController = driveController;
 
@@ -38,9 +42,9 @@ public class ArcadeDriveCommand extends Command {
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
     m_subsystem.setArcadeSpeeds(
-      -m_driveController.getRightY(), 
+      -m_driveController.getRightY(),
       -m_driveController.getLeftX()
-      );
+    );
   }
 
   // Called once the command ends or is interrupted.

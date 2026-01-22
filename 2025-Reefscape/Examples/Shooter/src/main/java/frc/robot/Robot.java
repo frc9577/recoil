@@ -4,12 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * This sample program shows how to control a motor using a joystick. In the operator control part
  * of the program, the joystick is read and the value is written to the motor.
@@ -21,13 +22,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
  * to the Dashboard.
  */
 public class Robot extends TimedRobot {
-  private static final int kMotorPort    = 50; // CAN ID
+
+  private static final int kMotorPort = 50; // CAN ID
   private static final int kJoystickPort = 0;
   //private static final int kEncoderPortA = 0;
   //private static final int kEncoderPortB = 1;
 
   private final SparkMax m_motor;
   private final XboxController m_joystick;
+
   //private final Encoder m_encoder;
 
   /** Called once at the beginning of the robot program. */

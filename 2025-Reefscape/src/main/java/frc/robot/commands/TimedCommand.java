@@ -1,13 +1,15 @@
 // This should end up in common when that is set up - Owen G.
 
 package frc.robot.commands;
-import java.util.Set;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.Set;
 
 /** An example command that uses an example subsystem. */
 public class TimedCommand extends Command {
+
   private final Command m_command;
   private long m_startTime;
   private int m_executeTime;
@@ -18,13 +20,15 @@ public class TimedCommand extends Command {
    * @param command The command being executed.
    * @param executeTime executeTime wants the run time in positive miliseconds.
    */
-  public TimedCommand(Command command, int executeTime) 
-  {
+  public TimedCommand(Command command, int executeTime) {
     m_command = command;
 
     if (executeTime < 0) {
-      DriverStation.reportError("executeTime in TimedCommand Constructor is negative", null);
-    } 
+      DriverStation.reportError(
+        "executeTime in TimedCommand Constructor is negative",
+        null
+      );
+    }
     m_executeTime = executeTime;
 
     // Gets the required subsystem dependencies and then adds them as a requirement.
@@ -56,7 +60,8 @@ public class TimedCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean timedOut = (System.currentTimeMillis() - m_startTime) >= m_executeTime;
+    boolean timedOut =
+      (System.currentTimeMillis() - m_startTime) >= m_executeTime;
     return timedOut || m_command.isFinished();
   }
 }

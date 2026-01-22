@@ -8,6 +8,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class TankDriveCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private XboxController m_tankController;
 
@@ -16,8 +17,10 @@ public class TankDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TankDriveCommand(DriveSubsystem subsystem, XboxController tankController) 
-  {
+  public TankDriveCommand(
+    DriveSubsystem subsystem,
+    XboxController tankController
+  ) {
     m_subsystem = subsystem;
     m_tankController = tankController;
 
@@ -31,9 +34,11 @@ public class TankDriveCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
-    m_subsystem.setTankSpeeds(-m_tankController.getLeftY(), -m_tankController.getRightY());
+  public void execute() {
+    m_subsystem.setTankSpeeds(
+      -m_tankController.getLeftY(),
+      -m_tankController.getRightY()
+    );
   }
 
   // Called once the command ends or is interrupted.
@@ -42,8 +47,7 @@ public class TankDriveCommand extends Command {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
+  public boolean isFinished() {
     return false;
   }
 }

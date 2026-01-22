@@ -13,29 +13,34 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class RobotConstants {
-    public static final double minPnuematicsPressure = 80.0;  // default 80.0
+
+    public static final double minPnuematicsPressure = 80.0; // default 80.0
     public static final double maxPnuematicsPressure = 120.0; // default 120.0
 
     public static final int periodicTicksPerSecond = 50;
     public static final int pnuematicReportingFreq = 1;
-    public static final int imuReportingFreq       = 1;
-    public static final int gooseReportingFreq     = 1;
+    public static final int imuReportingFreq = 1;
+    public static final int gooseReportingFreq = 1;
   }
 
   public static class AutoConstants {
+
     public static final long kPassLineDuration_mS = 2000;
     public static final double kPassLineSpeed = 0.40;
   }
 
   public static class DrivetrainConstants {
-    public static final int kLeftFrontMotorCANID  = 10;
-    public static final int kLeftBackMotorCANID   = 11;
+
+    public static final int kLeftFrontMotorCANID = 10;
+    public static final int kLeftBackMotorCANID = 11;
     public static final int kRightFrontMotorCANID = 20;
-    public static final int kRightBackMotorCANID  = 21;
+    public static final int kRightBackMotorCANID = 21;
   }
 
   public static class DriverConstants {
+
     public static final int kDriveJoystick = 0;
 
     public static final double kTurnDivider = 2.0;
@@ -45,25 +50,25 @@ public final class Constants {
     public static final int kLowGear = 1; // Joystick Trigger
     public static final int kReverseMode = 11; // Joystick button 11
     public static final int kForwardMode = 7; // Joystick button 7
-  
   }
 
   public static class OperatorConstants {
+
     public static final int kOperatorController = 2;
 
-    public static final int kClimbUp        = 7; // Back Button
-    public static final int kClimbDown      = 8; // Start Button
+    public static final int kClimbUp = 7; // Back Button
+    public static final int kClimbDown = 8; // Start Button
 
     //public static final int kIntakeAuto     = 3; // Button X
-    public static final int kOutput         = 6; // Right Bumper
-    public static final int kIntakeManual   = 5; // Left Bumper
-    public static final int kFullStop       = 2; // Button B
+    public static final int kOutput = 6; // Right Bumper
+    public static final int kIntakeManual = 5; // Left Bumper
+    public static final int kFullStop = 2; // Button B
 
-    public static final int kMoveArmTop     = 4; // Button Y
-    public static final int kMoveArmMiddle  = 3; // Button X
-    public static final int kMoveArmBottom  = 1; // Button A
+    public static final int kMoveArmTop = 4; // Button Y
+    public static final int kMoveArmMiddle = 3; // Button X
+    public static final int kMoveArmBottom = 1; // Button A
 
-    public static final int kSpitOut = 10;  // right joystick down
+    public static final int kSpitOut = 10; // right joystick down
 
     public static final double kGooseAngleIncrement = 1.0;
     public static final double kGooseAngleMax = 120.0;
@@ -71,17 +76,19 @@ public final class Constants {
   }
 
   public static class ClimbConstants {
+
     public static final int kPneumaticsHubCANid = 1;
 
     // Temp Values, Needs to be changed when solunoid is set up onto the robot
     public static final int kExtendChannelL = 8;
     public static final int kRetractChannelL = 7;
-    
+
     public static final int kExtendChannelR = 15;
     public static final int kRetractChannelR = 0;
   }
 
   public static class NoteHandlingConstants {
+
     public static final int kIntakeMotorCANID = 30;
     public static final int kOutputMotorCANID = 31;
 
@@ -96,24 +103,25 @@ public final class Constants {
   }
 
   public static class GooseRotationConstants {
+
     public static final int kRotateMotorCANID = 40;
-    public static final int kSmartMotionSlot  = 0;
+    public static final int kSmartMotionSlot = 0;
 
     // TODO: Need to tune
     // SparkMax PID coefficients for the rotation controller.
     // These are currently taken from the REV example at https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Position%20Closed%20Loop%20Control/src/main/java/frc/robot/Robot.java
-    public static final double kP         = 2.0;
-    public static final double kI         = 0.0;
-    public static final double kD         = 0.0;
-    public static final double kIZone     = 0.0;
-    public static final double kFF        = 0.0;
+    public static final double kP = 2.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kIZone = 0.0;
+    public static final double kFF = 0.0;
     public static final double kMinOutput = -1.0;
     public static final double kMaxOutput = 1.0;
 
-    public static final double kMaxVelocity     = 1500.0;
-    public static final double kMinVelocity     = 0.0;
+    public static final double kMaxVelocity = 1500.0;
+    public static final double kMinVelocity = 0.0;
     public static final double kMaxAcceleration = 500.0;
-    public static final double kMaxError        = 0.1;
+    public static final double kMaxError = 0.1;
 
     public static final boolean kUseSmartMotion = false;
 
@@ -121,21 +129,21 @@ public final class Constants {
     // When the switch(s) are hit the software will reset to the known position.
     // Currently we are presuming there will be a thing to set the arm at the start of the game.
     // TODO: The next 7 values are guesses and need to be measured.
-    public static final double kStartingAngle         = 30.0;
+    public static final double kStartingAngle = 30.0;
 
     public static final double kBottomRawEncoderValue = 0.523;
-    public static final double kBottomAngle           = 0.0;
+    public static final double kBottomAngle = 0.0;
 
-    public static final double kTopRawEncoderValue    = 0.205;
-    public static final double kTopAngle              = 115.0;
+    public static final double kTopRawEncoderValue = 0.205;
+    public static final double kTopAngle = 115.0;
 
-    public static final double kScoreAngle            = 130.0;
-    public static final double kMiddleAngle           = 40.0;
-    public static final double kIntakeAngle           = 0.0;
+    public static final double kScoreAngle = 130.0;
+    public static final double kMiddleAngle = 40.0;
+    public static final double kIntakeAngle = 0.0;
 
     // This defines the gear ratio between the motor and output shafts. Divide
     // the motor rotation count by this number to determine the output shaft
     // rotation count.
-    public static final int kMotorCurrentLimit        = 30;
+    public static final int kMotorCurrentLimit = 30;
   }
 }

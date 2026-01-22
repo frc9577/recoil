@@ -11,6 +11,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ArcadeDriveCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private Joystick m_Joystick;
 
@@ -19,8 +20,7 @@ public class ArcadeDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDriveCommand(DriveSubsystem subsystem, Joystick driveJoystick) 
-  {
+  public ArcadeDriveCommand(DriveSubsystem subsystem, Joystick driveJoystick) {
     m_subsystem = subsystem;
     m_Joystick = driveJoystick;
 
@@ -34,12 +34,14 @@ public class ArcadeDriveCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
+  public void execute() {
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
-    m_subsystem.setArcadeSpeeds(-m_Joystick.getY(), -(m_Joystick.getTwist() / DriverConstants.kTurnDivider));
+    m_subsystem.setArcadeSpeeds(
+      -m_Joystick.getY(),
+      -(m_Joystick.getTwist() / DriverConstants.kTurnDivider)
+    );
   }
 
   // Called once the command ends or is interrupted.
@@ -48,8 +50,7 @@ public class ArcadeDriveCommand extends Command {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
+  public boolean isFinished() {
     return false;
   }
 }

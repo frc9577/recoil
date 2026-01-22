@@ -4,13 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,16 +18,16 @@ import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
  * project.
  */
 public class Robot extends TimedRobot {
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
 
-
   /** Constants that define the settings of the driver camera */
   public static final int kDriverCameraResolutionX = 640;
   public static final int kDriverCameraResolutionY = 360;
-  public static final int kDriverCameraFPS         = 10;
-  
+  public static final int kDriverCameraFPS = 10;
+
   private UsbCamera driverCamera;
 
   /**
@@ -43,7 +42,10 @@ public class Robot extends TimedRobot {
 
     // Start the driver camera streaming.
     driverCamera = CameraServer.startAutomaticCapture("Driver Camera", 0);
-    driverCamera.setResolution(kDriverCameraResolutionX, kDriverCameraResolutionY);
+    driverCamera.setResolution(
+      kDriverCameraResolutionX,
+      kDriverCameraResolutionY
+    );
     driverCamera.setFPS(kDriverCameraFPS);
     driverCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
@@ -65,8 +67,6 @@ public class Robot extends TimedRobot {
 
     // Send back telemetry to driver station
     m_robotContainer.reportStatus();
-
-    
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -103,15 +103,13 @@ public class Robot extends TimedRobot {
 
     // Get the driver's choice of control system - arcade or tank drive.
     m_robotContainer.setDriveType();
-    
+
     //TODO Do all motors need to be turned off here?
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

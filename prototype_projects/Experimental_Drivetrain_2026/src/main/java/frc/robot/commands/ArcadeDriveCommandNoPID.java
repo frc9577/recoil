@@ -3,13 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.DriveSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ArcadeDriveCommandNoPID extends Command {
+
   private final DriveSubsystem m_subsystem;
   private CommandXboxController m_driveController;
 
@@ -18,7 +20,10 @@ public class ArcadeDriveCommandNoPID extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDriveCommandNoPID(DriveSubsystem subsystem, CommandXboxController driveController)  {
+  public ArcadeDriveCommandNoPID(
+    DriveSubsystem subsystem,
+    CommandXboxController driveController
+  ) {
     m_subsystem = subsystem;
     m_driveController = driveController;
 
@@ -37,7 +42,7 @@ public class ArcadeDriveCommandNoPID extends Command {
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
     double speedInput = -m_driveController.getRightY();
-    double turnInput  = m_driveController.getLeftX();
+    double turnInput = m_driveController.getLeftX();
 
     // Set the deadband
     if (Math.abs(speedInput) < OperatorConstants.kDriverControllerDeadband) {
