@@ -18,6 +18,14 @@ This top-level directory contains prototype, example and experiment projects dev
 
 This repository uses a modified feature branch workflow. Where all big features are done on short-lived feature branches, and then merged into a development branch for final bug testing before being put through pull request (PR) into main. Although, if the change is quick enough to do in one setting and meets the commit requirements (talked about later) for the development branch the change can be committed directly to it.
 
+### prettier
+
+We use prittier and the prettier java plugin to format all our files. To use prettier, install it and the extension using npm.
+
+1. Install nvm. On windows we use [nvm-windows](https://github.com/coreybutler/nvm-windows). On linux use `apt install node-13`
+2. Install prettier and prettier-java-plugin using npm in the project working directory: `npm install prettier prettier-java-plugin`
+3. Run prettier using 'prettier -w --plugin prettier-java-plugin .`
+
 ### Main:
 
 The most stable copy of the current year's competition code. Code cannot be directly committed to this branch and instead it is required to use a PR. Before a PR is merged into main, a full test of the robot is required to make sure every feature works. Automation runs the build on PRs to main and build failures block the ability to merge. After a merge, the build also runs on main.
