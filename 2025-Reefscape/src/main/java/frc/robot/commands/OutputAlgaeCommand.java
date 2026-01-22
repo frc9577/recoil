@@ -4,13 +4,13 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AlgaeConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 
-import edu.wpi.first.wpilibj2.command.Command;
-
 /** An example command that uses an example subsystem. */
 public class OutputAlgaeCommand extends Command {
+
   private final AlgaeSubsystem m_subsystem;
   private int m_endCounter = -1;
 
@@ -36,9 +36,7 @@ public class OutputAlgaeCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -51,7 +49,7 @@ public class OutputAlgaeCommand extends Command {
   @Override
   public boolean isFinished() {
     if (m_subsystem.hasAlgae() == false) {
-        m_endCounter++;
+      m_endCounter++;
     }
 
     return (m_endCounter >= AlgaeConstants.kEndOutputMaxCount);

@@ -4,12 +4,13 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class ElevatorManualSpeed extends Command {
+
   private final ElevatorSubsystem m_subsystem;
 
   /**
@@ -17,7 +18,7 @@ public class ElevatorManualSpeed extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ElevatorManualSpeed(ElevatorSubsystem subsystem)  {
+  public ElevatorManualSpeed(ElevatorSubsystem subsystem) {
     m_subsystem = subsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.

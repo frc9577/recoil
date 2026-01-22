@@ -2,12 +2,13 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.*;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class AutonomousDrive4Sec extends Command {
+
   private final DriveSubsystem m_subsystem;
   private double m_leftSpeed = 0.0;
   private double m_rightSpeed = 0.0;
@@ -18,8 +19,7 @@ public class AutonomousDrive4Sec extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutonomousDrive4Sec(DriveSubsystem subsystem) 
-  {
+  public AutonomousDrive4Sec(DriveSubsystem subsystem) {
     m_subsystem = subsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.

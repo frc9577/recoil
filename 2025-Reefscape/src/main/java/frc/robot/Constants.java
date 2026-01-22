@@ -13,42 +13,44 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 
- //
- // When updating this file, make sure that the following rules apply:
- //
- // 1. CAN IDs must be unique across the whole robot (assuming we only have a single
- // CAN bus which is true this year).
- // 2. Sensor channels must be unique across the whole robot (assuming we're using DIO
- // channels for light break or switch-based sensors).
- // 3. Pneumatics channels must be unique across the whole robot (assuming we're using
- // a single pneumatics hub)
+//
+// When updating this file, make sure that the following rules apply:
+//
+// 1. CAN IDs must be unique across the whole robot (assuming we only have a single
+// CAN bus which is true this year).
+// 2. Sensor channels must be unique across the whole robot (assuming we're using DIO
+// channels for light break or switch-based sensors).
+// 3. Pneumatics channels must be unique across the whole robot (assuming we're using
+// a single pneumatics hub)
 
- // Current CAN IDs:
- //   01 - Pneumatics hub
- //   10 - Drive left primary
- //   11 - Drive left follower
- //   20 - Drive right primary
- //   21 - Drive right follower
- //   40 - Coral handler input side motor  
- //   41 - Coral handler output side motor
- //   50 - Algae handler motor
- //   60 - Elevator motor
- //   70 - Coral ramp intake motor
- //
- // Current DIO Channels:
- //
- // 0 - Coral handler front sensor
- // 1 - Coral handler rear sensor
- // 2 - Coral ramp intake sensor
- // 3 - Algae sensor
- // 4 - Elevator bottom sensor
- // 5 -
- // 6 -
- // 7 -
- //
+// Current CAN IDs:
+//   01 - Pneumatics hub
+//   10 - Drive left primary
+//   11 - Drive left follower
+//   20 - Drive right primary
+//   21 - Drive right follower
+//   40 - Coral handler input side motor
+//   41 - Coral handler output side motor
+//   50 - Algae handler motor
+//   60 - Elevator motor
+//   70 - Coral ramp intake motor
+//
+// Current DIO Channels:
+//
+// 0 - Coral handler front sensor
+// 1 - Coral handler rear sensor
+// 2 - Coral ramp intake sensor
+// 3 - Algae sensor
+// 4 - Elevator bottom sensor
+// 5 -
+// 6 -
+// 7 -
+//
 
- public final class Constants {
+public final class Constants {
+
   public static class RobotConstants {
+
     public static final int kpnuematicsTicksPerUpdate = 5;
 
     public static final double minPnuematicsPressure = 80.0;
@@ -57,10 +59,11 @@ package frc.robot;
     /** Constants that define the settings of the driver camera */
     public static final int kDriverCameraResolutionX = 640;
     public static final int kDriverCameraResolutionY = 360;
-    public static final int kDriverCameraFPS         = 10;
+    public static final int kDriverCameraFPS = 10;
   }
 
   public static class OperatorConstants {
+
     public static final int kOperatorControllerPort = 0;
     public static final int kDriverControllerPort = 1;
 
@@ -86,6 +89,7 @@ package frc.robot;
   }
 
   public static class DrivetrainConstants {
+
     public static final int kLeftMotorCANID = 10;
     public static final int kOptionalLeftMotorCANID = 11;
 
@@ -111,18 +115,20 @@ package frc.robot;
     public static boolean kRightPositiveMovesForward = true;
 
     // The distance travelled for a single rotation of the Kraken output shaft.
-    public static final double kDrivetrainGearRatio = (8.46/0.478536);
+    public static final double kDrivetrainGearRatio = (8.46 / 0.478536);
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;
   }
 
   public static class AutoConstants {
+
     public static final double kPassLineSpeed = 0.40;
     public static final double kTurnInnerSpeed = 0.35;
   }
 
   public static class IntakeConstants {
+
     public static final int kMotorCANID = 70;
 
     public static final int kSensorChannel = 2;
@@ -133,6 +139,7 @@ package frc.robot;
   }
 
   public static class CoralConstants {
+
     public static final int kIntakeMotorCANID = 40;
     public static final int kOutputMotorCANID = 41;
 
@@ -152,6 +159,7 @@ package frc.robot;
   }
 
   public static class ShooterConstants {
+
     public static final int kIntakeMotorCANID = 40;
     public static final int kOutputMotorCANID = 41;
 
@@ -171,6 +179,7 @@ package frc.robot;
   }
 
   public static class AlgaeConstants {
+
     public static final int kMotorCANID = 50;
     public static final int kMotorCurrentLimit = 7;
 
@@ -186,24 +195,25 @@ package frc.robot;
     public static final int kEndOutputMaxCount = 100; // 2 second(s)
 
     public static final double kIntakeSpeed = 1;
-    public static final double kOutputSpeed = -1  ;
+    public static final double kOutputSpeed = -1;
 
     // SmartDashboard update frequency for algae subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 25;
   }
 
   public static class ElevatorConstants {
+
     public static final int kMotorCANID = 60;
     public static final double kMotorZeroingSpeed = -0.5;
     public static final boolean kPositiveMovesUp = false;
 
     public static final double kV = 0;
     public static final double kS = 0;
-    public static final double kP = 0.4;// An error of 1 rotation results in 2.4 V output
+    public static final double kP = 0.4; // An error of 1 rotation results in 2.4 V output
     public static final double kI = 0.001; // No output for integrated error
     public static final double kD = 0.15; // A velocity of 1 rps results in 0.1 V output
     public static final double PeakVoltage = 10.0;
-    
+
     public static final double maxElevatorHeight = 1.53;
 
     public static final int kSensorChannel = 4;
@@ -217,7 +227,7 @@ package frc.robot;
     // The distance travelled for a single rotation of the Kraken output shaft.
     // 64 to 1 gear box, pulley is 47.75mm diameter (0.15m circumference),
     // two stage elevator moves twice the distance of the pulley.
-    public static final double kElevatorGearRatio = (2 * 0.15)/64;
+    public static final double kElevatorGearRatio = (2 * 0.15) / 64;
 
     // SmartDashboard update frequency for elevator subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;

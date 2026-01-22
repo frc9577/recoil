@@ -21,11 +21,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
+
   private final TalonFX m_fx = new TalonFX(30);
 
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, use slot 0 */
-  private final VelocityVoltage m_velocityVoltage = new VelocityVoltage(0).withSlot(0);
+  private final VelocityVoltage m_velocityVoltage = new VelocityVoltage(
+    0
+  ).withSlot(0);
   private final XboxController m_joystick = new XboxController(0);
 
   /**
@@ -36,14 +39,15 @@ public class Robot extends TimedRobot {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
-      configs.Slot0.kS = 0.1; // To account for friction, add 0.1 V of static feedforward
-      configs.Slot0.kV = 0.12; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
-      configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11 V output
-      configs.Slot0.kI = 0; // No output for integrated error
-      configs.Slot0.kD = 0; // No output for error derivative
+    configs.Slot0.kS = 0.1; // To account for friction, add 0.1 V of static feedforward
+    configs.Slot0.kV = 0.12; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
+    configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11 V output
+    configs.Slot0.kI = 0; // No output for integrated error
+    configs.Slot0.kD = 0; // No output for error derivative
     // Peak output of 8 volts
-    configs.Voltage.withPeakForwardVoltage(Volts.of(8))
-      .withPeakReverseVoltage(Volts.of(-8));
+    configs.Voltage.withPeakForwardVoltage(Volts.of(8)).withPeakReverseVoltage(
+      Volts.of(-8)
+    );
 
     /* Retry config apply up to 5 times, report if failure */
     StatusCode status = StatusCode.StatusCodeNotInitialized;
@@ -52,16 +56,20 @@ public class Robot extends TimedRobot {
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
+      System.out.println(
+        "Could not apply configs, error code: " + status.toString()
+      );
     }
 
     SmartDashboard.putNumber("desired RPS", 0);
-    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber(
+      "current RPS",
+      m_fx.getVelocity().getValueAsDouble()
+    );
   }
 
   @Override
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {}
@@ -83,7 +91,10 @@ public class Robot extends TimedRobot {
     m_fx.setControl(m_velocityVoltage.withVelocity(desiredRotationsPerSecond));
 
     SmartDashboard.putNumber("desired RPS", desiredRotationsPerSecond);
-    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber(
+      "current RPS",
+      m_fx.getVelocity().getValueAsDouble()
+    );
   }
 
   @Override

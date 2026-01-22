@@ -2,15 +2,16 @@
 
 package frc.robot.commands;
 
-
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /** An example command that uses an example subsystem. */
 public class MotorConstSpeedCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final Subsystem m_subsystem;
+
   private MotorController m_motor;
   private double m_speed = 0.0;
 
@@ -19,7 +20,11 @@ public class MotorConstSpeedCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public MotorConstSpeedCommand(Subsystem subsystem, MotorController motor, double speed) {
+  public MotorConstSpeedCommand(
+    Subsystem subsystem,
+    MotorController motor,
+    double speed
+  ) {
     m_subsystem = subsystem;
     m_motor = motor;
     m_speed = speed;

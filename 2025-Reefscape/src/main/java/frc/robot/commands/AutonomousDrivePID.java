@@ -7,6 +7,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class AutonomousDrivePID extends Command {
+
   private final DriveSubsystem m_subsystem;
   private double m_leftTarget = 0.0;
   private double m_rightTarget = 0.0;
@@ -17,10 +18,14 @@ public class AutonomousDrivePID extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutonomousDrivePID(DriveSubsystem subsystem, double leftTarget, double rightTarget, double tolerance) 
-  {
+  public AutonomousDrivePID(
+    DriveSubsystem subsystem,
+    double leftTarget,
+    double rightTarget,
+    double tolerance
+  ) {
     m_subsystem = subsystem;
-    
+
     m_leftTarget = leftTarget;
     m_rightTarget = rightTarget;
 

@@ -5,6 +5,7 @@
 // https://github.com/CrossTheRoadElec/Phoenix6-Examples/blob/main/java/VelocityClosedLoop/src/main/java/frc/robot/Robot.java
 // This is a link to do speed control on the kraken motors. We need something like this.
 package frc.robot.subsystems;
+
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusCode;
@@ -18,7 +19,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -35,22 +35,31 @@ import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
+
   private TalonFX m_rightMotor;
   private TalonFX m_optionalRightMotor;
 
   private TalonFX m_leftMotor;
-  private TalonFX m_optionalLeftMotor; 
+  private TalonFX m_optionalLeftMotor;
 
   /* Start at velocity 0, use slot 0 */
-  private final MotionMagicVelocityVoltage m_leftVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
-  private final MotionMagicVelocityVoltage m_rightVelocityVoltage = new MotionMagicVelocityVoltage(0);//.withSlot(0);
+  private final MotionMagicVelocityVoltage m_leftVelocityVoltage =
+    new MotionMagicVelocityVoltage(0); //.withSlot(0);
+  private final MotionMagicVelocityVoltage m_rightVelocityVoltage =
+    new MotionMagicVelocityVoltage(0); //.withSlot(0);
 
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final AHRS m_gyro;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, AHRS gyro, TalonFX rightMotor, TalonFX leftMotor) { 
+  public DriveSubsystem(
+    DifferentialDrivePoseEstimator poseEstimator,
+    DifferentialDriveKinematics kinematics,
+    AHRS gyro,
+    TalonFX rightMotor,
+    TalonFX leftMotor
+  ) {
     m_poseEstimator = poseEstimator;
     m_kinematics = kinematics;
     m_gyro = gyro;
@@ -58,25 +67,25 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotor = leftMotor;
 
     // Right Motor
-    setConfig(m_rightMotor, InvertedValue.CounterClockwise_Positive); 
+    setConfig(m_rightMotor, InvertedValue.CounterClockwise_Positive);
     SendableRegistry.setName(m_rightMotor, "DriveSubsystem", "rightMotor");
 
     // Left Motor
-    setConfig(m_leftMotor, InvertedValue.Clockwise_Positive); 
+    setConfig(m_leftMotor, InvertedValue.Clockwise_Positive);
     SendableRegistry.setName(m_leftMotor, "DriveSubsystem", "leftMotor");
 
     // Zeroing the encoders
     m_leftMotor.setPosition(0);
-    m_rightMotor.setPosition(0); 
+    m_rightMotor.setPosition(0);
 
     // Init Autobuilder
     AutoBuilder.configure(
-      this::getPose, 
-      this::resetPose, 
-      this::getRobotRelativeSpeeds, 
-      (speeds, feedforwards) -> driveRobotRelative(speeds), 
-      new PPLTVController(0.02), 
-      AutoConstants.kRobotConfig, 
+      this::getPose,
+      this::resetPose,
+      this::getRobotRelativeSpeeds,
+      (speeds, feedforwards) -> driveRobotRelative(speeds),
+      new PPLTVController(0.02),
+      AutoConstants.kRobotConfig,
       () -> {
         // Boolean supplier that controls when the path will be mirrored for the red alliance
         // This will flip the path being followed to the red side of the field.
@@ -87,10 +96,10 @@ public class DriveSubsystem extends SubsystemBase {
           return alliance.get() == DriverStation.Alliance.Red;
         }
         return false;
-      }, 
+      },
       this
     );
-    
+
     // Gyro setup
     m_gyro.zeroYaw();
 
@@ -98,7 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("DB Left Set (MPS)", 0);
     SmartDashboard.putNumber("DB Right Set (MPS)", 0);
     SmartDashboard.putNumber("Left Target (MPS)", 0);
-    SmartDashboard.putNumber("Right Target (MPS)", 0);    
+    SmartDashboard.putNumber("Right Target (MPS)", 0);
     SmartDashboard.putNumber("Left Speed (MPS)", getMotorSpeedMPS(true));
     SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
@@ -118,28 +127,34 @@ public class DriveSubsystem extends SubsystemBase {
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     motorConfig.MotorOutput.Inverted = Inverted;
 
-    motorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.kPeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.kPeakVoltage));
+    motorConfig.Voltage.withPeakForwardVoltage(
+      Volts.of(DrivetrainConstants.kPeakVoltage)
+    ).withPeakReverseVoltage(Volts.of(-DrivetrainConstants.kPeakVoltage));
 
     var motionMagicConfigs = motorConfig.MotionMagic;
-    motionMagicConfigs.MotionMagicAcceleration = DrivetrainConstants.kMotionMagicAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration =
+      DrivetrainConstants.kMotionMagicAcceleration;
     motionMagicConfigs.MotionMagicJerk = DrivetrainConstants.kMotionMagicJerk;
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = motor.getConfigurator().apply(motorConfig);
-      System.out.println("config attempt #" + (i+1) + ": " + status.toString());
+      System.out.println(
+        "config attempt #" + (i + 1) + ": " + status.toString()
+      );
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
+      System.out.println(
+        "Could not apply configs, error code: " + status.toString()
+      );
     }
   }
 
   public void setFollowers(TalonFX optionalRight, TalonFX optionalLeft) {
     // Right Motor
     m_optionalRightMotor = optionalRight;
-  
+
     setConfig(m_optionalRightMotor, InvertedValue.CounterClockwise_Positive);
     m_optionalRightMotor.setControl(
       new Follower(m_rightMotor.getDeviceID(), MotorAlignmentValue.Aligned)
@@ -155,8 +170,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // TODO: Make a list chooser.
-  public void initDefaultCommand(CommandXboxController Controller)
-  {
+  public void initDefaultCommand(CommandXboxController Controller) {
     boolean useArcade = SmartDashboard.getBoolean("PID Arcade", true);
 
     if (useArcade == true) {
@@ -170,18 +184,24 @@ public class DriveSubsystem extends SubsystemBase {
 
   // This converts rotations of the motor shaft to meters travled.
   public double ConvertRotationsToMeters(double rotations) {
-    return rotations * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
+    return (
+      rotations *
+      DrivetrainConstants.kDrivetrainGearRatio *
+      DrivetrainConstants.kWheelCircumference
+    );
   }
 
   // This converts meters travled to rotations of the motor shaft.
   // This is the inverse function of the one above, calculated it myself. - Owen
   public double ConvertMetersToRotations(double meters) {
-    return (meters / DrivetrainConstants.kDrivetrainGearRatio) / DrivetrainConstants.kWheelCircumference;
+    return (
+      (meters / DrivetrainConstants.kDrivetrainGearRatio) /
+      DrivetrainConstants.kWheelCircumference
+    );
   }
 
   // This sets the differential speeds based on a desired MPS speed.
-  public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS)
-  {
+  public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS) {
     SmartDashboard.putNumber("Left Target (MPS)", leftSpeedMPS);
     SmartDashboard.putNumber("Right Target (MPS)", rightSpeedMPS);
 
@@ -202,33 +222,28 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // Wrapping robot position inside of getposition
-  public Pose2d getPose(){
+  public Pose2d getPose() {
     return m_poseEstimator.getEstimatedPosition();
   }
 
   // Resets the drivetrains pose estimator to zero.
-  public void resetPose(Pose2d newPose){
+  public void resetPose(Pose2d newPose) {
     m_leftMotor.setPosition(0);
     m_rightMotor.setPosition(0);
     m_poseEstimator.resetPose(newPose);
   }
 
-  public double getMotorSpeedRPS(boolean bLeft) 
-  {
+  public double getMotorSpeedRPS(boolean bLeft) {
     double RPS;
-    if (bLeft)
-    {
+    if (bLeft) {
       RPS = m_leftMotor.getVelocity().getValueAsDouble();
-    }
-    else 
-    {
+    } else {
       RPS = m_rightMotor.getVelocity().getValueAsDouble();
     }
     return RPS;
   }
 
-  public double getMotorSpeedMPS(boolean bLeft) 
-  {
+  public double getMotorSpeedMPS(boolean bLeft) {
     double RPS = getMotorSpeedRPS(bLeft);
     double MPS = ConvertRotationsToMeters(RPS);
     return MPS;
@@ -250,34 +265,41 @@ public class DriveSubsystem extends SubsystemBase {
   // Returns a robot relative ChassisSpeeds object based on the avrg linear velocity
   // in meters per second and avrg anglear velocity in readians per second
   // Currently we are asuming that their is no scale for the motors, we cannot find anywhere to set the scale.
-  public ChassisSpeeds getRobotRelativeSpeeds()
-  {
+  public ChassisSpeeds getRobotRelativeSpeeds() {
     // Linear Velocity in meters per second
     double leftMPS = getMotorSpeedMPS(true);
     double rightMPS = getMotorSpeedMPS(false);
 
     // Make wheelSpeeds object from MPS & converts it to chasis speeds
-    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(leftMPS, rightMPS);
+    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(
+      leftMPS,
+      rightMPS
+    );
     return m_kinematics.toChassisSpeeds(wheelSpeeds);
   }
 
   // Gives the drivetrain a new drive command based on a robot relative
   // chassis speed object.
-  public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed){
-    DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(relativeChassisSpeed);
+  public void driveRobotRelative(ChassisSpeeds relativeChassisSpeed) {
+    DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(
+      relativeChassisSpeed
+    );
 
-    setDifferentialSpeeds(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+    setDifferentialSpeeds(
+      wheelSpeeds.leftMetersPerSecond,
+      wheelSpeeds.rightMetersPerSecond
+    );
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run 
+    // This method will be called once per scheduler run
 
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
 
     m_poseEstimator.update(
-      m_gyro.getRotation2d(), 
+      m_gyro.getRotation2d(),
       lPositionMeters,
       rPositionMeters
     );

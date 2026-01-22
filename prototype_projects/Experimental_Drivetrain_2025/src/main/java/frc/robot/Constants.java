@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 
 /**
@@ -18,7 +17,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class AutoConstants {
+
     // Module Config Stuff
     public static final double kMaxDriveVelocityMPS = 40.0; // This is what SysID is saying i dont think its going 90 mph
     public static final double kWheelCOF = 1.0;
@@ -27,27 +28,37 @@ public final class Constants {
 
     public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(kNumMotors);
     public static final ModuleConfig kMoudleConfig = new ModuleConfig(
-      DrivetrainConstants.kWheelRadiusMeters, 
-      kMaxDriveVelocityMPS, 
-      kWheelCOF, 
-      kDriveMotor, 
-      kDriveCurrentLimit, 
+      DrivetrainConstants.kWheelRadiusMeters,
+      kMaxDriveVelocityMPS,
+      kWheelCOF,
+      kDriveMotor,
+      kDriveCurrentLimit,
       kNumMotors
     );
 
     // Robot Config Stuff
     // TODO: Run SYS ID and fill in!
     public static final double kMassKG = 15.0;
-    public static final double kMOI = kMassKG * (DrivetrainConstants.trackWidthMeters/2) * (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
+    public static final double kMOI =
+      kMassKG *
+      (DrivetrainConstants.trackWidthMeters / 2) *
+      (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
 
-    public static final RobotConfig kRobotConfig = new RobotConfig(kMassKG, kMOI, kMoudleConfig, DrivetrainConstants.trackWidthMeters);
+    public static final RobotConfig kRobotConfig = new RobotConfig(
+      kMassKG,
+      kMOI,
+      kMoudleConfig,
+      DrivetrainConstants.trackWidthMeters
+    );
   }
 
   public static class OperatorConstants {
+
     public static final int kDriverControllerPort = 0;
   }
 
   public static class DrivetrainConstants {
+
     public static final int kLeftMotorCANID = 10;
     public static final int kOptionalLeftMotorCANID = 11;
 
@@ -71,7 +82,7 @@ public final class Constants {
     public static final int maxAcceleration = 50; // rps
 
     // Constants used by differential drive command.
-    public static final double maxVelocityMPS = 1.0; 
+    public static final double maxVelocityMPS = 1.0;
 
     // For Auto Potentially
     public static boolean kLeftPositiveMovesForward = true;
@@ -80,12 +91,13 @@ public final class Constants {
     // Physical measurements related to the drivetrain.
     public static final double kDrivetrainGearRatio = 0.2;
     public static final double kWheelRadiusMeters = (4.0 / 2.0) * 0.0254; // Four Inch Wheels
-    public static final double kWheelCircumference = 2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
+    public static final double kWheelCircumference =
+      2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;
 
     // The track width in meters.
-    public static final double trackWidthMeters = 29.0 * 0.0254; 
+    public static final double trackWidthMeters = 29.0 * 0.0254;
   }
 }

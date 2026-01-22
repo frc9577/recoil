@@ -3,14 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-import frc.robot.subsystems.DriveSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class DifferentialDriveCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private CommandXboxController m_driveController;
 
@@ -19,7 +21,10 @@ public class DifferentialDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DifferentialDriveCommand(DriveSubsystem subsystem, CommandXboxController driveController)  {
+  public DifferentialDriveCommand(
+    DriveSubsystem subsystem,
+    CommandXboxController driveController
+  ) {
     m_subsystem = subsystem;
     m_driveController = driveController;
 
@@ -37,7 +42,7 @@ public class DifferentialDriveCommand extends Command {
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
-    double leftSpeed  = -m_driveController.getLeftY();
+    double leftSpeed = -m_driveController.getLeftY();
     double rightSpeed = -m_driveController.getRightY();
 
     // Set the deadband
@@ -48,10 +53,10 @@ public class DifferentialDriveCommand extends Command {
       rightSpeed = 0;
     }
 
-    leftSpeed  *= DrivetrainConstants.kMaxVelocityMPS;
+    leftSpeed *= DrivetrainConstants.kMaxVelocityMPS;
     rightSpeed *= DrivetrainConstants.kMaxVelocityMPS;
 
-    m_subsystem.setDifferentialSpeeds( leftSpeed, rightSpeed );
+    m_subsystem.setDifferentialSpeeds(leftSpeed, rightSpeed);
   }
 
   // Called once the command ends or is interrupted.

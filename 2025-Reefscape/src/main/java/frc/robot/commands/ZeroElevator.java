@@ -8,6 +8,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ZeroElevator extends Command {
+
   private final ElevatorSubsystem m_subsystem;
 
   /**
@@ -15,8 +16,7 @@ public class ZeroElevator extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ZeroElevator(ElevatorSubsystem subsystem) 
-  {
+  public ZeroElevator(ElevatorSubsystem subsystem) {
     m_subsystem = subsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.

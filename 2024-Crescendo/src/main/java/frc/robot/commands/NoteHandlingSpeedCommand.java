@@ -8,6 +8,7 @@ import frc.robot.subsystems.NoteHandlingSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class NoteHandlingSpeedCommand extends Command {
+
   private final NoteHandlingSubsystem m_subsystem;
   private double m_speed = 0.0;
   private boolean m_isInput = true;
@@ -17,7 +18,11 @@ public class NoteHandlingSpeedCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public NoteHandlingSpeedCommand(NoteHandlingSubsystem subsystem, double speed, boolean isInput) {
+  public NoteHandlingSpeedCommand(
+    NoteHandlingSubsystem subsystem,
+    double speed,
+    boolean isInput
+  ) {
     m_subsystem = subsystem;
     m_speed = speed;
     m_isInput = isInput;
@@ -29,13 +34,12 @@ public class NoteHandlingSpeedCommand extends Command {
   @Override
   public void initialize() {
     m_subsystem.setIntakeSpeed(m_speed);
-    if (!m_isInput)
-    {
-      m_subsystem.setOutputSpeed(-m_speed * NoteHandlingConstants.kOutputRollerMultiplier);
-    }
-    else
-    {
-       m_subsystem.setOutputSpeed(0.0);
+    if (!m_isInput) {
+      m_subsystem.setOutputSpeed(
+        -m_speed * NoteHandlingConstants.kOutputRollerMultiplier
+      );
+    } else {
+      m_subsystem.setOutputSpeed(0.0);
     }
   }
 

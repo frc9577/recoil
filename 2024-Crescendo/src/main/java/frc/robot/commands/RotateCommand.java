@@ -2,14 +2,15 @@
 
 package frc.robot.commands;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GooseRotationSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class RotateCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final GooseRotationSubsystem m_subsystem;
+
   private double m_angle = 0.0;
 
   /**

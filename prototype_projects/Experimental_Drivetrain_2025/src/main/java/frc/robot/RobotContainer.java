@@ -4,14 +4,10 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -25,6 +21,8 @@ import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.AutoCommands;
+import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +31,7 @@ import frc.robot.utils.AutoCommands;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
   // The robot's subsystems and commands are defined here...
   private final Optional<DriveSubsystem> m_driveSubsystem;
 
@@ -41,31 +40,51 @@ public class RobotContainer {
   //    new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
-  private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.trackWidthMeters);
+  private final DifferentialDriveKinematics m_DriveKinematics =
+    new DifferentialDriveKinematics(DrivetrainConstants.trackWidthMeters);
 
   // Pose Estimators
-  private DifferentialDrivePoseEstimator m_DrivePoseEstimator = new DifferentialDrivePoseEstimator(
-                                                                  m_DriveKinematics, 
-                                                                  m_gyro.getRotation2d(), 
-                                                                  0, 
-                                                                  0, 
-                                                                  new Pose2d());
+  private DifferentialDrivePoseEstimator m_DrivePoseEstimator =
+    new DifferentialDrivePoseEstimator(
+      m_DriveKinematics,
+      m_gyro.getRotation2d(),
+      0,
+      0,
+      new Pose2d()
+    );
 
   // Sendable Choosers
   private SendableChooser<Command> autoChooser;
 
   // Factorys
   private TalonFXFactory m_TalonFXFactory = new TalonFXFactory();
-  private DriveSubsystemFactory m_DriveSubsystemFactory = new DriveSubsystemFactory();
+  private DriveSubsystemFactory m_DriveSubsystemFactory =
+    new DriveSubsystemFactory();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Init DriveSubsystem
-    Optional<TalonFX> rightLead = m_TalonFXFactory.construct(DrivetrainConstants.kRightMotorCANID);
-    Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
-    Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalRightMotorCANID);
-    Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
-    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_DrivePoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
+    Optional<TalonFX> rightLead = m_TalonFXFactory.construct(
+      DrivetrainConstants.kRightMotorCANID
+    );
+    Optional<TalonFX> leftLead = m_TalonFXFactory.construct(
+      DrivetrainConstants.kLeftMotorCANID
+    );
+    Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(
+      DrivetrainConstants.kOptionalRightMotorCANID
+    );
+    Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(
+      DrivetrainConstants.kOptionalLeftMotorCANID
+    );
+    m_driveSubsystem = m_DriveSubsystemFactory.construct(
+      m_DrivePoseEstimator,
+      m_DriveKinematics,
+      m_gyro,
+      rightLead,
+      leftLead,
+      rightFollower,
+      leftFollower
+    );
 
     // Init the subsystems
     //m_limelightSubsystem = getSubsystem(LimelightSubsystem.class, m_limeLightPoseEstimator);
@@ -95,7 +114,7 @@ public class RobotContainer {
   //     // This is not tested! - Owen
   //     DriverStation.reportWarning(
   //       String.format(
-  //       "The %s was not found!", subsystemClass.getName()), 
+  //       "The %s was not found!", subsystemClass.getName()),
   //       false
   //     );
   //   }
@@ -104,7 +123,9 @@ public class RobotContainer {
 
   private void configureAutos() {
     // Init Autos (/home/lvuser/deploy/pathplanner/autos)
-    ArrayList<Command> autoCommands = AutoCommands.getAutoCommands(m_driveSubsystem);
+    ArrayList<Command> autoCommands = AutoCommands.getAutoCommands(
+      m_driveSubsystem
+    );
 
     // Init Chooser
     autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
@@ -112,8 +133,7 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    if (m_driveSubsystem.isPresent())
-    {
+    if (m_driveSubsystem.isPresent()) {
       //DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       //driveSubsystem.initDefaultCommand(m_driverController);
     }
@@ -130,15 +150,12 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // SmartDashboard.putBoolean("Example Subsystem", m_exampleSubsystem.isPresent());
-
     // if (m_exampleSubsystem.isPresent())
     // {
     //   ExampleSubsystem exampleSubsystem = m_exampleSubsystem.get();
-
     //   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     //   new Trigger(exampleSubsystem::exampleCondition)
     //       .onTrue(new ExampleCommand(exampleSubsystem));
-
     //   // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     //   // cancelling on release.
     //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());

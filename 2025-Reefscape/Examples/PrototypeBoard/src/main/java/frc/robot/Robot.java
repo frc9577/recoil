@@ -4,15 +4,15 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 /**
  * This is a sample program showing the use of the solenoid classes during operator control. Three
@@ -26,15 +26,20 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
  * only take a single channel.
  */
 public class Robot extends TimedRobot {
+
   private final Joystick m_stick = new Joystick(0);
 
   // DoubleSolenoid corresponds to a double solenoid.
   // In this case, it's connected to channels 1 and 2 of a PH with the default CAN ID.
-  private final Solenoid m_Solenoid =
-      new Solenoid(PneumaticsModuleType.REVPH, 0);
+  private final Solenoid m_Solenoid = new Solenoid(
+    PneumaticsModuleType.REVPH,
+    0
+  );
 
   // Compressor connected to a PH with a default CAN ID (1)
-  private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+  private final Compressor m_compressor = new Compressor(
+    PneumaticsModuleType.REVPH
+  );
 
   static final int kSolenoidForwardButton = 2;
   static final int kSolenoidReverseButton = 3;
@@ -43,8 +48,14 @@ public class Robot extends TimedRobot {
   static final int kMotor1CANID = 10;
   static final int kMotor2CANID = 20;
 
-  private final SparkMax m_Motor1 = new SparkMax(kMotor1CANID, MotorType.kBrushless);
-  private final SparkMax m_Motor2 = new SparkMax(kMotor2CANID, MotorType.kBrushless);
+  private final SparkMax m_Motor1 = new SparkMax(
+    kMotor1CANID,
+    MotorType.kBrushless
+  );
+  private final SparkMax m_Motor2 = new SparkMax(
+    kMotor2CANID,
+    MotorType.kBrushless
+  );
 
   /** Called once at the beginning of the robot program. */
   public Robot() {
@@ -73,13 +84,12 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("PMD.UnconditionalIfStatement")
   @Override
   public void teleopPeriodic() {
-
-    /*  
+    /*
      * The joystick Y axis control the speed of motor 1 and the X
      * axis controls motor 2.
      */
     double speed = m_stick.getY();
-    m_Motor1.set(speed); 
+    m_Motor1.set(speed);
 
     speed = m_stick.getX();
     m_Motor2.set(speed);
@@ -102,11 +112,11 @@ public class Robot extends TimedRobot {
         // Disable closed-loop mode on the compressor.
         m_compressor.disable();
       } else {
-          // Enable closed-loop mode based on the analog pressure sensor connected to the PH.
-          // The compressor will run while the pressure reported by the sensor is in the
-          // specified range ([70 PSI, 120 PSI] in this example).
-          // Analog mode exists only on the PH! On the PCM, this enables digital control.
-          m_compressor.enableAnalog(70, 120);
+        // Enable closed-loop mode based on the analog pressure sensor connected to the PH.
+        // The compressor will run while the pressure reported by the sensor is in the
+        // specified range ([70 PSI, 120 PSI] in this example).
+        // Analog mode exists only on the PH! On the PCM, this enables digital control.
+        m_compressor.enableAnalog(70, 120);
       }
     }
   }

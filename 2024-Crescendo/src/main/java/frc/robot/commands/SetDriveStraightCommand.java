@@ -2,11 +2,11 @@
 
 package frc.robot.commands;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class SetDriveStraightCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private boolean m_straightMode = false;
 
@@ -15,7 +15,10 @@ public class SetDriveStraightCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetDriveStraightCommand(DriveSubsystem subsystem, boolean straightMode) {
+  public SetDriveStraightCommand(
+    DriveSubsystem subsystem,
+    boolean straightMode
+  ) {
     m_subsystem = subsystem;
     m_straightMode = straightMode;
     // Use addRequirements() here to declare subsystem dependencies.

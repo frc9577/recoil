@@ -2,12 +2,13 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.*;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class AutonomousPassLine extends Command {
+
   private final DriveSubsystem m_subsystem;
   private double m_leftSpeed = 0.0;
   private double m_rightSpeed = 0.0;
@@ -18,8 +19,7 @@ public class AutonomousPassLine extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutonomousPassLine(DriveSubsystem subsystem) 
-  {
+  public AutonomousPassLine(DriveSubsystem subsystem) {
     m_subsystem = subsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -51,6 +51,9 @@ public class AutonomousPassLine extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (System.currentTimeMillis() - m_startTime) >= AutoConstants.kPassLineDuration_mS;
+    return (
+      (System.currentTimeMillis() - m_startTime) >=
+      AutoConstants.kPassLineDuration_mS
+    );
   }
 }

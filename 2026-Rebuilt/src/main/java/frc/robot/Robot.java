@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
+
   private final DifferentialDrive m_robotDrive;
   private final Joystick m_leftStick;
   private final Joystick m_rightStick;

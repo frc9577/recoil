@@ -9,6 +9,7 @@ import frc.robot.subsystems.GooseRotationSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ManualRotateCommand extends Command {
+
   private final GooseRotationSubsystem m_subsystem;
   private XboxController m_joystick;
 
@@ -17,7 +18,10 @@ public class ManualRotateCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ManualRotateCommand(GooseRotationSubsystem subsystem, XboxController joystick) {
+  public ManualRotateCommand(
+    GooseRotationSubsystem subsystem,
+    XboxController joystick
+  ) {
     m_subsystem = subsystem;
     m_joystick = joystick;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -26,36 +30,27 @@ public class ManualRotateCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double setPointAngle = m_subsystem.getSetPointAngle();
     double joystickValue = -m_joystick.getLeftY();
-    
-    if ((joystickValue <= 0.25) && (joystickValue >= -0.25))
-    { 
-      return; 
+
+    if ((joystickValue <= 0.25) && (joystickValue >= -0.25)) {
+      return;
     }
 
-    if (joystickValue > 0.25)
-    {
+    if (joystickValue > 0.25) {
       setPointAngle += OperatorConstants.kGooseAngleIncrement;
-    }
-    else if (joystickValue < -0.25)
-    {
+    } else if (joystickValue < -0.25) {
       setPointAngle -= OperatorConstants.kGooseAngleIncrement;
     }
 
-    if(setPointAngle > OperatorConstants.kGooseAngleMax)
-    {
+    if (setPointAngle > OperatorConstants.kGooseAngleMax) {
       setPointAngle = OperatorConstants.kGooseAngleMax;
-    }
-    else if (setPointAngle < OperatorConstants.kGooseAngleMin)
-    {
+    } else if (setPointAngle < OperatorConstants.kGooseAngleMin) {
       setPointAngle = OperatorConstants.kGooseAngleMin;
     }
 
@@ -64,9 +59,7 @@ public class ManualRotateCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) 
-  {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

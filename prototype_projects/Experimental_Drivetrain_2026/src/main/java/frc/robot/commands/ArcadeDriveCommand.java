@@ -3,14 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /** An example command that uses an example subsystem. */
 public class ArcadeDriveCommand extends Command {
+
   private final DriveSubsystem m_subsystem;
   private CommandXboxController m_driveController;
 
@@ -19,7 +21,10 @@ public class ArcadeDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArcadeDriveCommand(DriveSubsystem subsystem, CommandXboxController driveController)  {
+  public ArcadeDriveCommand(
+    DriveSubsystem subsystem,
+    CommandXboxController driveController
+  ) {
     m_subsystem = subsystem;
     m_driveController = driveController;
 
@@ -38,7 +43,7 @@ public class ArcadeDriveCommand extends Command {
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
     double speedInput = -m_driveController.getRightY();
-    double turnInput  = m_driveController.getLeftX();
+    double turnInput = m_driveController.getLeftX();
 
     // Set the deadband
     if (Math.abs(speedInput) < OperatorConstants.kDriverControllerDeadband) {
@@ -56,17 +61,14 @@ public class ArcadeDriveCommand extends Command {
     double greaterInput = Math.max(Math.abs(speedInput), Math.abs(turnInput));
     double lesserInput = Math.min(Math.abs(speedInput), Math.abs(turnInput));
     if (greaterInput == 0.0) {
-      m_subsystem.setDifferentialSpeeds(
-        0, 
-        0
-      );
+      m_subsystem.setDifferentialSpeeds(0, 0);
     } else {
       double saturatedInput = (greaterInput + lesserInput) / greaterInput;
       leftSpeed /= saturatedInput;
       rightSpeed /= saturatedInput;
 
       m_subsystem.setDifferentialSpeeds(
-        leftSpeed * DrivetrainConstants.kMaxVelocityMPS, 
+        leftSpeed * DrivetrainConstants.kMaxVelocityMPS,
         rightSpeed * DrivetrainConstants.kMaxVelocityMPS
       );
     }

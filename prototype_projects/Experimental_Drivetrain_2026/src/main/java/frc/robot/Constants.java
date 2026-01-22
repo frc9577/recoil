@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 
 /**
@@ -18,7 +17,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class AutoConstants {
+
     public static final double kMaxDriveVelocityMPS = 40.0; // true max speed of the robot mps
     public static final double kWheelCOF = 1.0; // no data for this, bsed it
 
@@ -26,7 +27,10 @@ public final class Constants {
 
     // Uncommenting this causes the weird x y rotion error.
     //public static final double kMOI = (1/12)  * kMassKG * ((DrivetrainConstants.kLengthMeters*DrivetrainConstants.kLengthMeters) + (DrivetrainConstants.kWidthMeters*DrivetrainConstants.kWidthMeters)); // Moment of Intertia
-    public static final double kMOI = kMassKG * (DrivetrainConstants.kTrackWidthMeters/2) * (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
+    public static final double kMOI =
+      kMassKG *
+      (DrivetrainConstants.kTrackWidthMeters / 2) *
+      (DrivetrainConstants.kA_angular / DrivetrainConstants.kA_linear); // Moment of Intertia
 
     public static final double kDriveCurrentLimit = 10.0; // amps
 
@@ -35,24 +39,31 @@ public final class Constants {
 
     public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(kNumMotors);
     public static final ModuleConfig kModuleConfig = new ModuleConfig(
-      DrivetrainConstants.kWheelRadiusMeters, 
-      kMaxDriveVelocityMPS, 
-      kWheelCOF, 
-      kDriveMotor, 
-      kDriveCurrentLimit, 
+      DrivetrainConstants.kWheelRadiusMeters,
+      kMaxDriveVelocityMPS,
+      kWheelCOF,
+      kDriveMotor,
+      kDriveCurrentLimit,
       kNumMotors
     );
 
-    public static final RobotConfig kRobotConfig = new RobotConfig(kMassKG, kMOI, kModuleConfig, DrivetrainConstants.kTrackWidthMeters);
+    public static final RobotConfig kRobotConfig = new RobotConfig(
+      kMassKG,
+      kMOI,
+      kModuleConfig,
+      DrivetrainConstants.kTrackWidthMeters
+    );
     // populate on init possibility end here
   }
 
   public static class OperatorConstants {
+
     public static final int kDriverControllerPort = 0;
     public static final double kDriverControllerDeadband = 0.02; // Exclusive
   }
 
   public static class DrivetrainConstants {
+
     public static final int kLeftMotorCANID = 10;
     public static final int kOptionalLeftMotorCANID = 11;
 
@@ -85,10 +96,11 @@ public final class Constants {
     // Physical measurements related to the drivetrain.
     public static final double kDrivetrainGearRatio = 0.2;
     public static final double kWheelRadiusMeters = (4.0 / 2.0) * 0.0254; // Four Inch Wheels
-    public static final double kWheelCircumference = 2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
+    public static final double kWheelCircumference =
+      2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
     public static final double kWidthMeters = 0.760;
     public static final double kLengthMeters = 0.760;
-    public static final double kTrackWidthMeters = 29.0 * 0.0254;//0.74; 
+    public static final double kTrackWidthMeters = 29.0 * 0.0254; //0.74;
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;

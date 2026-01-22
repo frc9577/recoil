@@ -6,10 +6,10 @@
 // (if any) is it making?
 
 package frc.robot.subsystems;
+
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
@@ -17,7 +17,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.XboxController;
@@ -28,24 +29,27 @@ import frc.robot.Constants.*;
 import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
-
 public class DriveSubsystem extends SubsystemBase {
-  private final TalonFX m_rightMotor = new TalonFX(DrivetrainConstants.kRightMotorCANID);
+
+  private final TalonFX m_rightMotor = new TalonFX(
+    DrivetrainConstants.kRightMotorCANID
+  );
   private TalonFX m_optionalRightMotor;
 
-  private final TalonFX m_leftMotor  = new TalonFX(DrivetrainConstants.kLeftMotorCANID);
-  private TalonFX m_optionalLeftMotor; 
+  private final TalonFX m_leftMotor = new TalonFX(
+    DrivetrainConstants.kLeftMotorCANID
+  );
+  private TalonFX m_optionalLeftMotor;
 
   private DifferentialDrive m_Drivetrain;
 
-  private double m_leftSpeed  = 0.0;
+  private double m_leftSpeed = 0.0;
   private double m_rightSpeed = 0.0;
 
   private double m_modeMultiplier = 1.0;
 
   public class pidControl {
+
     private TalonFX m_motor;
     private boolean m_positiveMovesForward;
 
@@ -53,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final TrapezoidProfile m_profile = new TrapezoidProfile(
       new TrapezoidProfile.Constraints(
-        DrivetrainConstants.maxVelocity, 
+        DrivetrainConstants.maxVelocity,
         DrivetrainConstants.maxAcceleration
       )
     );
@@ -70,7 +74,8 @@ public class DriveSubsystem extends SubsystemBase {
     public void setTargetPosition(double position) {
       m_targetPosition = position;
 
-      double positionRotations = position * DrivetrainConstants.kDrivetrainGearRatio;
+      double positionRotations =
+        position * DrivetrainConstants.kDrivetrainGearRatio;
       if (!m_positiveMovesForward) {
         positionRotations = -positionRotations;
       }
@@ -96,7 +101,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getPosition() {
-      double motorPosition = m_motor.getPosition().getValueAsDouble() / DrivetrainConstants.kDrivetrainGearRatio;
+      double motorPosition =
+        m_motor.getPosition().getValueAsDouble() /
+        DrivetrainConstants.kDrivetrainGearRatio;
 
       if (m_positiveMovesForward) {
         return motorPosition;
@@ -107,18 +114,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   pidControl m_leftPidControl = new pidControl(
-    m_leftMotor, 
+    m_leftMotor,
     DrivetrainConstants.kLeftPositiveMovesForward
   );
 
   pidControl m_rightPidControl = new pidControl(
-    m_rightMotor, 
+    m_rightMotor,
     DrivetrainConstants.kRightPositiveMovesForward
   );
 
   //The gyro sensor
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
-  
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Right Motor
@@ -132,18 +139,22 @@ public class DriveSubsystem extends SubsystemBase {
     rightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    rightMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
+    rightMotorConfig.Voltage.withPeakForwardVoltage(
+      Volts.of(DrivetrainConstants.PeakVoltage)
+    ).withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
 
-    m_rightMotor.getConfigurator().apply(rightMotorConfig);    
+    m_rightMotor.getConfigurator().apply(rightMotorConfig);
     SendableRegistry.setName(m_rightMotor, "DriveSubsystem", "rightMotor");
 
     // Optional Right Motor
     try {
-      m_optionalRightMotor = new TalonFX(DrivetrainConstants.kOptionalRightMotorCANID);
-  
+      m_optionalRightMotor = new TalonFX(
+        DrivetrainConstants.kOptionalRightMotorCANID
+      );
+
       // Setting up Config
-      TalonFXConfiguration optionalRightMotorConfig = new TalonFXConfiguration();
+      TalonFXConfiguration optionalRightMotorConfig =
+        new TalonFXConfiguration();
       optionalRightMotorConfig.Slot0.kV = DrivetrainConstants.kV;
       optionalRightMotorConfig.Slot0.kS = DrivetrainConstants.kS;
       optionalRightMotorConfig.Slot0.kP = DrivetrainConstants.kP;
@@ -151,10 +162,12 @@ public class DriveSubsystem extends SubsystemBase {
       optionalRightMotorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
 
       optionalRightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-      optionalRightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      optionalRightMotorConfig.MotorOutput.Inverted =
+        InvertedValue.Clockwise_Positive;
 
-      optionalRightMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-      .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
+      optionalRightMotorConfig.Voltage.withPeakForwardVoltage(
+        Volts.of(DrivetrainConstants.PeakVoltage)
+      ).withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
 
       // Saving
       m_optionalRightMotor.getConfigurator().apply(optionalRightMotorConfig);
@@ -163,8 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
       m_optionalRightMotor.setControl(
         new Follower(m_rightMotor.getDeviceID(), false)
       );
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
@@ -177,17 +189,21 @@ public class DriveSubsystem extends SubsystemBase {
     leftMotorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
 
     leftMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    leftMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    leftMotorConfig.MotorOutput.Inverted =
+      InvertedValue.CounterClockwise_Positive;
 
-    leftMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-    .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
+    leftMotorConfig.Voltage.withPeakForwardVoltage(
+      Volts.of(DrivetrainConstants.PeakVoltage)
+    ).withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
 
     m_leftMotor.getConfigurator().apply(leftMotorConfig);
     SendableRegistry.setName(m_leftMotor, "DriveSubsystem", "leftMotor");
 
     // Optional Left Motor
     try {
-      m_optionalLeftMotor = new TalonFX(DrivetrainConstants.kOptionalLeftMotorCANID);
+      m_optionalLeftMotor = new TalonFX(
+        DrivetrainConstants.kOptionalLeftMotorCANID
+      );
 
       // Setting up Config
       TalonFXConfiguration optionalLeftMotorConfig = new TalonFXConfiguration();
@@ -198,10 +214,12 @@ public class DriveSubsystem extends SubsystemBase {
       optionalLeftMotorConfig.Slot0.kD = DrivetrainConstants.kD; // A velocity of 1 rps results in 0.1 V output
 
       optionalLeftMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-      optionalLeftMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+      optionalLeftMotorConfig.MotorOutput.Inverted =
+        InvertedValue.CounterClockwise_Positive;
 
-      optionalLeftMotorConfig.Voltage.withPeakForwardVoltage(Volts.of(DrivetrainConstants.PeakVoltage))
-      .withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
+      optionalLeftMotorConfig.Voltage.withPeakForwardVoltage(
+        Volts.of(DrivetrainConstants.PeakVoltage)
+      ).withPeakReverseVoltage(Volts.of(-DrivetrainConstants.PeakVoltage));
 
       // Saving
       m_optionalLeftMotor.getConfigurator().apply(optionalLeftMotorConfig);
@@ -210,9 +228,7 @@ public class DriveSubsystem extends SubsystemBase {
       m_optionalLeftMotor.setControl(
         new Follower(m_leftMotor.getDeviceID(), false)
       );
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       // TODO: There are really two cases you want to catch. The first, when the follower
       // motor controller doesn't exist, isn't an error. The second, where the motor exists
       // but one of the later configuration calls fails, is an error. Generally, you would
@@ -230,14 +246,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Setting up the drive train
     m_Drivetrain = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
-    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");  
+    SendableRegistry.setName(m_Drivetrain, "DriveSubsystem", "Drivetrain");
 
     // Gyro setup
     m_gyro.zeroYaw();
   }
 
-  public void initDefaultCommand(XboxController Controller, boolean isArcade)
-  {
+  public void initDefaultCommand(XboxController Controller, boolean isArcade) {
     if (isArcade == true) {
       setDefaultCommand(new ArcadeDriveCommand(this, Controller));
     } else {
@@ -246,18 +261,19 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // Sets left and right motors to set speeds to support tank drive models.
-  public void setTankSpeeds(double leftInput, double rightInput)
-  {
-    m_leftSpeed = (leftInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
-    m_rightSpeed = (rightInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
+  public void setTankSpeeds(double leftInput, double rightInput) {
+    m_leftSpeed =
+      (leftInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
+    m_rightSpeed =
+      (rightInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
 
     // NOTE: We are squaring the input to improve driver response
     m_Drivetrain.tankDrive(m_leftSpeed, m_rightSpeed, true);
   }
 
-  public void setArcadeSpeeds(double joystickInput, double rotationInput)
-  {
-    m_leftSpeed = (joystickInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
+  public void setArcadeSpeeds(double joystickInput, double rotationInput) {
+    m_leftSpeed =
+      (joystickInput / DrivetrainConstants.kSpeedDivider) * m_modeMultiplier;
     m_rightSpeed = (rotationInput / DrivetrainConstants.kTurnDivider);
 
     // NOTE: We are making our own custom input modifications
@@ -268,20 +284,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // Changes controls to normal or reverse mode's
-  public void setReverseMode(boolean reverseMode)
-  {
+  public void setReverseMode(boolean reverseMode) {
     m_modeMultiplier = reverseMode ? -1.0 : 1.0;
     SmartDashboard.putBoolean("Reverse Mode", reverseMode);
   }
 
-  public double getSpeed(boolean bLeft)
-  {
-    if (bLeft)
-    {
+  public double getSpeed(boolean bLeft) {
+    if (bLeft) {
       return m_leftSpeed;
-    }
-    else
-    {
+    } else {
       return m_rightSpeed;
     }
   }
@@ -315,25 +326,27 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // For Auto, returns the selected motors CURRENT position
-  public double getPosition(boolean isLeft)
-  {
-   if (isLeft) {
-    return m_leftPidControl.getPosition();
-   }  else {
-    return m_rightPidControl.getPosition();
-   }
+  public double getPosition(boolean isLeft) {
+    if (isLeft) {
+      return m_leftPidControl.getPosition();
+    } else {
+      return m_rightPidControl.getPosition();
+    }
   }
 
   // For Auto, returns if the left and right motor are within tolerance of the PID target
-  public boolean isAtTarget(double tolerance) 
-  {
-    double leftError = Math.abs(m_leftPidControl.getTargetPosition() - m_leftPidControl.getPosition());
-    double rightError = Math.abs(m_rightPidControl.getTargetPosition() - m_rightPidControl.getPosition());
+  public boolean isAtTarget(double tolerance) {
+    double leftError = Math.abs(
+      m_leftPidControl.getTargetPosition() - m_leftPidControl.getPosition()
+    );
+    double rightError = Math.abs(
+      m_rightPidControl.getTargetPosition() - m_rightPidControl.getPosition()
+    );
 
     return (leftError <= tolerance) && (rightError <= tolerance);
   }
 
-  // For Auto, needs to be in an auto command execute, so we can use the PID without 
+  // For Auto, needs to be in an auto command execute, so we can use the PID without
   // differential drive timeing out.
   public void callDrivetrainFeed() {
     m_Drivetrain.feed();
@@ -345,8 +358,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   @Override
   public void simulationPeriodic() {

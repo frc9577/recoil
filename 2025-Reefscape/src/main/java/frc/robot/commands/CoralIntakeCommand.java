@@ -4,12 +4,13 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.CoralConstants;
 import frc.robot.subsystems.CoralSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class CoralIntakeCommand extends Command {
+
   private final CoralSubsystem m_subsystem;
   private boolean m_hasTriggered = false;
   private int m_endCounter = -1;
@@ -53,9 +54,9 @@ public class CoralIntakeCommand extends Command {
     if (m_subsystem.hasCoral() == true && m_hasTriggered == false) {
       m_hasTriggered = true;
     }
-    
+
     if (m_hasTriggered == true) {
-        m_endCounter++;
+      m_endCounter++;
     }
 
     return (m_endCounter >= CoralConstants.kEndIntakeMaxCount);
