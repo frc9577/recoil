@@ -26,12 +26,15 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ArcadeDriveCommand;
+import frc.robot.commands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -48,6 +51,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final AHRS m_gyro;
+
+  private final SendableChooser<Class<?>> m_driveChooser = new SendableChooser<>();
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, AHRS gyro, TalonFX rightMotor, TalonFX leftMotor) { 
@@ -94,6 +99,12 @@ public class DriveSubsystem extends SubsystemBase {
     // Gyro setup
     m_gyro.zeroYaw();
 
+    // Drive Chooser Init
+    m_driveChooser.setDefaultOption("PID Arcade", ArcadeDriveCommand.class);
+    m_driveChooser.addOption("PID Differential", DifferentialDriveCommand.class);
+    m_driveChooser.addOption("NO-PID Arcade", ArcadeDriveCommandNoPID.class);
+    SmartDashboard.putData("Drive Commands", m_driveChooser);
+
     // Init Smartdashboard
     SmartDashboard.putNumber("DB Left Set (MPS)", 0);
     SmartDashboard.putNumber("DB Right Set (MPS)", 0);
@@ -103,7 +114,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
-    SmartDashboard.putBoolean("PID Arcade", true);
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -154,16 +164,26 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
-  // TODO: Make a list chooser.
+  // This takes the current class selected in the drive chooser and attempts to
+  // initilize a command object from it & run it. TODO: Test this!
   public void initDefaultCommand(CommandXboxController Controller)
   {
-    boolean useArcade = SmartDashboard.getBoolean("PID Arcade", true);
+    Class<?> driveClass = m_driveChooser.getSelected();
 
-    if (useArcade == true) {
-      setDefaultCommand(new ArcadeDriveCommand(this, Controller));
-    } else {
-      setDefaultCommand(new DifferentialDriveCommand(this, Controller));
+    try {
+      Object driveCommand = driveClass.getDeclaredConstructor().newInstance(this, Controller);
+      setDefaultCommand((Command) driveCommand);
+
+      System.out.println(String.format("Loaded drive command \"%s\"!", driveClass.getName()));
+    } catch (Exception e) {
+      DriverStation.reportWarning(
+        String.format(
+        "Failed to load drive command \"%s\"!", driveClass.getName()), 
+        false
+      );
     }
+
+    // setDefaultCommand(new ArcadeDriveCommand(this, Controller));
   }
 
   // TODO: Work on a naming scheme for conversion functions
