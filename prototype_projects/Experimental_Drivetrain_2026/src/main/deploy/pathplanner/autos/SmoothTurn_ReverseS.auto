@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Smooth Turn"
+            "pathName": "Smooth_Turn"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse S Turn"
+            "pathName": "Reverse_S_Turn"
           }
         }
       ]
