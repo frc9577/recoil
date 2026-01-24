@@ -152,6 +152,15 @@ public class RobotContainer {
     configureDefaultCommands();
   }
 
+  public void autoInit() {
+    if (m_driveSubsystem.isPresent()) {
+      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+
+      m_gyro.reset();
+      driveSubsystem.resetPose(new Pose2d());
+    }
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
