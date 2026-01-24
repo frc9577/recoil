@@ -232,7 +232,12 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetPose(Pose2d newPose){
     m_leftMotor.setPosition(0);
     m_rightMotor.setPosition(0);
-    m_poseEstimator.resetPose(newPose);
+    
+    m_poseEstimator.resetPosition(
+      m_gyro.getRotation2d(), 
+      0, 0, 
+      newPose
+    );
   }
 
   public double getMotorSpeedRPS(boolean bLeft) 
