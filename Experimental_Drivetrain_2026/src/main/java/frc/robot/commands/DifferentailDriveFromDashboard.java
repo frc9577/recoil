@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DifferentailDriveFromDashboard extends Command {
@@ -12,7 +13,7 @@ public class DifferentailDriveFromDashboard extends Command {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DifferentailDriveFromDashboard(DriveSubsystem subsystem)  {
+    public DifferentailDriveFromDashboard(DriveSubsystem subsystem, CommandXboxController driveController)  {
         m_subsystem = subsystem;
 
         // Use addRequirements() here to declare subsystem dependencies.
