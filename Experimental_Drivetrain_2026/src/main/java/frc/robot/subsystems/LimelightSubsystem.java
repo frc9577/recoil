@@ -3,46 +3,59 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import com.studica.frc.AHRS;
+
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 
 public class LimelightSubsystem extends SubsystemBase {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
+  private final AHRS m_gyro;
 
   /** Creates a new PositionSubsystem. */
-  public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator) {
+  public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, AHRS gyro) {
     m_poseEstimator = poseEstimator;
+    m_gyro = gyro;
   }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+  // This is copy and pasted from limelight's documentation for testing.
+  public void updateOdometry() {
+    boolean doRejectUpdate = false;
+
+    LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    
+    // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    if(Math.abs(m_gyro.getRate()) > 720)
+    {
+      doRejectUpdate = true;
+    }
+
+    if(mt2.tagCount == 0)
+    {
+      doRejectUpdate = true;
+    }
+
+    if(!doRejectUpdate)
+    {
+      // A Static Standard Deviation of .7 meters for x & y, it does not trust the theta. (Taken from example)
+      Vector<N3> errorVec = VecBuilder.fill(.7,.7,9999999);
+      m_poseEstimator.setVisionMeasurementStdDevs(errorVec);
+
+      m_poseEstimator.addVisionMeasurement(
+        mt2.pose,
+        mt2.timestampSeconds
+      );
+    }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler 
-
-    // This is copy and pasted from limelight's documentation for testing.
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
-        m_poseEstimator.addVisionMeasurement(
-            limelightMeasurement.pose,
-            limelightMeasurement.timestampSeconds
-        );
-    }
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
+    updateOdometry();
   }
 }
