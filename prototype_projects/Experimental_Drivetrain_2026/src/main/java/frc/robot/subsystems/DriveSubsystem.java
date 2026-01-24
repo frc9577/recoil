@@ -170,8 +170,8 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
-  // This takes the current class selected in the drive chooser and attempts to
-  // initilize a command object from it & run it.
+  // This takes the current class selected in the drive chooser and attempts to initilize a command object from it & run it.
+  // The commands must have a constructor with a DriveSubsystem and CommandXboxController as args.
   public void initDefaultCommand(CommandXboxController Controller)
   {
     Class<?> driveClass = m_driveChooser.getSelected();
@@ -305,7 +305,6 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run 
-
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
 

@@ -11,12 +11,18 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
@@ -43,16 +49,23 @@ public class RobotContainer {
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
 
-  // Pose Estimators
-  private DifferentialDrivePoseEstimator m_DrivePoseEstimator = new DifferentialDrivePoseEstimator(
-                                                                  m_DriveKinematics, 
-                                                                  m_gyro.getRotation2d(), 
-                                                                  0, 
-                                                                  0, 
-                                                                  new Pose2d());
+  // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
+  private Vector<N3> m_drivetrainError = VecBuilder.fill(0.2, 0.2, 0);
+  private Vector<N3> m_limelightError = VecBuilder.fill(.7,.7,9999999);
 
-  // Sendable Choosers
+  private DifferentialDrivePoseEstimator m_PoseEstimator = new DifferentialDrivePoseEstimator(
+    m_DriveKinematics, 
+    m_gyro.getRotation2d(), 
+    0, 
+    0, 
+    new Pose2d(0.0, 8.0, new Rotation2d()),
+    m_drivetrainError,
+    m_limelightError
+  );
+
+  // Smartdashboard Objects
   private SendableChooser<Command> autoChooser;
+  private final Field2d m_field = new Field2d();
 
   // Factorys
   private TalonFXFactory m_TalonFXFactory = new TalonFXFactory();
@@ -68,10 +81,10 @@ public class RobotContainer {
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
     Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalRightMotorCANID);
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
-    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_DrivePoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
+    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
 
     // Init the subsystems
-    //m_limelightSubsystem = getSubsystem(LimelightSubsystem.class, m_limeLightPoseEstimator);
+    //m_limelightSubsystem = getSubsystem(LimelightSubsystem.class, m_PoseEstimator);
     //m_exampleSubsystem = getSubsystem(ExampleSubsystem.class);
 
     // Init Auto
@@ -127,8 +140,25 @@ public class RobotContainer {
     // }
   }
 
+  // Populate the SmartDashboard on robot init.
+  public void InitSmartDashboard() {
+    // Non-Subsystem Specific Stuff
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData("Field", m_field);
+  }
+
   // This function is called every 20mS.  
   public void UpdateSmartDashboard() {
+    // Non-subsystem specific stuff
+    if ((m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0) {
+      Pose2d estimatedPos = m_PoseEstimator.getEstimatedPosition();
+      m_field.setRobotPose(estimatedPos);
+
+      SmartDashboard.putNumber("Pose X (Meter)", estimatedPos.getX());
+      SmartDashboard.putNumber("Pose Y (Meter)", estimatedPos.getY());
+      SmartDashboard.putNumber("Pose Theta (Degrees)", estimatedPos.getRotation().getDegrees());
+    }
+
     // Drive subsystem
     if(m_driveSubsystem.isPresent() && (m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0)
     {
