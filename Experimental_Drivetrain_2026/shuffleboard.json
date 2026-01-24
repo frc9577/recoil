@@ -295,6 +295,19 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "3,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Gyro Degrees",
+              "_title": "/SmartDashboard/Gyro Degrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
