@@ -11,7 +11,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "3,1": {
+          "8,4": {
             "size": [
               1,
               1
@@ -24,7 +24,7 @@
               "_showGlyph": false
             }
           },
-          "4,1": {
+          "9,4": {
             "size": [
               1,
               1
@@ -37,7 +37,7 @@
               "_showGlyph": false
             }
           },
-          "3,3": {
+          "3,2": {
             "size": [
               1,
               1
@@ -50,7 +50,7 @@
               "_showGlyph": false
             }
           },
-          "4,3": {
+          "4,2": {
             "size": [
               1,
               1
@@ -63,7 +63,7 @@
               "_showGlyph": false
             }
           },
-          "4,2": {
+          "4,1": {
             "size": [
               1,
               1
@@ -76,7 +76,7 @@
               "_showGlyph": false
             }
           },
-          "3,2": {
+          "3,1": {
             "size": [
               1,
               1
@@ -98,6 +98,8 @@
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
               "_source1": "network_table:///SmartDashboard/Left Speed (MPS)",
+              "_source2": "network_table:///SmartDashboard/Right Speed (MPS)",
+              "_source3": "network_table:///SmartDashboard/Right Speed (RPS)",
               "_title": "Graph",
               "_glyph": 148,
               "_showGlyph": false,
@@ -108,10 +110,12 @@
               "Y-axis/Lower bound": -3.0,
               "Y-axis/Unit": "mps",
               "Visible data/SmartDashboard/Left Speed (MPS)": true,
-              "Visible data/SmartDashboard/Left Target (MPS)": true
+              "Visible data/SmartDashboard/Left Target (MPS)": true,
+              "Visible data/SmartDashboard/Right Speed (MPS)": true,
+              "Visible data/SmartDashboard/Right Speed (RPS)": true
             }
           },
-          "4,4": {
+          "4,3": {
             "size": [
               1,
               1
@@ -124,7 +128,7 @@
               "_showGlyph": false
             }
           },
-          "3,4": {
+          "3,3": {
             "size": [
               1,
               1
@@ -143,9 +147,22 @@
               1
             ],
             "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/Use Arcade",
-              "_title": "SmartDashboard/Use Arcade",
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Drive Commands",
+              "_title": "SmartDashboard/Drive Commands",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DB Arcade Set (MPS)",
+              "_title": "SmartDashboard/DB Arcade Set (MPS)",
               "_glyph": 148,
               "_showGlyph": false
             }

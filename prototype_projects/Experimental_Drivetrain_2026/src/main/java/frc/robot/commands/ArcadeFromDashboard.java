@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class DifferentailDriveFromDashboard extends Command {
+public class ArcadeFromDashboard extends Command {
     private final DriveSubsystem m_subsystem;
 
     /**
@@ -13,7 +13,7 @@ public class DifferentailDriveFromDashboard extends Command {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DifferentailDriveFromDashboard(DriveSubsystem subsystem, CommandXboxController driveController)  {
+    public ArcadeFromDashboard(DriveSubsystem subsystem, CommandXboxController driveController)  {
         m_subsystem = subsystem;
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -27,10 +27,8 @@ public class DifferentailDriveFromDashboard extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double leftSpeed  = SmartDashboard.getNumber("DB Left Set (MPS)", 0);
-        double rightSpeed = SmartDashboard.getNumber("DB Right Set (MPS)", 0);
-
-        m_subsystem.setDifferentialSpeeds( leftSpeed, rightSpeed );
+        double speed  = SmartDashboard.getNumber("DB Arcade Set (MPS)", 0);
+        m_subsystem.setDifferentialSpeeds( speed, speed );
     }
 
     // Called once the command ends or is interrupted.

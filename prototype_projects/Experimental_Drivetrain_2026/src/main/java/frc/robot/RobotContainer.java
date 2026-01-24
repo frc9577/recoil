@@ -141,6 +141,8 @@ public class RobotContainer {
 
       SmartDashboard.putNumber("Left Distance (m)", driveSubsystem.getMotorPositionMeters(true));
       SmartDashboard.putNumber("Right Distance (m)", driveSubsystem.getMotorPositionMeters(false));
+
+      SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
     }
 
     m_iTickCount++;

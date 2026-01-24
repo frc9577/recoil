@@ -35,6 +35,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.ArcadeDriveCommandNoPID;
+import frc.robot.commands.ArcadeFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -103,17 +104,22 @@ public class DriveSubsystem extends SubsystemBase {
     m_driveChooser.setDefaultOption("PID Arcade", ArcadeDriveCommand.class);
     m_driveChooser.addOption("PID Differential", DifferentialDriveCommand.class);
     m_driveChooser.addOption("NO-PID Arcade", ArcadeDriveCommandNoPID.class);
+    m_driveChooser.addOption("Dashboard PID Arcade", ArcadeFromDashboard.class);
     SmartDashboard.putData("Drive Commands", m_driveChooser);
 
     // Init Smartdashboard
     SmartDashboard.putNumber("DB Left Set (MPS)", 0);
     SmartDashboard.putNumber("DB Right Set (MPS)", 0);
+    SmartDashboard.putNumber("DB Arcade Set (MPS)", 0);
+
     SmartDashboard.putNumber("Left Target (MPS)", 0);
     SmartDashboard.putNumber("Right Target (MPS)", 0);    
     SmartDashboard.putNumber("Left Speed (MPS)", getMotorSpeedMPS(true));
     SmartDashboard.putNumber("Right Speed (MPS)", getMotorSpeedMPS(false));
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
+
+    SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -232,7 +238,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetPose(Pose2d newPose){
     m_leftMotor.setPosition(0);
     m_rightMotor.setPosition(0);
-    
+
     m_poseEstimator.resetPosition(
       m_gyro.getRotation2d(), 
       0, 0, 
