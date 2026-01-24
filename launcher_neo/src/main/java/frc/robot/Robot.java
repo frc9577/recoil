@@ -65,14 +65,13 @@ public class Robot extends TimedRobot {
         .d(LauncherConstants.kD, ClosedLoopSlot.kSlot1)
         .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
         .feedForward
-          // kV is now in Volts, so we multiply by the nominal voltage (12V)
           .kV(LauncherConstants.kV, ClosedLoopSlot.kSlot1);
 
     motorConfig.closedLoop.maxMotion
         // Set MAXMotion parameters for velocity control in slot 1
         .maxAcceleration(LauncherConstants.kMaxAccelerationRPMPS, ClosedLoopSlot.kSlot1)
-        .cruiseVelocity(6000, ClosedLoopSlot.kSlot1)
-        .allowedProfileError(1, ClosedLoopSlot.kSlot1);
+        .cruiseVelocity(LauncherConstants.kCruiseVelocityRPM, ClosedLoopSlot.kSlot1)
+        .allowedProfileError(LauncherConstants.kAllowedErrorR, ClosedLoopSlot.kSlot1);
 
     /*
      * Apply the configuration to the SPARK MAX.
