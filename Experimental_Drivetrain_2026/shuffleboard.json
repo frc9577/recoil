@@ -164,19 +164,6 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "3,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
-              "_title": "/SmartDashboard/Left Target (MPS)",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "3,2": {
             "size": [
               1,
@@ -203,19 +190,6 @@
               "_showGlyph": false
             }
           },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
-              "_title": "/SmartDashboard/Right Target (MPS)",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "3,0": {
             "size": [
               2,
@@ -236,9 +210,9 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Left Distance (m)",
-              "_source1": "network_table:///SmartDashboard/Left Target (MPS)",
-              "_source2": "network_table:///SmartDashboard/Left Speed (MPS)",
+              "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
+              "_source1": "network_table:///SmartDashboard/Left Speed (MPS)",
+              "_source2": "network_table:///SmartDashboard/Left Distance (m)",
               "_title": "Graph",
               "_glyph": 148,
               "_showGlyph": false,
@@ -278,15 +252,41 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Target (MPS)",
+              "_title": "/SmartDashboard/Left Target (MPS)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Target (MPS)",
+              "_title": "/SmartDashboard/Right Target (MPS)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
     }
   ],
   "windowGeometry": {
-    "x": -5.0,
+    "x": -7.0,
     "y": 1.0,
-    "width": 1939.0,
+    "width": 1934.0,
     "height": 844.0
   }
 }

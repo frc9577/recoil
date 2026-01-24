@@ -165,13 +165,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // This takes the current class selected in the drive chooser and attempts to
-  // initilize a command object from it & run it. TODO: Test this!
+  // initilize a command object from it & run it.
   public void initDefaultCommand(CommandXboxController Controller)
   {
     Class<?> driveClass = m_driveChooser.getSelected();
 
     try {
-      Object driveCommand = driveClass.getDeclaredConstructor().newInstance(this, Controller);
+      Object driveCommand = driveClass.getDeclaredConstructor(DriveSubsystem.class, CommandXboxController.class).newInstance(this, Controller);
       setDefaultCommand((Command) driveCommand);
 
       System.out.println(String.format("Loaded drive command \"%s\"!", driveClass.getName()));
@@ -181,6 +181,8 @@ public class DriveSubsystem extends SubsystemBase {
         "Failed to load drive command \"%s\"!", driveClass.getName()), 
         false
       );
+
+      e.printStackTrace();
     }
 
     // setDefaultCommand(new ArcadeDriveCommand(this, Controller));
