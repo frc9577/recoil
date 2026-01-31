@@ -21,6 +21,7 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -98,7 +99,7 @@ public class DriveSubsystem extends SubsystemBase {
     );
     
     // Gyro setup
-    m_gyro.zeroYaw();
+    m_gyro.reset();
 
     // Drive Chooser Init
     m_driveChooser.setDefaultOption("PID Arcade", ArcadeDriveCommand.class);
@@ -307,9 +308,10 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run 
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
-
+    Rotation2d yaw = m_gyro.getRotation2d();
+    
     m_poseEstimator.update(
-      m_gyro.getRotation2d(), 
+      yaw, 
       lPositionMeters,
       rPositionMeters
     );
