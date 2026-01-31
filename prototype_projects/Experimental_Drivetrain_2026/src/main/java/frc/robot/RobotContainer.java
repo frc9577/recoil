@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -159,6 +160,8 @@ public class RobotContainer {
       SmartDashboard.putNumber("Pose X (Meter)", estimatedPos.getX());
       SmartDashboard.putNumber("Pose Y (Meter)", estimatedPos.getY());
       SmartDashboard.putNumber("Pose Theta (Degrees)", estimatedPos.getRotation().getDegrees());
+    
+      SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
     }
 
     // Drive subsystem
@@ -180,18 +183,28 @@ public class RobotContainer {
     m_iTickCount++;
   }
 
-  public void teleopInit() {
-    configureDefaultCommands();
+  // Move to auto init for competition code.
+  public void enabledInit() {
+    double cameraYaw = m_limelightSubsystem.getRobotYaw();
+    
+    m_gyro.reset();
+    m_gyro.setAngleAdjustment(-cameraYaw);
+
     LimelightHelpers.SetIMUMode("limelight", 4);
   }
 
-  public void autoInit() {
-    if (m_driveSubsystem.isPresent()) {
-      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+  public void teleopInit() {
+    configureDefaultCommands();
+  }
 
-      m_gyro.reset();
-      driveSubsystem.resetPose(new Pose2d());
-    }
+  public void autoInit() {
+    // This causes issues when auto's do not reset odometry!!
+    // if (m_driveSubsystem.isPresent()) {
+    //   DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+
+    //   m_gyro.reset();
+    //   driveSubsystem.resetPose(new Pose2d());
+    // }
   }
 
   /**

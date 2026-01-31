@@ -309,7 +309,8 @@ public class DriveSubsystem extends SubsystemBase {
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
     Rotation2d yaw = m_gyro.getRotation2d();
-    
+    //m_gyro.getAngle()
+
     m_poseEstimator.update(
       yaw, 
       lPositionMeters,
