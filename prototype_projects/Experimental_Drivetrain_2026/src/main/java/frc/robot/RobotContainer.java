@@ -30,6 +30,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
 
 /**
@@ -41,6 +42,7 @@ import frc.robot.utils.AutoCommands;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Optional<DriveSubsystem> m_driveSubsystem;
+  private final LimelightSubsystem m_limelightSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -55,7 +57,7 @@ public class RobotContainer {
 
   private DifferentialDrivePoseEstimator m_PoseEstimator = new DifferentialDrivePoseEstimator(
     m_DriveKinematics, 
-    m_gyro.getRotation2d(), 
+    Rotation2d.fromDegrees(0.0), 
     0, 
     0, 
     new Pose2d(0.0, 8.0, new Rotation2d()),
@@ -84,7 +86,7 @@ public class RobotContainer {
     m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
 
     // Init the subsystems
-    //m_limelightSubsystem = getSubsystem(LimelightSubsystem.class, m_PoseEstimator);
+    m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_gyro);
     //m_exampleSubsystem = getSubsystem(ExampleSubsystem.class);
 
     // Init Auto
@@ -180,6 +182,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     configureDefaultCommands();
+    LimelightHelpers.SetIMUMode("limelight", 4);
   }
 
   public void autoInit() {

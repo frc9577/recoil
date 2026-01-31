@@ -20,6 +20,8 @@ public class LimelightSubsystem extends SubsystemBase {
   public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, AHRS gyro) {
     m_poseEstimator = poseEstimator;
     m_gyro = gyro;
+
+    LimelightHelpers.SetIMUMode("limelight", 1);
   }
 
   // This is copy and pasted from limelight's documentation for testing.
@@ -28,6 +30,9 @@ public class LimelightSubsystem extends SubsystemBase {
 
     LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    if (mt2 == null) { 
+      return;
+    }
     
     // if our angular velocity is greater than 720 degrees per second, ignore vision updates
     if(Math.abs(m_gyro.getRate()) > 720)
