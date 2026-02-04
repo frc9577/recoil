@@ -29,6 +29,8 @@ public class LimelightSubsystem extends SubsystemBase {
   public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, AHRS gyro) {
     m_poseEstimator = poseEstimator;
     m_gyro = gyro;
+
+    m_gyro.enableLogging(false);
   }
 
   public double getRobotYaw() {  

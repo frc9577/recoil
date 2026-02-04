@@ -183,14 +183,12 @@ public class RobotContainer {
     m_iTickCount++;
   }
 
+  public void disabledInit() {}
+
   // Move to auto init for competition code.
   public void enabledInit() {
-    double cameraYaw = m_limelightSubsystem.getRobotYaw();
-    
-    m_gyro.reset();
-    m_gyro.setAngleAdjustment(-cameraYaw);
-
     LimelightHelpers.SetIMUMode("limelight", 4);
+    m_gyro.enableLogging(true);
   }
 
   public void teleopInit() {
@@ -205,6 +203,15 @@ public class RobotContainer {
     //   m_gyro.reset();
     //   driveSubsystem.resetPose(new Pose2d());
     // }
+  }
+
+  // Gets called every disabled tick.
+  public void disabledPeriodic() {
+    double cameraYaw = m_limelightSubsystem.getRobotYaw();
+    
+    m_gyro.enableLogging(false);
+    m_gyro.reset();
+    m_gyro.setAngleAdjustment(-cameraYaw);
   }
 
   /**
