@@ -13,22 +13,33 @@ public class IntakeSubsystem extends SubsystemBase {
     // TODO: write this
   }
 
+  // Spins the shaft on the intake that will move fuel into the robot.
   public void start() {
     // TODO: implement start
   }
+
+  // Stops spinning the intake shaft.
   public void stop() {
     // TODO: implement stop
+
+  // Extends the intake mechanism over the bumpers and outside of the robot.
   }
   public void extend() {
     // TODO: implement extend
   }
+
+  // Retracts the intake mechanism over the bumpers and inside of the robot.
   public void retract() {
     // TODO: implement retract
   }
+
+  // Returns true if the intake shaft is spinning.
   public boolean isIntakeStarted() {
     // TODO: implement isIntakeStarted
     return false;
   }
+
+  // Returns true if the intake is extended outside of the frame perimiter.
   public boolean isIntakeExtended() {
     // TODO: implement isIntakeExtended
     return false;
