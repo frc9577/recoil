@@ -5,12 +5,33 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
     // TODO: write this
+  }
+
+  public void start() {
+    // TODO: implement start
+  }
+  public void stop() {
+    // TODO: implement stop
+  }
+  public void extend() {
+    // TODO: implement extend
+  }
+  public void retract() {
+    // TODO: implement retract
+  }
+  public boolean isIntakeStarted() {
+    // TODO: implement isIntakeStarted
+    return false;
+  }
+  public boolean isIntakeExtended() {
+    // TODO: implement isIntakeExtended
+    return false;
   }
 
   @Override
