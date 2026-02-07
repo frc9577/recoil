@@ -268,7 +268,7 @@ public class DriveSubsystem extends SubsystemBase {
     return MPS;
   }
 
-  // Gets the distance travled by the motor in meters
+  // Gets the distance traveled by the motor in meters
   public double getMotorPositionMeters(boolean bLeft) {
     double posRotations;
     if (bLeft == true) {
@@ -281,12 +281,12 @@ public class DriveSubsystem extends SubsystemBase {
     return posMeters;
   }
 
-  // Returns a robot relative ChassisSpeeds object based on the avrg linear velocity
-  // in meters per second and avrg anglear velocity in readians per second
-  // Currently we are asuming that their is no scale for the motors, we cannot find anywhere to set the scale.
+  // Returns a robot relative ChassisSpeeds object based on the average linear velocity
+  // in meters per second and average angular velocity in radians per second.
+  // Currently we are assuming that there is no scale for the motors, we cannot find anywhere to set the scale.
   public ChassisSpeeds getRobotRelativeSpeeds()
   {
-    // Linear Velocity in meters per second
+    // Linear velocity in meters per second
     double leftMPS = getMotorSpeedMPS(true);
     double rightMPS = getMotorSpeedMPS(false);
 
