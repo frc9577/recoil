@@ -16,7 +16,8 @@ package frc.robot;
 public final class Constants {
 
   public static class LauncherConstants {
-    public static final int kMotorCANID = 40;
+    public static final int kMotorCANID1= 41;
+    public static final int kMotorCANID2 = 40;
 
     // These numbers came from the ctre example then tweaked
     public static final double kS = 0.1; // A velocity target of 1 rps results in xV output
