@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.IMUData;
+import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -67,7 +70,7 @@ public class RobotContainer {
   );
 
   // Smartdashboard Objects
-  private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> m_autoChooser;
   private final Field2d m_field = new Field2d();
 
   // Factorys
@@ -102,11 +105,27 @@ public class RobotContainer {
 
   private void configureAutos() {
     // Init Autos (/home/lvuser/deploy/pathplanner/autos)
-    AutoCommands.getAutoCommands(m_driveSubsystem);
+    // AutoCommands.getAutoCommands(m_driveSubsystem);
 
-    // Init Chooser
-    autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // // Init Chooser
+    // m_autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
+    m_autoChooser = new SendableChooser<Command>();
+
+    // Custom Autos
+    m_autoChooser.addOption(
+      "On-Fly Forward 2m", 
+      new DriveForwardFromPos(m_PoseEstimator, 2)
+    );
+
+    // Path Planner Auto's
+    ArrayList<String> autoNames = AutoCommands.getAutoNames();
+    for (String autoName : autoNames) {
+      PathPlannerAuto auto = new PathPlannerAuto(autoName);
+      m_autoChooser.addOption(autoName, auto);
+    }
+
+    // Add to dashboard
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
   private void configureDefaultCommands() {
@@ -220,6 +239,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 }
