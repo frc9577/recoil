@@ -2,6 +2,35 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+//
+// CANIDs and other hardware resource IDs and channels are defined in
+// the robot specification document at https://docs.google.com/document/d/1A_Mh49vCdzeZFZrrAAlE3kgAf9tdAOItZ7-rJoq3Ufs/edit?usp=sharing
+//
+// Current CAN IDs:
+//
+//   01 - Pneumatics hub
+//   10 - Drive left primary
+//   11 - Drive left follower
+//   20 - Drive right primary
+//   21 - Drive right follower
+//   30 - Intake roller
+//   40 - Launcher flywheel primary motor  
+//   41 - Launcher flywheel secondary motor
+//   42 - Launcher lift belt motor
+//   50 - Indexer motor
+//   51 - Bulk move belt motor
+//
+// Current DIO Channels:
+//
+// 0 - Upper fuel sensor (launcher subsystem)
+// 1 - Lower fuel sensor (indexer subsystem)
+//
+// Current Solenoid Channels:
+//
+// 0 - Intake retract (extend is passive state via spring) 
+// 1 - Climb L1 Left
+// 2 - Climb L1 Right
+ 
 package frc.robot;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -92,5 +121,47 @@ public final class Constants {
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;
+  }
+
+  public static class IntakeConstants {
+    public static int kIntakeMotorCANID = 30;
+
+    public static int kSolenoidChannel = 0;
+
+    // Raw intake motor speed in range [-1.0,1.0]
+    public static double kIntakeMotorSpeed = 0.3;
+
+    // Solenoid states required to extend and retract the intake mechanism.
+    public static int     kIntakeSolenoid = 1;
+    public static boolean kIntakeExtend   = true;
+    public static boolean kIntakeRetract  = !kIntakeExtend;
+  }
+
+  public static class LauncherConstants {
+    public static int kLauncherFlywheelMotor1CANID = 40; 
+    public static int kLauncherFlywheelMotor2CANID = 41;
+    public static int kLauncherLiftMotorCANID      = 42;
+
+    // Beam break sensor to detect fuel at the top of the lift.
+    public static final int kUpperFuelSensorChannel = 0;
+    public static final boolean kUpperFuelSensorIsEmpty = false;
+  }
+
+  public static class IndexerBulkConstants {
+    public static int kIndexerMotorCANID  = 50;
+    public static int kBulkMoveMotorCANID = 51;
+
+    // Raw motor speeds in range [-1.0,1.0]
+    public static final double kBulkMoveMotorSpeed = 0.3;
+    public static double kIndexerMotorSpeed = 0.3;
+
+    // Beam break sensor to detect fuel at the indexer.
+    public static final int kLowerFuelSensorChannel = 1;
+    public static final boolean kLowerFuelSensorIsEmpty = false;
+  }
+
+  public static class ClimbL1Constants {
+    public static int kLeftSolenoidChannel  = 1;
+    public static int kRightSolenoidChannel = 2;
   }
 }
