@@ -69,6 +69,7 @@ public class Robot extends TimedRobot {
       System.out.println("Could not apply configs 2, error code: " + status.toString());
     }
 
+    SmartDashboard.putNumber("desired RPS", 0);
     SmartDashboard.getNumber("desired RPS", 0);
     SmartDashboard.putNumber("current RPS1", m_fx1.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("current RPS2", m_fx2.getVelocity().getValueAsDouble());
