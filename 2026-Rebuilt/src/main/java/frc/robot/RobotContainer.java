@@ -27,8 +27,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.PneumaticsConstants;
 import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
@@ -53,6 +55,7 @@ public class RobotContainer {
   private final Optional<ClimbL1Subsystem> m_climbL1Subsystem;
   private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
   private final Optional<LauncherSubsystem> m_launcherSubsystem;
+  private final Optional<PneumaticHub> m_pneumaticHub;
   private final LimelightSubsystem m_limelightSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -89,6 +92,16 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
+    // Init pneumatics system.
+    m_pneumaticHub = getSubsystem(PneumaticHub.class);
+    if (m_pneumaticHub.isPresent())
+    {
+      PneumaticHub hub = m_pneumaticHub.get();
+      hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+                                 PneumaticsConstants.kMaxPneumaticsPressure);
+    }
+
     // Init DriveSubsystem
     Optional<TalonFX> rightLead = m_TalonFXFactory.construct(DrivetrainConstants.kRightMotorCANID);
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
@@ -221,6 +234,14 @@ public class RobotContainer {
       SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
     }
 
+    // Pneumatics compressor
+    if(m_pneumaticHub.isPresent() && ((m_iTickCount % PneumaticsConstants.kTicksPerUpdate) == 0))
+    {
+      PneumaticHub hub = m_pneumaticHub.get();
+      SmartDashboard.putNumber("Pressure", hub.getPressure(0));
+      SmartDashboard.putBoolean("Compressor Running", hub.getCompressor());
+    }
+    
     m_iTickCount++;
   }
 

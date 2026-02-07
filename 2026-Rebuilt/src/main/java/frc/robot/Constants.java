@@ -78,6 +78,10 @@ public final class Constants {
 
   public static class PneumaticsConstants {
     public static final int kPneumaticsHubCANID = 1;
+    public static final double kMinPneumaticsPressure = 80.0;
+    public static final double kMaxPneumaticsPressure = 120.0;
+
+    public static final int kTicksPerUpdate = 5;
   }
 
   public static class OperatorConstants {
