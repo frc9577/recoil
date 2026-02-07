@@ -1,0 +1,14 @@
+Test 1:
+Auto: SmoothTurnReverseS
+Rotation Off: 0 degrees (essentially)
+Pos Off: 8 inch
+
+Test 2:
+Auto: SmoothTurnReverseS
+Rotation Off: 0 degrees (essentially)
+Pos Off: 8 inch
+
+Test 3:
+Auto: SmoothTurnReverseS
+Rotation Off: 0 degrees (essentially)
+Pos Off: 8 inch
