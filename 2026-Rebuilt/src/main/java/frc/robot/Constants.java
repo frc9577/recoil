@@ -76,6 +76,10 @@ public final class Constants {
     // populate on init possibility end here
   }
 
+  public static class PneumaticsConstants {
+    public static final int kPneumaticsHubCANID = 1;
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriverControllerDeadband = 0.02; // Exclusive
@@ -163,5 +167,8 @@ public final class Constants {
   public static class ClimbL1Constants {
     public static int kLeftSolenoidChannel  = 1;
     public static int kRightSolenoidChannel = 2;
+
+    public static boolean kClimbL1Raise  = true;
+    public static boolean kClimbL1Lower  = !kClimbL1Raise;
   }
 }
