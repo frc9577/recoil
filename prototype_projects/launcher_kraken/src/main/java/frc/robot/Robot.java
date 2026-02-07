@@ -22,7 +22,8 @@ import frc.robot.Constants.LauncherConstants;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final TalonFX m_fx = new TalonFX(LauncherConstants.kMotorCANID);
+  private final TalonFX m_fx1 = new TalonFX(LauncherConstants.kMotorCANID1);
+  private final TalonFX m_fx2 = new TalonFX(LauncherConstants.kMotorCANID2);
 
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, use slot 0 */
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
+    
 
     /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
       configs.Slot0.kS = LauncherConstants.kS; // To account for friction, add 0.1 V of static feedforward
@@ -53,15 +55,23 @@ public class Robot extends TimedRobot {
     /* Retry config apply up to 5 times, report if failure */
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_fx.getConfigurator().apply(configs);
+      status = m_fx1.getConfigurator().apply(configs);
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
+      System.out.println("Could not apply configs 1, error code: " + status.toString());
+    }
+    for (int i = 0; i < 5; ++i) {
+      status = m_fx2.getConfigurator().apply(configs);
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs 2, error code: " + status.toString());
     }
 
-    SmartDashboard.putNumber("desired RPS", 0);
-    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
+    SmartDashboard.getNumber("desired RPS", 0);
+    SmartDashboard.putNumber("current RPS1", m_fx1.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("current RPS2", m_fx2.getVelocity().getValueAsDouble());
   }
 
   @Override
@@ -84,11 +94,15 @@ public class Robot extends TimedRobot {
 
     double desiredRotationsPerSecond = joyValue * (6000/60); // Control motor from -6000 to +6000 rpm
 
-    /* Use velocity voltage */
-    m_fx.setControl(m_velocityVoltage.withVelocity(desiredRotationsPerSecond));
+    desiredRotationsPerSecond = SmartDashboard.getNumber("desired RPS", desiredRotationsPerSecond);
+    SmartDashboard.putNumber("set RPS", desiredRotationsPerSecond);
 
-    SmartDashboard.putNumber("desired RPS", desiredRotationsPerSecond);
-    SmartDashboard.putNumber("current RPS", m_fx.getVelocity().getValueAsDouble());
+    /* Use velocity voltage */
+    m_fx1.setControl(m_velocityVoltage.withVelocity(desiredRotationsPerSecond));
+    m_fx2.setControl(m_velocityVoltage.withVelocity(-desiredRotationsPerSecond));
+
+    SmartDashboard.putNumber("current RPS1", m_fx1.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("current RPS2", m_fx2.getVelocity().getValueAsDouble());
   }
 
   @Override
