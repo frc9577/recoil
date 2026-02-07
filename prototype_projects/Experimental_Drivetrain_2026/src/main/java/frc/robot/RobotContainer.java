@@ -10,6 +10,7 @@ import java.util.Optional;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -25,12 +26,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.commands.DriveForwardFromPos;
+import frc.robot.commands.RotateToRotation2D;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -68,6 +71,13 @@ public class RobotContainer {
     m_drivetrainError,
     m_limelightError
   );
+
+  PathConstraints m_constraints = new PathConstraints(
+          1.0, 
+          1.0, 
+          2 * Math.PI,
+          4 * Math.PI
+  ); // The constraints for this path.
 
   // Smartdashboard Objects
   private SendableChooser<Command> m_autoChooser;
@@ -117,11 +127,33 @@ public class RobotContainer {
       new DriveForwardFromPos(m_PoseEstimator, 2)
     );
 
+    m_autoChooser.addOption(
+      "Rotate to 0", 
+      new RotateToRotation2D(
+        m_driveSubsystem.get(), 
+        m_PoseEstimator, 
+        new Rotation2d(0.0), 
+        1
+      )
+    );
+
     // Path Planner Auto's
     ArrayList<String> autoNames = AutoCommands.getAutoNames();
     for (String autoName : autoNames) {
-      PathPlannerAuto auto = new PathPlannerAuto(autoName);
-      m_autoChooser.addOption(autoName, auto);
+      PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
+      Pose2d startingPose = plannedAuto.getStartingPose();
+
+      Command rotationCommand = new RotateToRotation2D(
+        m_driveSubsystem.get(), 
+        m_PoseEstimator, 
+        startingPose.getRotation(), 
+        1
+      );
+
+      Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
+      Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotationCommand);//, plannedAuto);
+
+      m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
     }
 
     // Add to dashboard
@@ -167,6 +199,9 @@ public class RobotContainer {
     // Non-Subsystem Specific Stuff
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putNumber("Target Rotation", 0);
+    SmartDashboard.putNumber("Target Angle Diff Abs", 0);
+    SmartDashboard.putNumber("Rotation Speed", 0);
   }
 
   // This function is called every 20mS.  
