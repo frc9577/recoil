@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
@@ -33,6 +34,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.commands.DriveForwardFromPos;
+import frc.robot.commands.POTFtoPoint;
 import frc.robot.commands.RotateToRotation2D;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
@@ -121,6 +123,15 @@ public class RobotContainer {
     // m_autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
     m_autoChooser = new SendableChooser<Command>();
 
+    // Named Commands
+    NamedCommands.registerCommand("RotateTo-180", new RotateToRotation2D(
+        m_driveSubsystem.get(), 
+        m_PoseEstimator, 
+        Rotation2d.fromDegrees(180), 
+        1
+      )
+    );
+
     // Custom Autos
     m_autoChooser.addOption(
       "On-Fly Forward 2m", 
@@ -137,21 +148,29 @@ public class RobotContainer {
       )
     );
 
+    m_autoChooser.addOption(
+      "On-The-Fly to (2, 4.837) -90", 
+      new POTFtoPoint(
+        m_PoseEstimator, 
+        new Pose2d(2, 4.837, Rotation2d.fromDegrees(-90))
+      )
+    );
+
     // Path Planner Auto's
     ArrayList<String> autoNames = AutoCommands.getAutoNames();
     for (String autoName : autoNames) {
       PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
       Pose2d startingPose = plannedAuto.getStartingPose();
 
-      Command rotationCommand = new RotateToRotation2D(
+      Command rotateToStartRot = new RotateToRotation2D(
         m_driveSubsystem.get(), 
-        m_PoseEstimator, 
+        m_PoseEstimator,
         startingPose.getRotation(), 
         1
       );
 
       Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
-      Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotationCommand);//, plannedAuto);
+      Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
 
       m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
     }
