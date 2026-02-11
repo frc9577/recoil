@@ -22,17 +22,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.IMUData;
+import frc.robot.commands.AimAtHub;
 import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.commands.POTFtoPoint;
 import frc.robot.commands.RotateToRotation2D;
@@ -91,6 +95,7 @@ public class RobotContainer {
 
   // Keep track of time for SmartDashboard updates.
   static int m_iTickCount = 0;
+  private boolean m_isRed = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -132,6 +137,14 @@ public class RobotContainer {
       )
     );
 
+    NamedCommands.registerCommand("AimToHub", new AimAtHub(
+        m_driveSubsystem.get(), 
+        m_PoseEstimator, 
+        2.0, 
+        m_isRed
+      )
+    );
+
     // Custom Autos
     m_autoChooser.addOption(
       "On-Fly Forward 2m", 
@@ -166,7 +179,7 @@ public class RobotContainer {
         m_driveSubsystem.get(), 
         m_PoseEstimator,
         startingPose.getRotation(), 
-        1
+        2.0
       );
 
       Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
@@ -211,6 +224,17 @@ public class RobotContainer {
     //   // cancelling on release.
     //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
     // }
+
+    m_driverController.y().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
+    m_driverController.x().onTrue(
+      new AimAtHub(
+        m_driveSubsystem.get(), 
+        m_PoseEstimator, 
+        2.0, 
+        m_isRed
+      )
+    );
   }
 
   // Populate the SmartDashboard on robot init.
@@ -260,6 +284,11 @@ public class RobotContainer {
 
   // Move to auto init for competition code.
   public void enabledInit() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      m_isRed = alliance.get() == DriverStation.Alliance.Red;
+    }
+
     LimelightHelpers.SetIMUMode("limelight", 4);
     m_gyro.enableLogging(true);
   }
