@@ -51,7 +51,7 @@ public class RotateToRotation2D extends Command {
 
     double speed = ((Math.pow(speedExp, targetDiff)-1)/(Math.pow(speedExp, 180)-1));
     speed *= m_maxSpeed;
-    speed = Math.max(speed, 0.2);
+    speed = Math.max(speed, 0.3);
     SmartDashboard.putNumber("Rotation Speed", speed);
 
     if (changeInRotation.getDegrees() <= 0) {
