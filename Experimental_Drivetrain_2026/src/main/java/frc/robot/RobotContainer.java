@@ -35,7 +35,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.commands.POTFtoPoint;
@@ -95,7 +94,6 @@ public class RobotContainer {
 
   // Keep track of time for SmartDashboard updates.
   static int m_iTickCount = 0;
-  private boolean m_isRed = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -141,7 +139,7 @@ public class RobotContainer {
         m_driveSubsystem.get(), 
         m_PoseEstimator, 
         2.0, 
-        m_isRed
+        isRed()
       )
     );
 
@@ -232,7 +230,7 @@ public class RobotContainer {
         m_driveSubsystem.get(), 
         m_PoseEstimator, 
         2.0, 
-        m_isRed
+        isRed()
       )
     );
   }
@@ -280,15 +278,21 @@ public class RobotContainer {
     m_iTickCount++;
   }
 
+  // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
+  public boolean isRed() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+    } else {
+      System.out.println("Could not fetch alliance! Defaulting to blue!");
+      return false;
+    }
+  }
+
   public void disabledInit() {}
 
   // Move to auto init for competition code.
   public void enabledInit() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      m_isRed = alliance.get() == DriverStation.Alliance.Red;
-    }
-
     LimelightHelpers.SetIMUMode("limelight", 4);
     m_gyro.enableLogging(true);
   }
