@@ -41,6 +41,7 @@ import frc.robot.commands.AimAtHub;
 import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.commands.POTFtoPoint;
 import frc.robot.commands.RotateToRotation2D;
+import frc.robot.commands.TurnLeftTest;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -91,8 +92,8 @@ public class RobotContainer {
   PathConstraints m_constraints = new PathConstraints(
           1.0, 
           1.0, 
-          2 * Math.PI,
-          4 * Math.PI
+          (1/2) * Math.PI, // 90 degrees/s
+          (1/2) * Math.PI
   ); // The constraints for this path.
 
   // Smartdashboard Objects
@@ -259,8 +260,13 @@ public class RobotContainer {
     //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
     // }
 
+    // Cancel All Active Commands
     m_driverController.y().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
+    // Turn left to produce stall error.
+    m_driverController.b().onTrue(new TurnLeftTest(m_driveSubsystem.get()));
+
+    // Aim to Hub
     m_driverController.x().onTrue(
       new AimAtHub(
         m_driveSubsystem.get(), 
