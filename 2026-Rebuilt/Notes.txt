@@ -12,3 +12,8 @@ Test 3:
 Auto: SmoothTurnReverseS
 Rotation Off: 0 degrees (essentially)
 Pos Off: 8 inch
+
+
+Pose for distance testing:
+X: 1.52
+Y: 4.26

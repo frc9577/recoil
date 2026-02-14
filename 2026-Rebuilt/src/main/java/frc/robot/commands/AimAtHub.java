@@ -3,21 +3,17 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
-
+import frc.robot.utils.HubUtils;
 /** An example command that uses an example subsystem. */
 public class AimAtHub extends Command {
   private final DriveSubsystem m_driveSubsystem;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final double m_maxSpeed;
   private final BooleanSupplier m_isRed;
-
-  private final Pose2d m_BlueCenter = new Pose2d(4.607, 4.035, new Rotation2d());
-  private final Pose2d m_RedCenter = new Pose2d();
 
   /**
    * Creates a new AimAtHub.
@@ -40,18 +36,7 @@ public class AimAtHub extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Pose2d targetPose;
-    if (m_isRed.getAsBoolean()) {
-      targetPose = m_RedCenter;
-    } else {
-      targetPose = m_BlueCenter;
-    }
-
-    Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
-    double dY = targetPose.getY() - currentPose.getY();
-    double dX = targetPose.getX() - currentPose.getX();
-
-    Rotation2d targetRotation = new Rotation2d(Math.atan2(dY, dX));
+    Rotation2d targetRotation = HubUtils.getRobotToHubAngle(m_poseEstimator, m_isRed);
     RotateToRotation2D aimCommand = new RotateToRotation2D(
       m_driveSubsystem, 
       m_poseEstimator, 

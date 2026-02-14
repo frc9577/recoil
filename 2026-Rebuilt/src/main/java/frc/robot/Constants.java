@@ -36,6 +36,8 @@ package frc.robot;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 
 /**
@@ -47,6 +49,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class FieldConstants {
+    public static final Pose2d kBlueHubCenter = new Pose2d(4.607, 4.035, new Rotation2d());
+    public static final Pose2d kRedHubCenter = new Pose2d();
+  }
+
   public static class AutoConstants {
     public static final double kMaxDriveVelocityMPS = 40.0; // true max speed of the robot mps
     public static final double kWheelCOF = 1.0; // no data for this, bsed it

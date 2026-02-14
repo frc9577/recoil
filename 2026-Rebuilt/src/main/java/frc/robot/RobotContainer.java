@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -52,6 +53,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
+import frc.robot.utils.HubUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -93,8 +95,8 @@ public class RobotContainer {
   PathConstraints m_constraints = new PathConstraints(
           1.0, 
           1.0, 
-          (1/2) * Math.PI, // 90 degrees/s
-          (1/2) * Math.PI
+            (1/2) * Math.PI,
+            1 * Math.PI
   ); // The constraints for this path.
 
   // Smartdashboard Objects
@@ -226,6 +228,11 @@ public class RobotContainer {
 
     // Add to dashboard
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
+
+    // Field wigit update
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      m_field.getObject("path").setPoses(poses);
+    });
   }
 
   private void configureDefaultCommands() {
@@ -286,6 +293,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("Target Rotation", 0);
     SmartDashboard.putNumber("Target Angle Diff Abs", 0);
     SmartDashboard.putNumber("Rotation Speed", 0);
+
+    SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
   }
 
   // This function is called every 20mS.  
@@ -300,6 +309,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("Pose Theta (Degrees)", estimatedPos.getRotation().getDegrees());
     
       SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
+      SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
     }
 
     // Drive subsystem
