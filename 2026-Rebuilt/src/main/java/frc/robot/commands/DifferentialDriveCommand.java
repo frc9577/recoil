@@ -48,9 +48,6 @@ public class DifferentialDriveCommand extends Command {
       rightSpeed = 0;
     }
 
-    leftSpeed = (leftSpeed < 0) ? (-leftSpeed * leftSpeed) : (leftSpeed * leftSpeed);
-    rightSpeed = (rightSpeed < 0) ? (-rightSpeed * rightSpeed) : (rightSpeed * rightSpeed);
-
     leftSpeed  *= DrivetrainConstants.kMaxVelocityMPS;
     rightSpeed *= DrivetrainConstants.kMaxVelocityMPS;
 

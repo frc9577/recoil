@@ -120,6 +120,11 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Speed (RPS)", getMotorSpeedRPS(true));
     SmartDashboard.putNumber("Right Speed (RPS)", getMotorSpeedRPS(false));
 
+    SmartDashboard.putNumber("Left Set (-1-->1)", 0);
+    SmartDashboard.putNumber("Right Set (-1-->1)", 0);
+    SmartDashboard.putNumber("Left Get (-1-->1)", 0);
+    SmartDashboard.putNumber("Right Get (-1-->1)", 0);  
+
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
   }
 
@@ -226,6 +231,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   // pass in -1 to 1 for the motor speed with no closed loop control.
   public void setDifferentialSpeedNoPid(double left, double right) {
+    SmartDashboard.putNumber("Left Set (-1-->1)", left);
+    SmartDashboard.putNumber("Right Set (-1-->1)", right);  
+
     m_leftMotor.set(left);
     m_rightMotor.set(right);
   }
@@ -316,6 +324,9 @@ public class DriveSubsystem extends SubsystemBase {
       lPositionMeters,
       rPositionMeters
     );
+
+    SmartDashboard.putNumber("Left Get (-1-->1)", m_leftMotor.get());
+    SmartDashboard.putNumber("Right Get (-1-->1)", m_rightMotor.get()); 
   }
 
   @Override

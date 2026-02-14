@@ -91,9 +91,9 @@
           },
           {
             "title": "Field",
-            "x": 384.0,
+            "x": 640.0,
             "y": 0.0,
-            "width": 640.0,
+            "width": 512.0,
             "height": 384.0,
             "type": "Field",
             "properties": {
@@ -152,7 +152,7 @@
           },
           {
             "title": "Pose X (Meter)",
-            "x": 1024.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -166,7 +166,7 @@
           },
           {
             "title": "Pose Y (Meter)",
-            "x": 1024.0,
+            "x": 1152.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -180,7 +180,7 @@
           },
           {
             "title": "Pose Theta (Degrees)",
-            "x": 1024.0,
+            "x": 1152.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -190,6 +190,19 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "limelight",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]

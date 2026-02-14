@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ReverseIntoCorner"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimToHub"
+            "pathName": "ExamplePathBackwards"
           }
         }
       ]
