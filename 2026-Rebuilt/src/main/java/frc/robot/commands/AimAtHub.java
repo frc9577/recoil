@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,7 +14,7 @@ public class AimAtHub extends Command {
   private final DriveSubsystem m_driveSubsystem;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final double m_maxSpeed;
-  private final boolean m_isRed;
+  private final BooleanSupplier m_isRed;
 
   private final Pose2d m_BlueCenter = new Pose2d(4.607, 4.035, new Rotation2d());
   private final Pose2d m_RedCenter = new Pose2d();
@@ -25,7 +27,7 @@ public class AimAtHub extends Command {
    * @param maxSpeed The max speed the robot is allowed to go in the rotation.
    * @param isRed Does the robot need to point tword the red or blue goal, default is blue.
    */
-  public AimAtHub(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, double maxSpeed, boolean isRed) 
+  public AimAtHub(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, double maxSpeed, BooleanSupplier isRed) 
   {
     m_driveSubsystem = driveSubsystem;
     m_poseEstimator = poseEstimator;
@@ -39,7 +41,7 @@ public class AimAtHub extends Command {
   @Override
   public void initialize() {
     Pose2d targetPose;
-    if (m_isRed) {
+    if (m_isRed.getAsBoolean()) {
       targetPose = m_RedCenter;
     } else {
       targetPose = m_BlueCenter;

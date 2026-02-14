@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -176,7 +177,7 @@ public class RobotContainer {
         m_driveSubsystem.get(), 
         m_PoseEstimator, 
         2.0, 
-        isRed()
+        isRed
       )
     );
 
@@ -272,7 +273,7 @@ public class RobotContainer {
         m_driveSubsystem.get(), 
         m_PoseEstimator, 
         2.0, 
-        isRed()
+        isRed
       )
     );
   }
@@ -329,7 +330,7 @@ public class RobotContainer {
   }
 
   // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
-  public boolean isRed() {
+  public BooleanSupplier isRed = () -> {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       return alliance.get() == DriverStation.Alliance.Red;
@@ -337,7 +338,7 @@ public class RobotContainer {
       System.out.println("Could not fetch alliance! Defaulting to blue!");
       return false;
     }
-  }
+  };
 
   public void disabledInit() {}
 
