@@ -104,7 +104,6 @@ public class RobotContainer {
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_gyro);
     m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
     m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
-    m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
 
     // Init pneumatics system and subsystems that rely upon it.
     m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
@@ -115,13 +114,13 @@ public class RobotContainer {
                                  PneumaticsConstants.kMaxPneumaticsPressure);
 
       m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
-
-      // TODO: If intake ends up using pneumatics, move its construction here too.
+      m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
     }
     else
     {
-      // If there are no pneumatics, there's no climb.
+      // If there are no pneumatics, there's no climb or intake.
       m_climbL1Subsystem = Optional.empty();
+      m_intakeSubsystem  = Optional.empty();
     }
 
     // Init Auto
