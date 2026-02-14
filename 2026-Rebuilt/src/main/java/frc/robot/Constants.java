@@ -146,9 +146,12 @@ public final class Constants {
   }
 
   public static class LauncherConstants {
-    public static int kLauncherFlywheelMotor1CANID = 40; 
-    public static int kLauncherFlywheelMotor2CANID = 41;
-    public static int kLauncherLiftMotorCANID      = 42;
+    public static final int kLauncherFlywheelMotor1CANID = 40; 
+    public static final int kLauncherFlywheelMotor2CANID = 41;
+    public static final int kLauncherLiftMotorCANID      = 42;
+
+    // The speed, in range [-1.0, 1.0], to run the lift motor when started.
+    public static final double kLiftMotorSpeed = 0.3;
 
     // Beam break sensor to detect fuel at the top of the lift.
     public static final int kUpperFuelSensorChannel = 0;

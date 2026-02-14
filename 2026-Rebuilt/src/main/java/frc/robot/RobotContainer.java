@@ -41,6 +41,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
+import frc.robot.utils.PneumaticHubWrapper;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -55,7 +56,7 @@ public class RobotContainer {
   private final Optional<ClimbL1Subsystem> m_climbL1Subsystem;
   private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
   private final Optional<LauncherSubsystem> m_launcherSubsystem;
-  private final Optional<PneumaticHub> m_pneumaticHub;
+  private final Optional<PneumaticHubWrapper> m_pneumaticHub;
   private final LimelightSubsystem m_limelightSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -92,16 +93,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    // Init pneumatics system.
-    m_pneumaticHub = getSubsystem(PneumaticHub.class);
-    if (m_pneumaticHub.isPresent())
-    {
-      PneumaticHub hub = m_pneumaticHub.get();
-      hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
-                                 PneumaticsConstants.kMaxPneumaticsPressure);
-    }
-
     // Init DriveSubsystem
     Optional<TalonFX> rightLead = m_TalonFXFactory.construct(DrivetrainConstants.kRightMotorCANID);
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
@@ -109,12 +100,29 @@ public class RobotContainer {
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
     m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
 
-    // Init the subsystems
+    // Init the subsystems that don't require pneumatics.
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_gyro);
     m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
     m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
-    m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
     m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
+
+    // Init pneumatics system and subsystems that rely upon it.
+    m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
+    if (m_pneumaticHub.isPresent())
+    {
+      PneumaticHub hub = m_pneumaticHub.get();
+      hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+                                 PneumaticsConstants.kMaxPneumaticsPressure);
+
+      m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
+
+      // TODO: If intake ends up using pneumatics, move its construction here too.
+    }
+    else
+    {
+      // If there are no pneumatics, there's no climb.
+      m_climbL1Subsystem = Optional.empty();
+    }
 
     // Init Auto
     configureAutos();

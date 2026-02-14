@@ -12,17 +12,25 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.LauncherConstants;
 
 public class LauncherSubsystem extends SubsystemBase {
-  private double m_targetSpeedrpm;
-  private boolean m_liftRunning;
+  private double m_targetSpeedrpm = 0.0;
+  private boolean m_liftRunning = false;
   private int m_tickCount = 0;
 
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
+  private SparkMax m_motorLift;
+
+  private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, use slot 0 */
@@ -32,13 +40,21 @@ public class LauncherSubsystem extends SubsystemBase {
      * @throws Exception */
     public LauncherSubsystem() throws Exception {
 
+    m_motorLift     = new SparkMax(LauncherConstants.kLauncherLiftMotorCANID, MotorType.kBrushless);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
 
-    // Check that the motors exist and throw an exception if they don't.
+    // Check that the launcher motors exist and throw an exception if they don't.
     if(!m_motorLeader.isConnected() || !m_motorFollower.isConnected())
     {
       throw new Exception("At least one launcher motor is not present!");
+    }
+
+    // Ensure that the lift motor is present.
+    SparkBase.Faults Faults = m_motorLift.getFaults();
+    if(Faults.can || Faults.firmware || Faults.gateDriver)
+    {
+      throw new Exception("Lift motor is not present or is reporting a fault!");
     }
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
@@ -92,6 +108,9 @@ public class LauncherSubsystem extends SubsystemBase {
     m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
                    LauncherConstants.kMotorsDriveInOppositeDirections ? 
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
+
+    // Configure the fuel sensor.
+
   }
 
   //
@@ -133,7 +152,8 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void startLift()
   {
-    // TODO: Populate this!
+    m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
+    m_liftRunning = true;
   }
 
   //
@@ -141,7 +161,15 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void stopLift()
   {
-    // TODO: Populate this!
+    m_motorLift.set(0.0);
+    m_liftRunning = false;
+  }
+
+  // 
+  // Determine whether or not the lift motor is running.
+  public boolean isLiftMotorStarted()
+  {
+    return m_liftRunning;
   }
 
   //
@@ -150,8 +178,8 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public boolean isFuelAtLauncher()
   {
-    // TODO: Populate this!
-    return false;
+        boolean sensorRead = m_Sensor.get();
+        return (sensorRead == LauncherConstants.kUpperFuelSensorIsEmpty) ? false : true;
   }
 
   @Override
