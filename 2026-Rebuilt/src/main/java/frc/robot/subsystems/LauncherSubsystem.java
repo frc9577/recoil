@@ -30,6 +30,7 @@ public class LauncherSubsystem extends SubsystemBase {
   private double m_targetSpeedrpm = 0.0;
   private boolean m_liftRunning = false;
   private int m_tickCount = 0;
+  private boolean m_configValid = false;
 
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
@@ -115,7 +116,9 @@ public class LauncherSubsystem extends SubsystemBase {
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
 
     // Configure the fuel sensor.
+    // TODO: Add this.
 
+    m_configValid = true;
   }
 
   //
@@ -192,7 +195,7 @@ public class LauncherSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     m_tickCount++;
 
-    if((m_tickCount % LauncherConstants.kTicksPerUpdate) == 0)
+    if(m_configValid && ((m_tickCount % LauncherConstants.kTicksPerUpdate) == 0))
     {
         double speedRPS = m_motorLeader.getVelocity().getValueAsDouble();
         SmartDashboard.putNumber("Launcher RPM", speedRPS * 60.0);

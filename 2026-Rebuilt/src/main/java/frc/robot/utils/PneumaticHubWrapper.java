@@ -4,8 +4,9 @@
 //
 package frc.robot.utils;
 
-import edu.wpi.first.hal.REVPHFaults;
+import edu.wpi.first.hal.REVPHStickyFaults;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.hal.REVPHVersion;
 
 public class PneumaticHubWrapper extends PneumaticHub {
     private PneumaticHub m_Hub;
@@ -32,8 +33,8 @@ public class PneumaticHubWrapper extends PneumaticHub {
 
     public boolean isAvailable()
     {
-        REVPHFaults Faults = m_Hub.getFaults();
+        REVPHVersion Version = m_Hub.getVersion();
 
-        return !(Faults.CanWarning || Faults.HardwareFault);
+        return (Version.firmwareMajor == 0) ? false : true;
     }
 }
