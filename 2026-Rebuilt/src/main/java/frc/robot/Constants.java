@@ -27,7 +27,7 @@
 //
 // Current Solenoid Channels:
 //
-// 0 - Intake retract (extend is passive state via spring) 
+// 0 - Intake retract
 // 1 - Climb L1 Left
 // 2 - Climb L1 Right
  
@@ -37,6 +37,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -77,6 +78,7 @@ public final class Constants {
   }
 
   public static class PneumaticsConstants {
+    public static final PneumaticsModuleType kHubType = PneumaticsModuleType.REVPH;
     public static final int kPneumaticsHubCANID = 1;
     public static final double kMinPneumaticsPressure = 80.0;
     public static final double kMaxPneumaticsPressure = 120.0;
@@ -134,13 +136,11 @@ public final class Constants {
   public static class IntakeConstants {
     public static int kIntakeMotorCANID = 30;
 
-    public static int kSolenoidChannel = 0;
-
     // Raw intake motor speed in range [-1.0,1.0]
     public static double kIntakeMotorSpeed = 0.3;
 
     // Solenoid states required to extend and retract the intake mechanism.
-    public static int     kIntakeSolenoid = 1;
+    public static int     kIntakeSolenoid = 0;
     public static boolean kIntakeExtend   = true;
     public static boolean kIntakeRetract  = !kIntakeExtend;
   }

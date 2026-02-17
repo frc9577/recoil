@@ -22,10 +22,10 @@ public class ClimbL1Subsystem extends SubsystemBase {
     // if underlying hardware is not present and, hence, allow our Optional system to
     // work.
     m_LeftSolenoid  = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsModuleType.REVPH, 
+                                   PneumaticsConstants.kHubType, 
                                    ClimbL1Constants.kLeftSolenoidChannel);
     m_RightSolenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsModuleType.REVPH, 
+                                   PneumaticsConstants.kHubType,
                                    ClimbL1Constants.kLeftSolenoidChannel);
     SmartDashboard.putBoolean("ClimbL1Raised", m_bRaised);
   }
