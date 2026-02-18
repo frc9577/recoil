@@ -40,6 +40,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PneumaticsConstants;
 import frc.robot.commands.AimAtHub;
+import frc.robot.commands.DeadreckonForward;
 import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.commands.POTFtoPoint;
 import frc.robot.commands.RotateToRotation2D;
@@ -184,6 +185,16 @@ public class RobotContainer {
     );
 
     // Custom Autos
+    m_autoChooser.addOption(
+      "Deadreckon 3m at 3.0", 
+      new DeadreckonForward(m_driveSubsystem.get(), 3, 4.0)
+    );
+
+    m_autoChooser.addOption(
+      "Deadreckon -3m at -1.0", 
+      new DeadreckonForward(m_driveSubsystem.get(), -3, -1.0)
+    );
+
     m_autoChooser.addOption(
       "On-Fly Forward 2m", 
       new DriveForwardFromPos(m_PoseEstimator, 2)

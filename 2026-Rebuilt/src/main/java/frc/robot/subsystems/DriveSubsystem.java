@@ -7,6 +7,8 @@
 package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.Console;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -216,6 +218,8 @@ public class DriveSubsystem extends SubsystemBase {
   // This sets the differential speeds based on a desired MPS speed.
   public void setDifferentialSpeeds(double leftSpeedMPS, double rightSpeedMPS)
   {
+    //System.out.println("🙀 " + String.valueOf(leftSpeedMPS) + ", " + String.valueOf(rightSpeedMPS));
+
     SmartDashboard.putNumber("Left Target (MPS)", leftSpeedMPS);
     SmartDashboard.putNumber("Right Target (MPS)", rightSpeedMPS);
 
