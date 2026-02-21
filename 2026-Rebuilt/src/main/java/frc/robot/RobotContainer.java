@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -31,7 +30,6 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PneumaticsConstants;
-import frc.robot.commands.DriveForwardFromPos;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -42,6 +40,7 @@ import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
 import frc.robot.utils.PneumaticHubWrapper;
+import frc.robot.commands.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -62,6 +61,8 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_operatorController =
+      new CommandXboxController(OperatorConstants.kOperatorControllerPort);
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
@@ -188,20 +189,45 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // SmartDashboard.putBoolean("Example Subsystem", m_exampleSubsystem.isPresent());
+    // Set dashboard indicators showing which subsystems are actually present.
+    SmartDashboard.putBoolean("Drive Subsystem", m_driveSubsystem.isPresent());
+    SmartDashboard.putBoolean("Intake Subsystem", m_intakeSubsystem.isPresent());
+    SmartDashboard.putBoolean("ClimbL1 Subsystem", m_climbL1Subsystem.isPresent());
+    SmartDashboard.putBoolean("Launcher Subsystem", m_launcherSubsystem.isPresent());
+    SmartDashboard.putBoolean("IndexerBulk Subsystem", m_indexerBulkSubsystem.isPresent());
 
-    // if (m_exampleSubsystem.isPresent())
-    // {
-    //   ExampleSubsystem exampleSubsystem = m_exampleSubsystem.get();
+    // Note that some of our command bindings require that multiple subsystems
+    // are present. We only enable a binding if all its requirements are met!
+    // The command bindings here are implemented based on the 2026 Robot User Manual
+    // found at https://docs.google.com/document/d/1VfiFjz9N2ol3pl7xUKzU2Jam5AbL1xXlS_cHFYYanFM
 
-    //   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //   new Trigger(exampleSubsystem::exampleCondition)
-    //       .onTrue(new ExampleCommand(exampleSubsystem));
+    //
+    // Operator Controls
+    //
+    if (m_intakeSubsystem.isPresent())
+    {
+      m_operatorController.rightBumper().onTrue(new StartIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.leftBumper().onTrue(new StopIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.povUp().onTrue(new ExtendIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.povDown().onTrue(new RetractIntakeCommand(m_intakeSubsystem.get()));
+    }
 
-    //   // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    //   // cancelling on release.
-    //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
-    // }
+    if (m_climbL1Subsystem.isPresent())
+    {
+      // Operator's manual climb overrides.
+      m_operatorController.start().onTrue(new RaiseClimbCommand(m_climbL1Subsystem.get()));
+      m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));    
+    }
+
+    if (m_launcherSubsystem.isPresent())
+    {
+      // Operator's manual climb overrides.
+      m_operatorController.b().onTrue(new StopLauncherCommand(m_launcherSubsystem.get()));
+      
+      // TODO: Need composite command for manual shoot (spin up flywheel, wait for target, start lift motor)
+    }
+
+    // TODO: Write and bind composite commands for driver controls.
   }
 
   // Populate the SmartDashboard on robot init.
