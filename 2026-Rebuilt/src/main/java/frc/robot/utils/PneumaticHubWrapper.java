@@ -4,7 +4,6 @@
 //
 package frc.robot.utils;
 
-import edu.wpi.first.hal.REVPHStickyFaults;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.hal.REVPHVersion;
 
