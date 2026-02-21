@@ -159,91 +159,93 @@ public class RobotContainer {
     return iss;
   }
 
+  // Init Autos (/home/lvuser/deploy/pathplanner/autos)
   private void configureAutos() {
-    // Init Autos (/home/lvuser/deploy/pathplanner/autos)
-    // AutoCommands.getAutoCommands(m_driveSubsystem);
+    if (m_driveSubsystem.isPresent()) {
+      // Init Needed values
+      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+      m_autoChooser = new SendableChooser<Command>();
 
-    // // Init Chooser
-    // m_autoChooser = AutoBuilder.buildAutoChooser(); // Can make a default by giving a string
-    m_autoChooser = new SendableChooser<Command>();
-
-    // Named Commands
-    NamedCommands.registerCommand("RotateTo-180", new RotateToRotation2D(
-        m_driveSubsystem.get(), 
-        m_PoseEstimator, 
-        Rotation2d.fromDegrees(180), 
-        1
-      )
-    );
-
-    NamedCommands.registerCommand("AimToHub", new AimAtHub(
-        m_driveSubsystem.get(), 
-        m_PoseEstimator, 
-        2.0, 
-        isRed
-      )
-    );
-
-    // Custom Autos
-    m_autoChooser.addOption(
-      "Deadreckon 3m at 3.0 mps", 
-      new DeadreckonForward(m_driveSubsystem.get(), 3, 3.0)
-    );
-
-    m_autoChooser.addOption(
-      "Deadreckon -3m at -1.0", 
-      new DeadreckonForward(m_driveSubsystem.get(), -3, -1.0)
-    );
-
-    m_autoChooser.addOption(
-      "On-Fly Forward 2m", 
-      new DriveForwardFromPos(m_PoseEstimator, 2)
-    );
-
-    m_autoChooser.addOption(
-      "Rotate to 0", 
-      new RotateToRotation2D(
-        m_driveSubsystem.get(), 
-        m_PoseEstimator, 
-        new Rotation2d(0.0), 
-        1
-      )
-    );
-
-    m_autoChooser.addOption(
-      "On-The-Fly to (2, 4.837) -90", 
-      new POTFtoPoint(
-        m_PoseEstimator, 
-        new Pose2d(2, 4.837, Rotation2d.fromDegrees(-90))
-      )
-    );
-
-    // Path Planner Auto's
-    ArrayList<String> autoNames = AutoCommands.getAutoNames();
-    for (String autoName : autoNames) {
-      PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
-      Pose2d startingPose = plannedAuto.getStartingPose();
-
-      Command rotateToStartRot = new RotateToRotation2D(
-        m_driveSubsystem.get(), 
-        m_PoseEstimator,
-        startingPose.getRotation(), 
-        2.0
+      // Named Commands
+      NamedCommands.registerCommand("RotateTo-180", new RotateToRotation2D(
+          driveSubsystem, 
+          m_PoseEstimator, 
+          Rotation2d.fromDegrees(180), 
+          1
+        )
       );
 
-      Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
-      Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
+      NamedCommands.registerCommand("AimToHub", new AimAtHub(
+          driveSubsystem, 
+          m_PoseEstimator, 
+          2.0, 
+          isRed
+        )
+      );
 
-      m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
+      // Custom Autos
+      m_autoChooser.addOption(
+        "Deadreckon 3m at 3.0 mps", 
+        new DeadreckonForward(driveSubsystem, 3, 3.0)
+      );
+
+      m_autoChooser.addOption(
+        "Deadreckon -3m at -1.0", 
+        new DeadreckonForward(driveSubsystem, -3, -1.0)
+      );
+
+      m_autoChooser.addOption(
+        "On-Fly Forward 2m", 
+        new DriveForwardFromPos(m_PoseEstimator, 2)
+      );
+
+      m_autoChooser.addOption(
+        "Rotate to 0", 
+        new RotateToRotation2D(
+          driveSubsystem, 
+          m_PoseEstimator, 
+          new Rotation2d(0.0), 
+          1
+        )
+      );
+
+      m_autoChooser.addOption(
+        "On-The-Fly to (2, 4.837) -90", 
+        new POTFtoPoint(
+          m_PoseEstimator, 
+          new Pose2d(2, 4.837, Rotation2d.fromDegrees(-90))
+        )
+      );
+
+      // Path Planner Auto's
+      ArrayList<String> autoNames = AutoCommands.getAutoNames();
+      for (String autoName : autoNames) {
+        PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
+        Pose2d startingPose = plannedAuto.getStartingPose();
+
+        Command rotateToStartRot = new RotateToRotation2D(
+          driveSubsystem, 
+          m_PoseEstimator,
+          startingPose.getRotation(), 
+          2.0
+        );
+
+        Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
+        Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
+
+        m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
+      }
+
+      // Add to dashboard
+      SmartDashboard.putData("Auto Chooser", m_autoChooser);
+
+      // Field wigit update
+      PathPlannerLogging.setLogActivePathCallback((poses) -> {
+        m_field.getObject("path").setPoses(poses);
+      });
+    } else {
+      DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
     }
-
-    // Add to dashboard
-    SmartDashboard.putData("Auto Chooser", m_autoChooser);
-
-    // Field wigit update
-    PathPlannerLogging.setLogActivePathCallback((poses) -> {
-      m_field.getObject("path").setPoses(poses);
-    });
   }
 
   private void configureDefaultCommands() {
