@@ -52,7 +52,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public final class Constants {
   public static class FieldConstants {
     public static final Pose2d kBlueHubCenter = new Pose2d(4.607, 4.035, new Rotation2d());
-    public static final Pose2d kRedHubCenter = new Pose2d();
+    public static final Pose2d kRedHubCenter = new Pose2d(11.9284, 4.035, new Rotation2d());
   }
 
   public static class AutoConstants {

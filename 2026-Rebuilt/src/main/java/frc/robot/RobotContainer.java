@@ -83,7 +83,7 @@ public class RobotContainer {
     Rotation2d.fromDegrees(0.0), 
     0, 
     0, 
-    new Pose2d(0.0, 8.0, new Rotation2d()),
+    new Pose2d(0.0, 0.0, new Rotation2d()),
     m_drivetrainError,
     m_limelightError
   );
@@ -160,6 +160,7 @@ public class RobotContainer {
   }
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
+  // TODO: Check if the new PathPlannerAuto is mirroring the cords when read by the pathfinder.
   private void configureAutos() {
     if (m_driveSubsystem.isPresent()) {
       // Init Needed values
