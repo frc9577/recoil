@@ -54,7 +54,7 @@ public class DeadreckonForward extends Command {
   @Override
   public boolean isFinished() {
     double distanceDiff = avrgDistances() - m_startDistance;
-    System.out.println(String.valueOf(distanceDiff) + " --> " + String.valueOf(m_targetDistance) + " at " + String.valueOf(m_speed));
+    // System.out.println(String.valueOf(distanceDiff) + " --> " + String.valueOf(m_targetDistance) + " at " + String.valueOf(m_speed));
 
     if (distanceDiff >= m_targetDistance) {
       return true;
