@@ -186,7 +186,7 @@ public class RobotContainer {
 
     // Custom Autos
     m_autoChooser.addOption(
-      "Deadreckon 3m at 3.0", 
+      "Deadreckon 3m at 3.0 mps", 
       new DeadreckonForward(m_driveSubsystem.get(), 3, 3.0)
     );
 
