@@ -34,7 +34,7 @@ public class LauncherSubsystem extends SubsystemBase {
 
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
-  private SparkMax m_motorLift;
+  //private SparkMax m_motorLift;
 
   private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
@@ -46,7 +46,7 @@ public class LauncherSubsystem extends SubsystemBase {
      * @throws Exception */
     public LauncherSubsystem() throws Exception {
 
-    m_motorLift     = new SparkMax(LauncherConstants.kLauncherLiftMotorCANID, MotorType.kBrushless);
+    //m_motorLift     = new SparkMax(LauncherConstants.kLauncherLiftMotorCANID, MotorType.kBrushless);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
 
@@ -57,11 +57,11 @@ public class LauncherSubsystem extends SubsystemBase {
     }
 
     // Ensure that the lift motor is present.
-    SparkBase.Faults Faults = m_motorLift.getFaults();
-    if(Faults.can || Faults.firmware || Faults.gateDriver)
-    {
-      throw new Exception("Lift motor is not present or is reporting a fault!");
-    }
+    // SparkBase.Faults Faults = m_motorLift.getFaults();
+    // if(Faults.can || Faults.firmware || Faults.gateDriver)
+    // {
+    //   throw new Exception("Lift motor is not present or is reporting a fault!");
+    // }
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
     
@@ -160,7 +160,7 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void startLift()
   {
-    m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
+    //m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
     m_liftRunning = true;
   }
 
@@ -169,7 +169,7 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void stopLift()
   {
-    m_motorLift.set(0.0);
+    //m_motorLift.set(0.0);
     m_liftRunning = false;
   }
 

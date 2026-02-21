@@ -219,7 +219,7 @@ public class RobotContainer {
 
     if (m_launcherSubsystem.isPresent())
     {
-      // Operator's manual climb overrides.
+      // Operator's manual launcher override.
       m_operatorController.b().onTrue(new StopLauncherCommand(m_launcherSubsystem.get()));
       
       // FOR TEST PURPOSES ONLY!
@@ -238,6 +238,7 @@ public class RobotContainer {
     // Non-Subsystem Specific Stuff
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putNumber("mt2 Tag Count", 0.0);
   }
 
   // This function is called every 20mS.  

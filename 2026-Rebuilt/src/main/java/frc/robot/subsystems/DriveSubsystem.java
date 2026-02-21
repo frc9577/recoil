@@ -38,6 +38,7 @@ import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.ArcadeFromDashboard;
 import frc.robot.commands.DifferentialDriveCommand;
+import frc.robot.commands.NoDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;
@@ -106,6 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_driveChooser.addOption("PID Differential", DifferentialDriveCommand.class);
     m_driveChooser.addOption("NO-PID Arcade", ArcadeDriveCommandNoPID.class);
     m_driveChooser.addOption("Dashboard PID Arcade", ArcadeFromDashboard.class);
+    m_driveChooser.addOption("None", NoDriveCommand.class);
     SmartDashboard.putData("Drive Commands", m_driveChooser);
 
     // Init Smartdashboard

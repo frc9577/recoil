@@ -181,7 +181,7 @@ public final class Constants {
 
     // Set to false if we drive the lead launcher flywheel motor clockwise to operate
     // correctly, or true to drive it counterclockwise.
-    public static final boolean kLauncherMotorForwardIsCCW = true;
+    public static final boolean kLauncherMotorForwardIsCCW = false;
 
     // Frequency at which we send current launcher speed back to the driver station.
     public static final int kTicksPerUpdate = 10;
