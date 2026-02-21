@@ -14,6 +14,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.IMUData;
@@ -62,6 +63,8 @@ public class LimelightSubsystem extends SubsystemBase {
     if (mt2 == null) { 
       return;
     }
+
+    SmartDashboard.putNumber("mt2 Tag Count", mt2.tagCount);
     
     // if our angular velocity is greater than 720 degrees per second, ignore vision updates
     if(Math.abs(m_gyro.getRate()) > 720)

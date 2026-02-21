@@ -32,19 +32,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PneumaticHub;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.PneumaticsConstants;
-import frc.robot.commands.AimAtHub;
-import frc.robot.commands.DeadreckonForward;
-import frc.robot.commands.DriveForwardFromPos;
-import frc.robot.commands.POTFtoPoint;
-import frc.robot.commands.RotateToRotation2D;
-import frc.robot.commands.TurnLeftTest;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -55,6 +45,9 @@ import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
 import frc.robot.utils.HubUtils;
+import frc.robot.utils.PneumaticHubWrapper;
+import frc.robot.commands.*;
+import frc.robot.Constants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -65,16 +58,18 @@ import frc.robot.utils.HubUtils;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Optional<DriveSubsystem> m_driveSubsystem;
-  // private final Optional<IntakeSubsystem> m_intakeSubsystem;
-  // private final Optional<ClimbL1Subsystem> m_climbL1Subsystem;
-  // private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
-  // private final Optional<LauncherSubsystem> m_launcherSubsystem;
-  // private final Optional<PneumaticHub> m_pneumaticHub;
+  private final Optional<IntakeSubsystem> m_intakeSubsystem;
+  private final Optional<ClimbL1Subsystem> m_climbL1Subsystem;
+  private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
+  private final Optional<LauncherSubsystem> m_launcherSubsystem;
+  private final Optional<PneumaticHubWrapper> m_pneumaticHub;
   private final LimelightSubsystem m_limelightSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_operatorController =
+      new CommandXboxController(OperatorConstants.kOperatorControllerPort);
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
@@ -113,16 +108,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    // Init pneumatics system.
-    // m_pneumaticHub = getSubsystem(PneumaticHub.class);
-    // if (m_pneumaticHub.isPresent())
-    // {
-    //   PneumaticHub hub = m_pneumaticHub.get();
-    //   hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
-    //                              PneumaticsConstants.kMaxPneumaticsPressure);
-    // }
-
     // Init DriveSubsystem
     Optional<TalonFX> rightLead = m_TalonFXFactory.construct(DrivetrainConstants.kRightMotorCANID);
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
@@ -130,13 +115,28 @@ public class RobotContainer {
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
     m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
 
-    // Init the subsystems
+    // Init the subsystems that don't require pneumatics.
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_gyro);
-    // m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
-    // m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
-    // m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
-    // m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
+    m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
+    m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
 
+    // Init pneumatics system and subsystems that rely upon it.
+    m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
+    if (m_pneumaticHub.isPresent())
+    {
+      PneumaticHub hub = m_pneumaticHub.get();
+      hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+                                 PneumaticsConstants.kMaxPneumaticsPressure);
+
+      m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
+      m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
+    }
+    else
+    {
+      // If there are no pneumatics, there's no climb or intake.
+      m_climbL1Subsystem = Optional.empty();
+      m_intakeSubsystem  = Optional.empty();
+    }
     // Init Auto
     configureAutos();
 
@@ -266,36 +266,70 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // SmartDashboard.putBoolean("Example Subsystem", m_exampleSubsystem.isPresent());
+    // Set dashboard indicators showing which subsystems are actually present.
+    SmartDashboard.putBoolean("Drive Subsystem", m_driveSubsystem.isPresent());
+    SmartDashboard.putBoolean("Intake Subsystem", m_intakeSubsystem.isPresent());
+    SmartDashboard.putBoolean("ClimbL1 Subsystem", m_climbL1Subsystem.isPresent());
+    SmartDashboard.putBoolean("Launcher Subsystem", m_launcherSubsystem.isPresent());
+    SmartDashboard.putBoolean("IndexerBulk Subsystem", m_indexerBulkSubsystem.isPresent());
 
-    // if (m_exampleSubsystem.isPresent())
-    // {
-    //   ExampleSubsystem exampleSubsystem = m_exampleSubsystem.get();
+    // Note that some of our command bindings require that multiple subsystems
+    // are present. We only enable a binding if all its requirements are met!
+    // The command bindings here are implemented based on the 2026 Robot User Manual
+    // found at https://docs.google.com/document/d/1VfiFjz9N2ol3pl7xUKzU2Jam5AbL1xXlS_cHFYYanFM
 
-    //   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //   new Trigger(exampleSubsystem::exampleCondition)
-    //       .onTrue(new ExampleCommand(exampleSubsystem));
+    if (m_driveSubsystem.isPresent()) {
+      DriveSubsystem driveSubsystem = m_driveSubsystem.get();
 
-    //   // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    //   // cancelling on release.
-    //   m_driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
-    // }
+      // Cancel All Drive Commands
+      m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
 
-    // Cancel All Active Commands
-    m_driverController.y().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+      // Turn left to produce stall error.
+      m_driverController.b().onTrue(new TurnLeftTest(driveSubsystem));
 
-    // Turn left to produce stall error.
-    m_driverController.b().onTrue(new TurnLeftTest(m_driveSubsystem.get()));
+      // Aim to Hub
+      m_driverController.x().onTrue(
+        new AimAtHub(
+          driveSubsystem, 
+          m_PoseEstimator, 
+          2.0, 
+          isRed
+        )
+      );
+    }
 
-    // Aim to Hub
-    m_driverController.x().onTrue(
-      new AimAtHub(
-        m_driveSubsystem.get(), 
-        m_PoseEstimator, 
-        2.0, 
-        isRed
-      )
-    );
+    //
+    // Operator Controls
+    //
+    if (m_intakeSubsystem.isPresent())
+    {
+      m_operatorController.rightBumper().onTrue(new StartIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.leftBumper().onTrue(new StopIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.povUp().onTrue(new ExtendIntakeCommand(m_intakeSubsystem.get()));
+      m_operatorController.povDown().onTrue(new RetractIntakeCommand(m_intakeSubsystem.get()));
+    }
+
+    if (m_climbL1Subsystem.isPresent())
+    {
+      // Operator's manual climb overrides.
+      m_operatorController.start().onTrue(new RaiseClimbCommand(m_climbL1Subsystem.get()));
+      m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));    
+    }
+
+    if (m_launcherSubsystem.isPresent())
+    {
+      // Operator's manual launcher override.
+      m_operatorController.b().onTrue(new StopLauncherCommand(m_launcherSubsystem.get()));
+      
+      // FOR TEST PURPOSES ONLY!
+      m_operatorController.a().onTrue(new StartFlywheelCommand(m_launcherSubsystem.get(),
+                                                               LauncherConstants.kFixedTestSpeed,
+                                                               LauncherConstants.kFlywheelToleranceRPM));
+      
+      // TODO: Need composite command for manual shoot (spin up flywheel, wait for target, start lift motor)
+    }
+
+    // TODO: Write and bind composite commands for driver controls.
   }
 
   // Populate the SmartDashboard on robot init.
@@ -303,11 +337,13 @@ public class RobotContainer {
     // Non-Subsystem Specific Stuff
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData("Field", m_field);
+
     SmartDashboard.putNumber("Target Rotation", 0);
     SmartDashboard.putNumber("Target Angle Diff Abs", 0);
     SmartDashboard.putNumber("Rotation Speed", 0);
 
     SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
+    SmartDashboard.putNumber("mt2 Tag Count", 0.0);
   }
 
   // This function is called every 20mS.  

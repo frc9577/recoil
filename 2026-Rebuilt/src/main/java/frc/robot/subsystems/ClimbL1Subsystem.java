@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ClimbL1Constants;
@@ -22,10 +21,10 @@ public class ClimbL1Subsystem extends SubsystemBase {
     // if underlying hardware is not present and, hence, allow our Optional system to
     // work.
     m_LeftSolenoid  = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsModuleType.REVPH, 
+                                   PneumaticsConstants.kHubType, 
                                    ClimbL1Constants.kLeftSolenoidChannel);
     m_RightSolenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsModuleType.REVPH, 
+                                   PneumaticsConstants.kHubType,
                                    ClimbL1Constants.kLeftSolenoidChannel);
     SmartDashboard.putBoolean("ClimbL1Raised", m_bRaised);
   }

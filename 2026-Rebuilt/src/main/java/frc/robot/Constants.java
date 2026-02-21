@@ -27,7 +27,7 @@
 //
 // Current Solenoid Channels:
 //
-// 0 - Intake retract (extend is passive state via spring) 
+// 0 - Intake retract
 // 1 - Climb L1 Left
 // 2 - Climb L1 Right
  
@@ -39,6 +39,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -84,6 +85,7 @@ public final class Constants {
   }
 
   public static class PneumaticsConstants {
+    public static final PneumaticsModuleType kHubType = PneumaticsModuleType.REVPH;
     public static final int kPneumaticsHubCANID = 1;
     public static final double kMinPneumaticsPressure = 80.0;
     public static final double kMaxPneumaticsPressure = 120.0;
@@ -94,6 +96,8 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriverControllerDeadband = 0.02; // Exclusive
+
+    public static final int kOperatorControllerPort = 1;
   }
 
   public static class DrivetrainConstants {
@@ -141,25 +145,56 @@ public final class Constants {
   public static class IntakeConstants {
     public static int kIntakeMotorCANID = 30;
 
-    public static int kSolenoidChannel = 0;
-
     // Raw intake motor speed in range [-1.0,1.0]
     public static double kIntakeMotorSpeed = 0.3;
 
     // Solenoid states required to extend and retract the intake mechanism.
-    public static int     kIntakeSolenoid = 1;
+    public static int     kIntakeSolenoid = 0;
     public static boolean kIntakeExtend   = true;
     public static boolean kIntakeRetract  = !kIntakeExtend;
   }
 
   public static class LauncherConstants {
-    public static int kLauncherFlywheelMotor1CANID = 40; 
-    public static int kLauncherFlywheelMotor2CANID = 41;
-    public static int kLauncherLiftMotorCANID      = 42;
+    public static final int kLauncherFlywheelMotor1CANID = 40; 
+    public static final int kLauncherFlywheelMotor2CANID = 41;
+    public static final int kLauncherLiftMotorCANID      = 42;
+
+    // The speed, in range [-1.0, 1.0], to run the lift motor when started.
+    public static final double kLiftMotorSpeed = 0.3;
 
     // Beam break sensor to detect fuel at the top of the lift.
     public static final int kUpperFuelSensorChannel = 0;
     public static final boolean kUpperFuelSensorIsEmpty = false;
+
+    // These numbers came from the ctre example then tweaked
+    public static final double kS = 0.1; // A velocity target of 1 rps results in xV output
+    public static final double kV = 0.12; // Add x V output to overcome static friction
+    public static final double kP = 0.11; // An error of 1 rotation results in x V output
+    public static final double kI = 0.0;
+    public static final double kD = 0.0; // A velocity of 1 rps results in x V output
+    public static final double kA_linear = 0.01; // Voltage needed to induce a given accel. in the motor shaft
+    public static final double kA_angular = 0.01; // TODO: We need to measure this!
+    public static final double kPeakVoltage = 8.0;
+
+    public static final double kMaxVelocityRPS = 6000.0/60.0;
+    public static final double kMaxAccelerationRPS2 = 50.0;
+
+    public static final double kMotionMagicAcceleration = 50.0; // Higher number --> Faster (50.0 = ~1s to max)
+    public static final double kMotionMagicJerk = 4000.0;
+
+    // Set to false if both flywheel motors drive in the same direction, false if they
+    // run in opposite directions.
+    public static final boolean kMotorsDriveInOppositeDirections = true;
+
+    // Set to false if we drive the lead launcher flywheel motor clockwise to operate
+    // correctly, or true to drive it counterclockwise.
+    public static final boolean kLauncherMotorForwardIsCCW = false;
+
+    // Frequency at which we send current launcher speed back to the driver station.
+    public static final int kTicksPerUpdate = 10;
+
+    public static final double kFixedTestSpeed = 3000.0;
+    public static final double kFlywheelToleranceRPM = 200.0;
   }
 
   public static class IndexerBulkConstants {
