@@ -27,9 +27,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PneumaticHub;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.PneumaticsConstants;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
@@ -41,6 +38,7 @@ import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.AutoCommands;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
+import frc.robot.Constants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -223,6 +221,11 @@ public class RobotContainer {
     {
       // Operator's manual climb overrides.
       m_operatorController.b().onTrue(new StopLauncherCommand(m_launcherSubsystem.get()));
+      
+      // FOR TEST PURPOSES ONLY!
+      m_operatorController.a().onTrue(new StartFlywheelCommand(m_launcherSubsystem.get(),
+                                                               LauncherConstants.kFixedTestSpeed,
+                                                               LauncherConstants.kFlywheelToleranceRPM));
       
       // TODO: Need composite command for manual shoot (spin up flywheel, wait for target, start lift motor)
     }

@@ -89,7 +89,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriverControllerDeadband = 0.02; // Exclusive
-    
+
     public static final int kOperatorControllerPort = 1;
   }
 
@@ -185,6 +185,9 @@ public final class Constants {
 
     // Frequency at which we send current launcher speed back to the driver station.
     public static final int kTicksPerUpdate = 10;
+
+    public static final double kFixedTestSpeed = 3000.0;
+    public static final double kFlywheelToleranceRPM = 200.0;
   }
 
   public static class IndexerBulkConstants {
