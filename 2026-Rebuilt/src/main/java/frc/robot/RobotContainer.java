@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -223,6 +224,13 @@ public class RobotContainer {
       for (String autoName : autoNames) {
         PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
         Pose2d startingPose = plannedAuto.getStartingPose();
+
+        System.out.println("Normal \"" + autoName + "\" " + startingPose.toString());
+
+        if (isRed.getAsBoolean() == true) {
+          startingPose = FlippingUtil.flipFieldPose(startingPose);
+          System.out.println("Transposed \"" + autoName + "\" " + startingPose.toString());
+        }
 
         Command rotateToStartRot = new RotateToRotation2D(
           driveSubsystem, 

@@ -7,8 +7,6 @@
 package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.io.Console;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -94,7 +92,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
+          DriverStation.Alliance currentAlliance = alliance.get();
+          return currentAlliance == DriverStation.Alliance.Red;
         }
         return false;
       }, 

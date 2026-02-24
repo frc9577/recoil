@@ -6,7 +6,6 @@ import frc.robot.subsystems.LauncherSubsystem;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.utils.HubUtils;
 import frc.robot.utils.LauncherUtils;
 
@@ -56,7 +55,7 @@ public class TrackHubFlywheelCommand extends Command {
     double Distance = HubUtils.getHubDistance(m_poseEstimator, m_isRed);
 
     // Determine flywheel speed to target hub from this distance.
-    double m_targetSpeedrpm = LauncherUtils.getFlywheelSpeed(Distance);
+    m_targetSpeedrpm = LauncherUtils.getFlywheelSpeed(Distance);
 
     // Set new flywheel target speed.
     m_subsystem.setTargetSpeedrpm(m_targetSpeedrpm);
