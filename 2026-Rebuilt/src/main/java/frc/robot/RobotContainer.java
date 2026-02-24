@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindThenFollowPath;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -48,6 +49,7 @@ import frc.robot.utils.AutoCommands;
 import frc.robot.utils.HubUtils;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
+import frc.robot.commands.util.PathfindThenAutoCommand;
 import frc.robot.Constants.*;
 
 /**
@@ -222,26 +224,7 @@ public class RobotContainer {
       // Path Planner Auto's
       ArrayList<String> autoNames = AutoCommands.getAutoNames();
       for (String autoName : autoNames) {
-        PathPlannerAuto plannedAuto = new PathPlannerAuto(autoName);
-        Pose2d startingPose = plannedAuto.getStartingPose();
-
-        System.out.println("Normal \"" + autoName + "\" " + startingPose.toString());
-
-        if (isRed.getAsBoolean() == true) {
-          startingPose = FlippingUtil.flipFieldPose(startingPose);
-          System.out.println("Transposed \"" + autoName + "\" " + startingPose.toString());
-        }
-
-        Command rotateToStartRot = new RotateToRotation2D(
-          driveSubsystem, 
-          m_PoseEstimator,
-          startingPose.getRotation(), 
-          2.0
-        );
-
-        Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
-        Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
-
+        Command pathfindThenAuto = new PathfindThenAutoCommand(driveSubsystem, m_PoseEstimator, m_constraints, autoName, isRed);
         m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
       }
 
