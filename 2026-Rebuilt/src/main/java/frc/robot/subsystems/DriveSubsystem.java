@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
 
@@ -34,11 +35,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.commands.ArcadeDriveCommandNoPID;
-import frc.robot.commands.ArcadeFromDashboard;
-import frc.robot.commands.DifferentialDriveCommand;
-import frc.robot.commands.NoDriveCommand;
+import frc.robot.commands.DriveCommands.ArcadeDriveCommand;
+import frc.robot.commands.DriveCommands.ArcadeDriveCommandNoPID;
+import frc.robot.commands.DriveCommands.ArcadeFromDashboard;
+import frc.robot.commands.DriveCommands.DifferentialDriveCommand;
+import frc.robot.commands.DriveCommands.NoDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;

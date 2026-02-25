@@ -2,15 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.DriveCommands;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.OperatorConstants;
 
 /** An example command that uses an example subsystem. */
-public class DifferentialDriveCommand extends Command {
+public class ArcadeDriveCommandNoPID extends Command {
   private final DriveSubsystem m_subsystem;
   private CommandXboxController m_driveController;
 
@@ -19,7 +18,7 @@ public class DifferentialDriveCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DifferentialDriveCommand(DriveSubsystem subsystem, CommandXboxController driveController)  {
+  public ArcadeDriveCommandNoPID(DriveSubsystem subsystem, CommandXboxController driveController)  {
     m_subsystem = subsystem;
     m_driveController = driveController;
 
@@ -37,21 +36,33 @@ public class DifferentialDriveCommand extends Command {
     // Note: We negate both axis values so that pushing the joystick forwards
     // (which makes the readin more negative) increases the speed and twisting clockwise
     // turns the robot clockwise.
-    double leftSpeed  = -m_driveController.getLeftY();
-    double rightSpeed = -m_driveController.getRightY();
+    double speedInput = -m_driveController.getRightY();
+    double turnInput  = m_driveController.getLeftX();
 
     // Set the deadband
-    if (Math.abs(leftSpeed) < OperatorConstants.kDriverControllerDeadband) {
-      leftSpeed = 0;
+    if (Math.abs(speedInput) < OperatorConstants.kDriverControllerDeadband) {
+      speedInput = 0;
     }
-    if (Math.abs(rightSpeed) < OperatorConstants.kDriverControllerDeadband) {
-      rightSpeed = 0;
+    if (Math.abs(turnInput) < OperatorConstants.kDriverControllerDeadband) {
+      turnInput = 0;
     }
 
-    leftSpeed  *= DrivetrainConstants.kMaxVelocityMPS;
-    rightSpeed *= DrivetrainConstants.kMaxVelocityMPS;
+    double leftSpeed = speedInput + turnInput;
+    double rightSpeed = speedInput - turnInput;
 
-    m_subsystem.setDifferentialSpeeds( leftSpeed, rightSpeed );
+    // Find the maximum possible value of (throttle + turn) along the vector
+    // that the joystick is pointing, then desaturate the wheel speeds
+    double greaterInput = Math.max(Math.abs(speedInput), Math.abs(turnInput));
+    double lesserInput = Math.min(Math.abs(speedInput), Math.abs(turnInput));
+    if (greaterInput == 0.0) {
+      m_subsystem.setDifferentialSpeedNoPid(0, 0);
+    } else {
+      double saturatedInput = (greaterInput + lesserInput) / greaterInput;
+      leftSpeed /= saturatedInput;
+      rightSpeed /= saturatedInput;
+
+      m_subsystem.setDifferentialSpeedNoPid(leftSpeed, rightSpeed);
+    }
   }
 
   // Called once the command ends or is interrupted.
