@@ -48,6 +48,8 @@ public class ArcadeDriveCommand extends Command {
       turnInput = 0;
     }
 
+    turnInput = turnInput / 2.0;
+
     double leftSpeed = speedInput + turnInput;
     double rightSpeed = speedInput - turnInput;
 

@@ -102,7 +102,7 @@ public class RobotContainer {
           1.0, 
           1.0, 
             (1/2) * Math.PI,
-            1 * Math.PI
+            (1/4) * Math.PI
   ); // The constraints for this path.
 
   // Smartdashboard Objects
@@ -233,8 +233,18 @@ public class RobotContainer {
       for (String autoName : autoNames) {
         new PathPlannerAuto(autoName); // init the path for quick loading later.
 
-        Command pathfindThenAuto = new PathfindThenAutoCommand(driveSubsystem, m_PoseEstimator, m_constraints, autoName, isRed);
-        m_autoChooser.addOption("[PF] "+autoName, pathfindThenAuto);
+        // Checks if the file name starts with "NP_", this is so no path finding
+        // is used when the auto from the file is ran.
+        Boolean noPathfind = autoName.split("_")[0] == "NP";
+        Command pathfindThenAuto;
+
+        if (noPathfind) {
+          pathfindThenAuto = new PathPlannerAuto(autoName);
+        } else {
+          pathfindThenAuto = new PathfindThenAutoCommand(driveSubsystem, m_PoseEstimator, m_constraints, autoName, isRed);
+        }
+
+        m_autoChooser.addOption((noPathfind ? "" : "[PF] ") + autoName, pathfindThenAuto);
       }
 
       // Warmup Pathfinder
