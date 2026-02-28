@@ -15,6 +15,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindThenFollowPath;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
@@ -99,8 +100,8 @@ public class RobotContainer {
   );
 
   PathConstraints m_constraints = new PathConstraints(
-          1.0, 
-          1.0, 
+          2.0, 
+          2.0, 
             (1/2) * Math.PI,
             (1/4) * Math.PI
   ); // The constraints for this path.
@@ -194,6 +195,17 @@ public class RobotContainer {
       );
 
       // Custom Autos
+      try {
+        PathPlannerPath path = PathPlannerPath.fromPathFile("GatherCorralShootVel");
+        m_autoChooser.addOption(
+          "PathFindAndFollowPath Example", 
+          AutoBuilder.pathfindThenFollowPath(path, m_constraints)
+        );
+      } catch (Exception e) {
+        System.out.println("Failed to load Pathfind and follow path exp!");
+      }
+
+
       m_autoChooser.addOption(
         "Deadreckon 3m at 3.0 mps", 
         new DeadreckonForward(driveSubsystem, 3, 3.0)

@@ -1,0 +1,6 @@
+pathfind and follow path w/ autos:
+1. pop out the first path.
+2. pathfind follow path w/ first path in list.
+3. profit
+
+make the path update to the one selected on the gui w/ some sort of selector event

@@ -45,7 +45,7 @@ public class PathfindThenAutoCommand extends Command {
             m_driveSubsystem, 
             m_poseEstimator,
             startingPose.getRotation(), 
-            2.0
+            3.0
         );
 
         Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);

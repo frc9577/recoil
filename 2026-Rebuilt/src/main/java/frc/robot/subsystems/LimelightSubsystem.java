@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import java.io.Console;
 import java.util.Arrays;
 
 import org.ejml.simple.SimpleMatrix;
@@ -25,6 +26,7 @@ public class LimelightSubsystem extends SubsystemBase {
   private final AHRS m_gyro;
 
   private final LimitedQueue<Double> m_YawQue = new LimitedQueue<Double>(5);
+  private boolean seenApriltag = false;
 
   /** Creates a new PositionSubsystem. */
   public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, AHRS gyro) {
@@ -35,6 +37,11 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public double getRobotYaw() {  
+    if (seenApriltag == false) {
+      System.out.println("No apriltag seen! returning 0!");
+      return 0.0;
+    }
+
     Double[] doubleObjects = m_YawQue.toArray(new Double[0]);
     int queSize = doubleObjects.length;
 
@@ -81,6 +88,11 @@ public class LimelightSubsystem extends SubsystemBase {
       doRejectUpdate = true;
     }
 
+    if (seenApriltag == false && mt2.tagCount >= 2) {
+      seenApriltag = true;
+      doRejectUpdate = true;
+    }
+
     if(!doRejectUpdate)
     {
       // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
@@ -105,8 +117,10 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler
-    IMUData limelightData = LimelightHelpers.getIMUData("limelight");
-    m_YawQue.add(limelightData.robotYaw);
+    if (seenApriltag == true) {
+      IMUData limelightData = LimelightHelpers.getIMUData("limelight");
+      m_YawQue.add(limelightData.robotYaw);
+    } 
     //System.out.println(m_YawQue.toString());
 
     updateOdometry();
