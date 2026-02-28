@@ -170,7 +170,6 @@ public class RobotContainer {
   }
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
-  // TODO: Check if the new PathPlannerAuto is mirroring the cords when read by the pathfinder.
   private void configureAutos() {
     if (m_driveSubsystem.isPresent()) {
       // Init Needed values
