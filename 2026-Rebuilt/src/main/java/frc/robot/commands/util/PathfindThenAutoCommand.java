@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.RotateToRotation2D;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -55,18 +56,31 @@ public class PathfindThenAutoCommand extends Command {
 
         // CommandScheduler.getInstance().schedule(pathfindThenAuto);
 
-        // TODO: Look into named commands and finish the command rewrite.
+        // TODO: Look into named commands
         try {
+            SequentialCommandGroup commandGroup = new SequentialCommandGroup();
             List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(m_plannedAutoName);
 
             // check if empty, if it isnt then remove first value
             // take the first value and plug it into a Pathfindthenfollowpath
-            // then create a sequenatal command group and add the pathfind to it
+            if (!paths.isEmpty()) {
+                PathPlannerPath path = paths.remove(0);
+                Command pathfinderCommand = AutoBuilder.pathfindThenFollowPath(path, m_constraints);
+                commandGroup.addCommands(pathfinderCommand);
+            }
+
             // then loop through the rest of the paths and add it to the command group.
+            for (PathPlannerPath path : paths) {
+                Command pathCommand = AutoBuilder.followPath(path);
+                commandGroup.addCommands(pathCommand);
+            }
             
             // also check if named commands trasnfer, if not need to figure that out. (trigger?)
+
+            CommandScheduler.getInstance().schedule(commandGroup);
         } catch (Exception e) {
             // do somthing here
+            System.out.println("Failed to run " + m_plannedAutoName + ": " + e.toString());
         }
     }
 

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -53,9 +54,11 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
-import frc.robot.commands.autos.DeadreckonForward;
-import frc.robot.commands.autos.DriveForwardFromPos;
-import frc.robot.commands.autos.POTFtoPoint;
+import frc.robot.commands.autoCommands.CorralAndShoot;
+import frc.robot.commands.autoCommands.DeadreckonForward;
+import frc.robot.commands.autoCommands.DriveForwardFromPos;
+import frc.robot.commands.autoCommands.POTFtoPoint;
+import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.commands.util.PathfindThenAutoCommand;
 import frc.robot.Constants.*;
@@ -101,7 +104,7 @@ public class RobotContainer {
 
   PathConstraints m_constraints = new PathConstraints(
           2.0, 
-          2.0, 
+          1.0, 
             (1/2) * Math.PI,
             (1/4) * Math.PI
   ); // The constraints for this path.
@@ -177,88 +180,25 @@ public class RobotContainer {
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       m_autoChooser = new SendableChooser<Command>();
 
-      // Named Commands
-      NamedCommands.registerCommand("RotateTo-180", new RotateToRotation2D(
-          driveSubsystem, 
-          m_PoseEstimator, 
-          Rotation2d.fromDegrees(180), 
-          1
+      // Init Autos
+      m_autoChooser.addOption("Corral and Park", 
+        new AutoFromList(
+          new ArrayList<Object>(Arrays.asList(
+            "GatherCorralShootVel", 
+            "GatherCorralVelTest", 
+            "GatherCorralVelTest2"
+          )),
+          m_constraints, 
+          driveSubsystem,
+          m_PoseEstimator
         )
       );
 
-      NamedCommands.registerCommand("AimToHub", new AimAtHub(
-          driveSubsystem, 
-          m_PoseEstimator, 
-          2.0, 
-          isRed
-        )
+      m_autoChooser.addOption("Corral and Shoot", 
+        new CorralAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
-      // Custom Autos
-      try {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("GatherCorralShootVel");
-        m_autoChooser.addOption(
-          "PathFindAndFollowPath Example", 
-          AutoBuilder.pathfindThenFollowPath(path, m_constraints)
-        );
-      } catch (Exception e) {
-        System.out.println("Failed to load Pathfind and follow path exp!");
-      }
-
-
-      m_autoChooser.addOption(
-        "Deadreckon 3m at 3.0 mps", 
-        new DeadreckonForward(driveSubsystem, 3, 3.0)
-      );
-
-      m_autoChooser.addOption(
-        "Deadreckon -3m at -1.0", 
-        new DeadreckonForward(driveSubsystem, -3, -1.0)
-      );
-
-      m_autoChooser.addOption(
-        "On-Fly Forward 2m", 
-        new DriveForwardFromPos(m_PoseEstimator, 2)
-      );
-
-      m_autoChooser.addOption(
-        "Rotate to 0", 
-        new RotateToRotation2D(
-          driveSubsystem, 
-          m_PoseEstimator, 
-          new Rotation2d(0.0), 
-          1
-        )
-      );
-
-      m_autoChooser.addOption(
-        "On-The-Fly to (2, 4.837) -90", 
-        new POTFtoPoint(
-          m_PoseEstimator, 
-          new Pose2d(2, 4.837, Rotation2d.fromDegrees(-90))
-        )
-      );
-
-      // Path Planner Auto's
-      ArrayList<String> autoNames = AutoCommands.getAutoNames();
-      for (String autoName : autoNames) {
-        new PathPlannerAuto(autoName); // init the path for quick loading later.
-
-        // Checks if the file name starts with "NP_", this is so no path finding
-        // is used when the auto from the file is ran.
-        Boolean noPathfind = autoName.split("_")[0] == "NP";
-        Command pathfindThenAuto;
-
-        if (noPathfind) {
-          pathfindThenAuto = new PathPlannerAuto(autoName);
-        } else {
-          pathfindThenAuto = new PathfindThenAutoCommand(driveSubsystem, m_PoseEstimator, m_constraints, autoName, isRed);
-        }
-
-        m_autoChooser.addOption((noPathfind ? "" : "[PF] ") + autoName, pathfindThenAuto);
-      }
-
-      // Warmup Pathfinder
+      // Warm up Pathfinder
       CommandScheduler.getInstance().schedule(
         PathfindingCommand.warmupCommand()
         .andThen(new InstantCommand(
@@ -378,6 +318,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
     SmartDashboard.putNumber("mt2 Tag Count", 0.0);
+
+    SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
   }
 
   // This function is called every 20mS.  
@@ -393,6 +335,8 @@ public class RobotContainer {
     
       SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
       SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
+
+      SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     }
 
     // Drive subsystem

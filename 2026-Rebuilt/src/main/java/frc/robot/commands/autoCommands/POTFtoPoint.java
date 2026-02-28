@@ -1,4 +1,4 @@
-package frc.robot.commands.autos;
+package frc.robot.commands.autoCommands;
 
 import java.util.List;
 
@@ -10,24 +10,23 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
-public class DriveForwardFromPos extends Command {
+public class POTFtoPoint extends Command {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
-  private double m_targetDistance = 0.0;
+  private Pose2d m_targetPose;
 
   /**
-   * Creates a new DriveForward2mFromPos.
+   * Creates a new POTFtwoPoints.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveForwardFromPos(DifferentialDrivePoseEstimator poseEstimator, double targetDistance) 
+  public POTFtoPoint(DifferentialDrivePoseEstimator poseEstimator, Pose2d targetPose) 
   {
     m_poseEstimator = poseEstimator;
-    m_targetDistance = targetDistance;
+    m_targetPose = targetPose;
   }
 
   // Called when the command is initially scheduled.
@@ -37,25 +36,12 @@ public class DriveForwardFromPos extends Command {
     // path creation on the fly: https://pathplanner.dev/pplib-create-a-path-on-the-fly.html
 
     Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
-    Rotation2d currentRotation = currentPose.getRotation();
-
-    double currentX = currentPose.getX();
-    double currentY = currentPose.getY();
-
-    // If we think of the direction we want to go as of the hypotonuse of a
-    // right trinagle, we can calculate the needed distance to travel on
-    // the (x, y) by calculating for them as the legs of the RT.
-    double xMod = m_targetDistance * currentRotation.getCos();
-    double yMod = m_targetDistance * currentRotation.getSin();
-
-    double newX = currentX + xMod;
-    double newY = currentY + yMod;
 
     // Create a list of waypoints from poses. Each pose represents one waypoint.
     // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(currentX, currentY, currentRotation),
-            new Pose2d(newX, newY, currentRotation)
+            currentPose,
+            m_targetPose
     );
 
     PathConstraints constraints = new PathConstraints(
@@ -70,7 +56,7 @@ public class DriveForwardFromPos extends Command {
             waypoints,
             constraints,
             null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-            new GoalEndState(0.0, currentRotation) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+            new GoalEndState(0.0, m_targetPose.getRotation()) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
     );
 
     // Prevent the path from being flipped if the coordinates are already correct

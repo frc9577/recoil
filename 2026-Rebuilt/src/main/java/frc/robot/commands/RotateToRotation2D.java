@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.io.Console;
+
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,7 +41,9 @@ public class RotateToRotation2D extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("Starting rotation to: " + m_targetRotation.getDegrees());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
