@@ -1,10 +1,12 @@
 package frc.robot.commands.util;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
@@ -34,24 +36,38 @@ public class PathfindThenAutoCommand extends Command {
 
     @Override
     public void initialize() {
-        PathPlannerAuto plannedAuto = new PathPlannerAuto(m_plannedAutoName);
-        Pose2d startingPose = plannedAuto.getStartingPose();
+        // PathPlannerAuto plannedAuto = new PathPlannerAuto(m_plannedAutoName);
+        // Pose2d startingPose = plannedAuto.getStartingPose();
 
-        if (m_isRed.getAsBoolean() == true) {
-            startingPose = FlippingUtil.flipFieldPose(startingPose);
+        // if (m_isRed.getAsBoolean() == true) {
+        //     startingPose = FlippingUtil.flipFieldPose(startingPose);
+        // }
+
+        // Command rotateToStartRot = new RotateToRotation2D(
+        //     m_driveSubsystem, 
+        //     m_poseEstimator,
+        //     startingPose.getRotation(), 
+        //     3.0
+        // );
+
+        // Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
+        // Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
+
+        // CommandScheduler.getInstance().schedule(pathfindThenAuto);
+
+        // TODO: Look into named commands and finish the command rewrite.
+        try {
+            List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(m_plannedAutoName);
+
+            // check if empty, if it isnt then remove first value
+            // take the first value and plug it into a Pathfindthenfollowpath
+            // then create a sequenatal command group and add the pathfind to it
+            // then loop through the rest of the paths and add it to the command group.
+            
+            // also check if named commands trasnfer, if not need to figure that out. (trigger?)
+        } catch (Exception e) {
+            // do somthing here
         }
-
-        Command rotateToStartRot = new RotateToRotation2D(
-            m_driveSubsystem, 
-            m_poseEstimator,
-            startingPose.getRotation(), 
-            3.0
-        );
-
-        Command pathfindToStartPose = AutoBuilder.pathfindToPose(startingPose, m_constraints);
-        Command pathfindThenAuto = Commands.sequence(pathfindToStartPose, rotateToStartRot, plannedAuto);
-
-        CommandScheduler.getInstance().schedule(pathfindThenAuto);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
