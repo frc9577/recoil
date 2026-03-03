@@ -45,9 +45,9 @@
     "rotation": 0.0
   },
   "reversed": true,
-  "folder": "DepotSideAuto",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": 0.0
   },
   "useDefaultConstraints": true

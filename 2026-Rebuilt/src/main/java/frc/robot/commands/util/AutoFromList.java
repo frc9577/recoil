@@ -1,5 +1,6 @@
 package frc.robot.commands.util;
 
+import java.io.Console;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -12,6 +13,7 @@ import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -105,6 +107,8 @@ public class AutoFromList extends Command {
                         // needed Values
                         Pose2d pathStartPose = path.getStartingDifferentialPose();
                         Rotation2d targetRot = pathStartPose.getRotation();
+                        System.out.println("Target ROT: " + String.valueOf(targetRot.getDegrees()));
+
                         BooleanSupplier conditional = () -> {
                             Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
                             double diff = Math.abs((targetRot.minus(currentRot)).getDegrees());
@@ -134,7 +138,7 @@ public class AutoFromList extends Command {
                             pathPoses.set(0, currentPose);
 
                             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pathPoses);
-                            PathPlannerPath newPath = new PathPlannerPath(waypoints, path.getGlobalConstraints(), path.getIdealStartingState(), path.getGoalEndState());
+                            PathPlannerPath newPath = new PathPlannerPath(waypoints, path.getGlobalConstraints(), path.getIdealStartingState(), path.getGoalEndState(), path.isReversed());
                             Command newPathCommand = AutoBuilder.followPath(newPath).andThen(commandGroup);
 
                             CommandScheduler.getInstance().schedule(newPathCommand);
@@ -149,9 +153,6 @@ public class AutoFromList extends Command {
 
                         // add to group
                         precommandGroup.addCommands(pathfinderCommand, conditonalCommand, testCommand);
-
-                        // Command pathfinderCommand = AutoBuilder.pathfindThenFollowPath(path, m_constraints);
-                        // commandGroup.addCommands(pathfinderCommand);
 
                         pathFinded = true;
                     } else {

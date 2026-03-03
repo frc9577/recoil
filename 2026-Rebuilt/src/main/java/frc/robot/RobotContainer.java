@@ -46,7 +46,9 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
+import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
+import frc.robot.commands.autoCommands.DSA_BackupTest;
 import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -169,21 +171,16 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
-      m_autoChooser.addOption("Corral and Park", 
-        new AutoFromList(
-          new ArrayList<Object>(Arrays.asList(
-            "GatherCorralShootVel", 
-            "GatherCorralVelTest", 
-            "GatherCorralVelTest2"
-          )),
-          m_constraints, 
-          driveSubsystem,
-          m_PoseEstimator
-        )
-      );
-
       m_autoChooser.addOption("Corral and Shoot", 
         new CorralAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      m_autoChooser.addOption("DSA Backup Test", 
+        new DSA_BackupTest(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      m_autoChooser.addOption("Backup And Shoot", 
+        new BackupAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
       // Warm up Pathfinder

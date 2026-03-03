@@ -15,19 +15,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
-public class DriveForwardFromPos extends Command {
+public class DriveInALineFromPos extends Command {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private double m_targetDistance = 0.0;
+  private Boolean m_reversed = false;
 
   /**
    * Creates a new DriveForward2mFromPos.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveForwardFromPos(DifferentialDrivePoseEstimator poseEstimator, double targetDistance) 
+  public DriveInALineFromPos(DifferentialDrivePoseEstimator poseEstimator, double targetDistance, Boolean reversed) 
   {
     m_poseEstimator = poseEstimator;
     m_targetDistance = targetDistance;
+    m_reversed = reversed;
   }
 
   // Called when the command is initially scheduled.
@@ -70,7 +72,8 @@ public class DriveForwardFromPos extends Command {
             waypoints,
             constraints,
             null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-            new GoalEndState(0.0, currentRotation) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+            new GoalEndState(0.0, currentRotation), // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+            m_reversed
     );
 
     // Prevent the path from being flipped if the coordinates are already correct
