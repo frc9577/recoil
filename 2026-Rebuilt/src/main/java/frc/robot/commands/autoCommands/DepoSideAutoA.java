@@ -113,7 +113,7 @@ public class DepoSideAutoA extends Command {
     ));
 
     // Run the command
-    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, true, false);
+    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, false, false);
     CommandScheduler.getInstance().schedule(auto);
   }
 
