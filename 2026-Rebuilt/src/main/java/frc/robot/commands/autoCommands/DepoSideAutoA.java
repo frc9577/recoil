@@ -75,6 +75,7 @@ public class DepoSideAutoA extends Command {
     }
 
     // Init the new sequence
+    // TODO: Replace placeholder InstantCommands with real ones.
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
       new ExtendIntakeCommand(null), // Extend Intake
       new InstantCommand(), // Drive Over bump fwd
@@ -83,7 +84,7 @@ public class DepoSideAutoA extends Command {
       // Start Pickup \\
       new StartIntakeCommand(null), // Trigger pickup
       new StartLiftCommand(null), // Trigger Lift
-      "DSA_PickupFwd",
+      "DSA_PickupFwd", // ⚠️⚠️ Might have an issue with location being to far from this path ⚠️⚠️
 
       // End Pickup \\
       new StopIntakeCommand(null), // Disable Pickup
@@ -95,7 +96,7 @@ public class DepoSideAutoA extends Command {
       new InstantCommand(), // Spin-up flywheel?? (Might have better location.)
       new InstantCommand(), // Drive over bump bwd
       new InstantCommand(), // Relocate
-      "DSA_ParkAtWall",
+      "DSA_ParkAtWall", // ⚠️⚠️ Might have an issue with location being to far from this path ⚠️⚠️
       new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 2.0, m_isRed), // Aim at hub
 
       // Shoot all balls \\
