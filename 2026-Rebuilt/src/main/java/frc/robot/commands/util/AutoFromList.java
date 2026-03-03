@@ -1,6 +1,5 @@
 package frc.robot.commands.util;
 
-import java.io.Console;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -8,12 +7,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,7 +18,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.RotateToRotation2D;
 import frc.robot.subsystems.DriveSubsystem;
-
+import frc.robot.utils.PathUtils;
+import edu.wpi.first.math.Pair;
 
 // Auto From Path Names And Commands
 public class AutoFromList extends Command {
@@ -134,11 +132,7 @@ public class AutoFromList extends Command {
                         Command testCommand = new InstantCommand(() -> {
                             Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
 
-                            List<Pose2d> pathPoses = path.getPathPoses();
-                            pathPoses.set(0, currentPose);
-
-                            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pathPoses);
-                            PathPlannerPath newPath = new PathPlannerPath(waypoints, path.getGlobalConstraints(), path.getIdealStartingState(), path.getGoalEndState(), path.isReversed());
+                            PathPlannerPath newPath = PathUtils.modifyPath(path, new Pair<>(0, currentPose));
                             Command newPathCommand = AutoBuilder.followPath(newPath).andThen(commandGroup);
 
                             CommandScheduler.getInstance().schedule(newPathCommand);
