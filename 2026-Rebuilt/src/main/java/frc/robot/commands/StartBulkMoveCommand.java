@@ -1,22 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.IndexerBulkSubsystem;
 
 /**
  * 
- * Stop the launcher lift motor and spin down the flywheel.
+ * Start bulk move.
  * 
  **/
-public class StartLiftCommand extends Command {
-  private final LauncherSubsystem m_subsystem;
+public class StartBulkMoveCommand extends Command {
+  private final IndexerBulkSubsystem m_subsystem;
   
   /**
-   * Creates a new StartLiftCommand.
+   * Creates a new StartBulkMoveCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StartLiftCommand(LauncherSubsystem subsystem) 
+  public StartBulkMoveCommand(IndexerBulkSubsystem subsystem) 
   {
     m_subsystem = subsystem;
 
@@ -27,7 +27,7 @@ public class StartLiftCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.startLift();
+    m_subsystem.startBulkTransfer();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

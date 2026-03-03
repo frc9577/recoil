@@ -198,12 +198,10 @@ public final class Constants {
   }
 
   public static class IndexerBulkConstants {
-    public static int kIndexerMotorCANID  = 50;
-    public static int kBulkMoveMotorCANID = 51;
+    public static int kBulkMoveMotorCANID = 50;
 
     // Raw motor speeds in range [-1.0,1.0]
     public static final double kBulkMoveMotorSpeed = 0.3;
-    public static double kIndexerMotorSpeed = 0.3;
 
     // Beam break sensor to detect fuel at the indexer.
     public static final int kLowerFuelSensorChannel = 1;

@@ -128,7 +128,9 @@ public class LauncherSubsystem extends SubsystemBase {
   {
     m_targetSpeedrpm = RPM;
 
-    double desiredRotationsPerSecond = RPM * 60.0;
+    // changed from multiplying to dividing 
+
+    double desiredRotationsPerSecond = RPM / 60.0;
 
     SmartDashboard.putNumber("Launcher Set RPM", RPM);
     SmartDashboard.putNumber("Launcher Set RPS", desiredRotationsPerSecond);
