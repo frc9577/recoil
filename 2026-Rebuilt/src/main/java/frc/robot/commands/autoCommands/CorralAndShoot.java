@@ -57,8 +57,11 @@ public class CorralAndShoot extends Command {
   @Override
   public void initialize() {
     // Init the new sequence
+
+    // !! DO NOT DO THIS!! LOOK AT "DepoSideAutoA.java" FOR A BETTER REFRENCE !!
     ArrayList<Object> sequence = new ArrayList<Object>(m_baseSequence);
     sequence.set(1, new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 2.0, m_isRed));
+    // !! DO NOT DO THIS!! LOOK AT "DepoSideAutoA.java" FOR A BETTER REFRENCE !!
 
     // Run the command
     Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, true, false);
