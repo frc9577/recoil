@@ -26,7 +26,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class DepoSideAutoA extends Command {
-  // The sequance of the command, any "*" are place holders for commands.
+  // The pathplanner paths that get pre-loaded for quicker load.
   private final ArrayList<Object> m_preloadPaths = new ArrayList<Object>(Arrays.asList(
     "DSA_PickupFwd",
     "DSA_PickupBwd", 
@@ -51,7 +51,7 @@ public class DepoSideAutoA extends Command {
     
     // warm-up for quick load later on
     for (Object item : m_preloadPaths) {
-        if (item instanceof String && (String) item != "*") {
+        if (item instanceof String) {
           try {
               PathPlannerPath path = PathPlannerPath.fromPathFile((String) item);
               Command command = AutoBuilder.followPath(path);
