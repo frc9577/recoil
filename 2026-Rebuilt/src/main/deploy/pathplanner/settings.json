@@ -3,7 +3,8 @@
   "robotLength": 0.9,
   "holonomicMode": false,
   "pathFolders": [
-    "Gather"
+    "Gather",
+    "DepotSideAuto"
   ],
   "autoFolders": [],
   "defaultMaxVel": 1.0,

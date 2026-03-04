@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7233205128205147,
-        "y": 4.942
+        "x": 0.63,
+        "y": 7.465
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.258192307692309,
-        "y": 4.96525641025641
+        "x": 0.7904815091648096,
+        "y": 7.273308359034138
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.5488717948717963,
-        "y": 5.883884615384615
+        "x": 3.5256923076923092,
+        "y": 5.930397435897436
       },
       "prevControl": {
-        "x": 0.4929118910589782,
-        "y": 5.378784362799069
-      },
-      "nextControl": {
-        "x": 0.6048316986846143,
-        "y": 6.388984867970162
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 0.6884102564102579,
-        "y": 6.651346153846154
-      },
-      "prevControl": {
-        "x": 0.6608812672599742,
-        "y": 6.402866467037828
+        "x": 2.2220361885581448,
+        "y": 5.930397435897436
       },
       "nextControl": null,
       "isLocked": false,
@@ -57,13 +41,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
+    "velocity": 1.0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "DepotSideAuto",
   "idealStartingState": {
-    "velocity": 1.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
