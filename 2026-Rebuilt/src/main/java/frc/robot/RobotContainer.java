@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -30,7 +28,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -50,7 +47,6 @@ import frc.robot.commands.DriveCommands.TurnLeftTest;
 import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DSA_BackupTest;
-import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
 
@@ -419,6 +415,18 @@ public class RobotContainer {
     if (m_indexerBulkSubsystem.isPresent())
     {
       m_indexerBulkSubsystem.get().testPeriodic();
+    }
+    if (m_climbL1Subsystem.isPresent())
+    {
+      m_climbL1Subsystem.get().testPeriodic();
+    }
+    if (m_intakeSubsystem.isPresent())
+    {
+      m_intakeSubsystem.get().testPeriodic();
+    }
+    if (m_launcherSubsystem.isPresent())
+    {
+      m_launcherSubsystem.get().testPeriodic();
     }
   }
 }
