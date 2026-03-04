@@ -31,6 +31,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("Intake Extended", m_Extended);
     SmartDashboard.putBoolean("Intake Running", m_motorRunning);
+
+    // Test mode controlls 
+    SmartDashboard.putBoolean("Intake TestExtend", false);
+    SmartDashboard.putBoolean("Intake TestRun", false);
   }
 
   // Spins the shaft on the intake that will move fuel into the robot.
@@ -73,6 +77,35 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  public void testPeriodic() {
+    // Set the motor states based on the SmartDashboard test controls.
+    Boolean Extend = SmartDashboard.getBoolean("Intake TestExtend", false);
+    Boolean Run = SmartDashboard.getBoolean("Intake TestRun", false);
+    
+    // Turn the intake on or off depending upon test control, only changing the state if the control actually changed.
+    if(Run) {
+      if(!m_motorRunning) {
+        this.start();
+      }
+    }
+    else {
+        if(m_motorRunning) {
+        this.stop();
+      }  
+    }
+    if(Extend) {
+      if(!m_Extended) {
+        this.extend();
+      }
+    }
+    else {
+        if(m_Extended) {
+        this.retract();
+      }  
+    }
+  }
+
 
   @Override
   public void simulationPeriodic() {

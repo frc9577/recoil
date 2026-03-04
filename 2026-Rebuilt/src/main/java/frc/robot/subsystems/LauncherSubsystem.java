@@ -17,10 +17,6 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -34,7 +30,7 @@ public class LauncherSubsystem extends SubsystemBase {
 
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
-  //private SparkMax m_motorLift;
+  private TalonFX m_motorLift;
 
   private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
@@ -46,22 +42,15 @@ public class LauncherSubsystem extends SubsystemBase {
      * @throws Exception */
     public LauncherSubsystem() throws Exception {
 
-    //m_motorLift     = new SparkMax(LauncherConstants.kLauncherLiftMotorCANID, MotorType.kBrushless);
+    m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
 
     // Check that the launcher motors exist and throw an exception if they don't.
-    if(!m_motorLeader.isConnected() || !m_motorFollower.isConnected())
+    if(!m_motorLeader.isConnected() || !m_motorFollower.isConnected() || !m_motorLift.isConnected())
     {
       throw new Exception("At least one launcher motor is not present!");
     }
-
-    // Ensure that the lift motor is present.
-    // SparkBase.Faults Faults = m_motorLift.getFaults();
-    // if(Faults.can || Faults.firmware || Faults.gateDriver)
-    // {
-    //   throw new Exception("Lift motor is not present or is reporting a fault!");
-    // }
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
     
@@ -117,6 +106,12 @@ public class LauncherSubsystem extends SubsystemBase {
 
     // Configure the fuel sensor.
     // TODO: Add this.
+    SmartDashboard.putNumber("Launcher RPM", 0.0 );
+    SmartDashboard.putNumber("Launcher RPS", 0.0);
+
+    // Test mode controls
+    SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
+    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
 
     m_configValid = true;
   }
@@ -162,7 +157,7 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void startLift()
   {
-    //m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
+    m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
     m_liftRunning = true;
   }
 
@@ -171,8 +166,22 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void stopLift()
   {
-    //m_motorLift.set(0.0);
+    m_motorLift.set(0.0);
     m_liftRunning = false;
+  }
+
+  public void setLiftSpeed(double speed)
+  {
+    m_motorLift.set(speed);
+
+    if(speed == 0.0)
+    {
+      m_liftRunning = false;
+    }
+    else 
+    {
+      m_liftRunning = true;
+    }
   }
 
   // 
@@ -205,8 +214,17 @@ public class LauncherSubsystem extends SubsystemBase {
     }
   }
 
+  public void testPeriodic() {
+    double launcherrpm = SmartDashboard.getNumber("Launcher TestRPM", 0.0 );
+    double liftspeed = SmartDashboard.getNumber("Launcher TestLiftSpeed", 0.0 );
+
+    this.setLiftSpeed(liftspeed);
+    this.setTargetSpeedrpm(launcherrpm);
+  }
+
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  
   }
 }
