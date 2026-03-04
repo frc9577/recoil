@@ -68,7 +68,12 @@ public class RotateToRotation2D extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Ended Rotation fix!");
+    if (interrupted) {
+      System.out.println("Rotation Interrupted!");
+    } else {
+      System.out.println("Rotatation Complete!");
+    }
+
     m_driveSubsystem.setDifferentialSpeeds(0, 0);
   }
 
