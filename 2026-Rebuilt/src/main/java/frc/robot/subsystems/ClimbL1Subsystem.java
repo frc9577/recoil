@@ -27,6 +27,7 @@ public class ClimbL1Subsystem extends SubsystemBase {
                                    PneumaticsConstants.kHubType,
                                    ClimbL1Constants.kLeftSolenoidChannel);
     SmartDashboard.putBoolean("ClimbL1Raised", m_bRaised);
+    SmartDashboard.putBoolean("ClimbL1 TestRaise", false);
   }
 
   // Raise the climb arms.
@@ -59,6 +60,22 @@ public class ClimbL1Subsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  // raise and lowers climb 
+  public void testPeriodic() {
+     Boolean RaiseClimb = SmartDashboard.getBoolean("ClimbL1 TestRaise", false);
+
+     if(RaiseClimb) {
+      if(!m_bRaised) {
+        this.raiseArms();
+      }
+    }
+    else {
+        if(m_bRaised) {
+        this.lowerArms();
+      }  
+    }
   }
 
   @Override
