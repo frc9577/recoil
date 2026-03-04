@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import java.io.Console;
 import java.util.Arrays;
 
 import org.ejml.simple.SimpleMatrix;

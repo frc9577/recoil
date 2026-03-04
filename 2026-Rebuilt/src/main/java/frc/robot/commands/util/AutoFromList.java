@@ -1,7 +1,6 @@
 package frc.robot.commands.util;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -33,8 +32,12 @@ public class AutoFromList extends Command {
     /**
      * Creates and runs a new auto from a list of path names and commands.
      * Any list with a command can only be ran once due to how the scheudler works.
+     * By default this command pathfinds to the first path and warm-ups the paths itself.
      * 
      * @param sequence A list of path names (strings) and commands to run in order.
+     * @param constraints The constraints the pathfinder segment of the auto uses.
+     * @param driveSubsystem The driveSubsystem, pass-ins for rotation corrections.
+     * @param poseEstimator The pose estimator, used to get the robots location.
      */
     public AutoFromList(List<Object> sequence, PathConstraints constraints, DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator) 
     {
@@ -47,6 +50,17 @@ public class AutoFromList extends Command {
         warmup();
     }
 
+    /**
+     * Creates and runs a new auto from a list of path names and commands.
+     * Any list with a command can only be ran once due to how the scheudler works.
+     * By default this command warm-ups the paths itself.
+     * 
+     * @param sequence A list of path names (strings) and commands to run in order.
+     * @param constraints The constraints the pathfinder segment of the auto uses.
+     * @param driveSubsystem The driveSubsystem, pass-ins for rotation corrections.
+     * @param poseEstimator The pose estimator, used to get the robots location.
+     * @param pathfindToFirstpath Should the command pathfind to the first path?
+     */
     public AutoFromList(List<Object> sequence, PathConstraints constraints, DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, boolean pathfindToFirstpath) 
     {
         m_sequence = sequence;
@@ -58,6 +72,17 @@ public class AutoFromList extends Command {
         warmup();
     }
 
+    /**
+     * Creates and runs a new auto from a list of path names and commands.
+     * Any list with a command can only be ran once due to how the scheudler works.
+     * 
+     * @param sequence A list of path names (strings) and commands to run in order.
+     * @param constraints The constraints the pathfinder segment of the auto uses.
+     * @param driveSubsystem The driveSubsystem, pass-ins for rotation corrections.
+     * @param poseEstimator The pose estimator, used to get the robots location.
+     * @param pathfindToFirstpath Should the command pathfind to the first path?
+     * @param doWarmup Should the command warm-up the paths itself? (If instantiated and ran during run-time, you might want this to be set to false)
+     */
     public AutoFromList(List<Object> sequence, PathConstraints constraints, DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, boolean pathfindToFirstpath, boolean doWarmup) 
     {
         m_sequence = sequence;
@@ -129,7 +154,7 @@ public class AutoFromList extends Command {
                         });
 
                         // decide what to do
-                        Command conditonalCommand_90 = Commands.either(
+                        Command rotateTwordPathConditional = Commands.either(
                             new InstantCommand(), 
                             new RotateToRotation2D(
                                 m_DriveSubsystem, 
@@ -141,15 +166,11 @@ public class AutoFromList extends Command {
                                 Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
                                 double diff = Math.abs((rotToPoint.minus(currentRot)).getDegrees());
 
-                                if (diff <= 90) {
-                                    System.out.println("GREATER THAN 90! ROTATING!!!");
-                                }
-
                                 return diff <= 90;
                             }
                         );
 
-                        Command conditonalCommand_45 = Commands.either(
+                        Command rotateTwordStartRotationConditional = Commands.either(
                             new InstantCommand(), 
                             new RotateToRotation2D(
                                 m_DriveSubsystem, 
@@ -167,9 +188,9 @@ public class AutoFromList extends Command {
 
                         // add to group
                         precommandGroup.addCommands(
-                            conditonalCommand_90, 
+                            rotateTwordPathConditional, 
                             pathfinderCommand, 
-                            conditonalCommand_45, 
+                            rotateTwordStartRotationConditional, 
                             postPathfindCommand
                         );
 

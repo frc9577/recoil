@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 public class PathUtils {
     /**
-     * Allows you to do the modification of a path w/o needing to do jankyness
+     * Allows you to do the modification of a path w/o needing to do the jankyness yourself.
+     * 
      * @param basePath The path that is used as a base.
      * @param pointsToModify A pair that represents the index of a point on the path, and the replacement value.
      * @return The path with the modified positions.

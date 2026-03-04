@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
 
