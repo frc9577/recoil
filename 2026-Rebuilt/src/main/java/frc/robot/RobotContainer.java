@@ -401,4 +401,15 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();
   }
+
+  public void testInit() {
+
+  }
+
+  public void testPeriodic() {
+    if (m_indexerBulkSubsystem.isPresent())
+    {
+      m_indexerBulkSubsystem.get().testPeriodic();
+    }
+  }
 }
