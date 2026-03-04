@@ -49,7 +49,7 @@ import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
 import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
-import frc.robot.commands.autoCommands.DSA_BackupTest;
+import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -172,15 +172,11 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
-      m_autoChooser.addOption("Corral and Shoot", 
+      m_autoChooser.addOption("[INDEV] Corral and Shoot", 
         new CorralAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
-      m_autoChooser.addOption("DSA Backup Test", 
-        new DSA_BackupTest(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
-      );
-
-      m_autoChooser.addOption("Backup And Shoot", 
+      m_autoChooser.addOption("[INDEV] Backup And Shoot", 
         new BackupAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
@@ -248,21 +244,21 @@ public class RobotContainer {
       m_driverController.b().onTrue(new TurnLeftTest(driveSubsystem));
 
       // Aim to Hub
+      m_driverController.y().onTrue(
+        new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, isRed)
+      );
+
+      // Travel to corner and shoot
       m_driverController.x().onTrue(
-        new AimAtHub(
-          driveSubsystem, 
-          m_PoseEstimator, 
-          2.0, 
-          isRed
-        )
+        new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
       // cancel the current command running on drive subsystem when
       // left y or right x is > half and the default command is not running.
-      Trigger autoCancelLeftY = new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
         .onTrue(new CancelDriveCommand(driveSubsystem));
 
-      Trigger autoCancelRightX = new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
         .onTrue(new CancelDriveCommand(driveSubsystem));
     }
 

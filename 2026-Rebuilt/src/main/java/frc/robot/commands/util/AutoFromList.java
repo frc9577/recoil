@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.RotateToRotation2D;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.PathUtils;
+import frc.robot.utils.PoseDiff;
 import edu.wpi.first.math.Pair;
 
 // Auto From Path Names And Commands
@@ -103,16 +104,13 @@ public class AutoFromList extends Command {
 
                     if (pathFinded == false) {
                         // needed Values
-                        Pose2d pathStartPose = path.getStartingDifferentialPose();
-                        Rotation2d targetRot = pathStartPose.getRotation();
-                        System.out.println("Target ROT: " + String.valueOf(targetRot.getDegrees()));
+                        Pose2d pathStartPose = path.getStartingDifferentialPose(); // Accounts for rotation
 
-                        BooleanSupplier conditional = () -> {
-                            Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
-                            double diff = Math.abs((targetRot.minus(currentRot)).getDegrees());
+                        Rotation2d directionRot = pathStartPose.getRotation();
+                        System.out.println("Direction ROT: " + String.valueOf(directionRot.getDegrees()));
 
-                            return diff <= 45;
-                        };
+                        PoseDiff dPose = new PoseDiff(m_poseEstimator.getEstimatedPosition(), pathStartPose);
+                        Rotation2d rotToPoint = new Rotation2d(Math.atan2(dPose.y, dPose.x));
 
                         // pathfind command
                         Command pathfinderCommand = AutoBuilder.pathfindToPose(
@@ -121,15 +119,7 @@ public class AutoFromList extends Command {
                             path.getIdealStartingState().velocityMPS()
                         );
 
-                        // path and rotate stuff
-                        Command rotateCommand = new RotateToRotation2D(
-                            m_DriveSubsystem, 
-                            m_poseEstimator,
-                            targetRot,
-                            2.0
-                        );
-
-                        Command testCommand = new InstantCommand(() -> {
+                        Command postPathfindCommand = new InstantCommand(() -> {
                             Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
 
                             PathPlannerPath newPath = PathUtils.modifyPath(path, new Pair<>(0, currentPose));
@@ -139,14 +129,49 @@ public class AutoFromList extends Command {
                         });
 
                         // decide what to do
-                        Command conditonalCommand = Commands.either(
+                        Command conditonalCommand_90 = Commands.either(
                             new InstantCommand(), 
-                            rotateCommand, 
-                            conditional
+                            new RotateToRotation2D(
+                                m_DriveSubsystem, 
+                                m_poseEstimator,
+                                rotToPoint,
+                                2.0
+                            ), 
+                            () -> {
+                                Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
+                                double diff = Math.abs((rotToPoint.minus(currentRot)).getDegrees());
+
+                                if (diff <= 90) {
+                                    System.out.println("GREATER THAN 90! ROTATING!!!");
+                                }
+
+                                return diff <= 90;
+                            }
+                        );
+
+                        Command conditonalCommand_45 = Commands.either(
+                            new InstantCommand(), 
+                            new RotateToRotation2D(
+                                m_DriveSubsystem, 
+                                m_poseEstimator,
+                                directionRot,
+                                2.0
+                            ), 
+                            () -> {
+                                Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
+                                double diff = Math.abs((directionRot.minus(currentRot)).getDegrees());
+
+                                return diff <= 45;
+                            }
                         );
 
                         // add to group
-                        precommandGroup.addCommands(pathfinderCommand, conditonalCommand, testCommand);
+                        precommandGroup.addCommands(
+                            conditonalCommand_90, 
+                            pathfinderCommand, 
+                            conditonalCommand_45, 
+                            postPathfindCommand
+                        );
 
                         pathFinded = true;
                     } else {

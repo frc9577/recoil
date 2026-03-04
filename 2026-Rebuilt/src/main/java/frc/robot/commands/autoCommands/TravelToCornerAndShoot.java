@@ -17,9 +17,9 @@ import frc.robot.commands.util.AutoFromList;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class DSA_BackupTest extends Command {
+public class TravelToCornerAndShoot extends Command {
   private final ArrayList<Object> m_preloadPaths = new ArrayList<Object>(Arrays.asList(
-    "ParkAtWallTest"
+    "ParkAtWall"
   ));
 
   // Pass-ins
@@ -31,7 +31,7 @@ public class DSA_BackupTest extends Command {
   /**
    * Creates a new DSA_BackupTest.
    */
-  public DSA_BackupTest(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, BooleanSupplier isRed, PathConstraints constraints) {
+  public TravelToCornerAndShoot(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, BooleanSupplier isRed, PathConstraints constraints) {
     m_DriveSubsystem = driveSubsystem;
     m_PoseEstimator = poseEstimator;
     m_isRed = isRed;
@@ -56,7 +56,7 @@ public class DSA_BackupTest extends Command {
   public void initialize() {
     // Init the new sequence
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
-      "ParkAtWallTest",
+      "ParkAtWall",
       new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 2.0, m_isRed) // Aim at hub
     ));
 

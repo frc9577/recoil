@@ -17,7 +17,7 @@ public class RotateToRotation2D extends Command {
 
   // Bounds are [0, 1) in interval notation. This effects the steepness of
   // the curve that is used to slow the robot as it approches the target.
-  private double speedExp = 0.98;
+  private double speedExp = 0.99;
 
   /**
    * Creates a new RotateToRotation2D.
