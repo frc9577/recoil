@@ -60,8 +60,8 @@ import frc.robot.Constants.*;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Optional<DriveSubsystem> m_driveSubsystem;
-  private final Optional<IntakeSubsystem> m_intakeSubsystem;
-  private final Optional<ClimbL1Subsystem> m_climbL1Subsystem;
+  private Optional<IntakeSubsystem> m_intakeSubsystem;
+  private Optional<ClimbL1Subsystem> m_climbL1Subsystem;
   private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
   private final Optional<LauncherSubsystem> m_launcherSubsystem;
   private final Optional<PneumaticHubWrapper> m_pneumaticHub;
@@ -125,21 +125,32 @@ public class RobotContainer {
 
     // Init pneumatics system and subsystems that rely upon it.
     m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
-    if (m_pneumaticHub.isPresent())
+    Boolean bHasPneumatics = m_pneumaticHub.isPresent();
+
+    if (bHasPneumatics)
     {
       PneumaticHub hub = m_pneumaticHub.get();
       hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
                                  PneumaticsConstants.kMaxPneumaticsPressure);
+    }
 
-      m_climbL1Subsystem = getSubsystem(ClimbL1Subsystem.class);
-      m_intakeSubsystem = getSubsystem(IntakeSubsystem.class);
-    }
-    else
-    {
-      // If there are no pneumatics, there's no climb or intake.
+    // Instantiate subsystems that rely upon pneumatics. We want to run
+    // the constructors even if the pneumatic hub is not present so that
+    // they can create SmartDashboard objects we want to use later.
+    try {
+      ClimbL1Subsystem climb = new ClimbL1Subsystem(bHasPneumatics);
+      m_climbL1Subsystem = Optional.ofNullable(climb);
+    } catch (Exception e) {
       m_climbL1Subsystem = Optional.empty();
-      m_intakeSubsystem  = Optional.empty();
     }
+    
+    try {
+      IntakeSubsystem intake = new IntakeSubsystem(bHasPneumatics);
+      m_intakeSubsystem = Optional.ofNullable(intake);
+    } catch (Exception e) {
+      m_intakeSubsystem = Optional.empty();
+    }
+
     // Init Auto
     configureAutos();
 
@@ -213,7 +224,13 @@ public class RobotContainer {
         m_field.getObject("path").setPoses(poses);
       });
     } else {
-      DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
+      try {
+        DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
+      } catch (Exception e) {
+        // If using the SimGUI with no drivetrain components on the robot, the prior call throws
+        // a null pointer exception which is unhelpful. Let's see if this lets us ignore it.
+      }
+
     }
   }
 

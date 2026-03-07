@@ -25,6 +25,7 @@ import frc.robot.Constants.LauncherConstants;
 public class LauncherSubsystem extends SubsystemBase {
   private double m_targetSpeedrpm = 0.0;
   private boolean m_liftRunning = false;
+  private boolean m_HasFuel = false;
   private int m_tickCount = 0;
   private boolean m_configValid = false;
 
@@ -42,6 +43,16 @@ public class LauncherSubsystem extends SubsystemBase {
      * @throws Exception */
     public LauncherSubsystem() throws Exception {
 
+    // Create SmartDashboard items first so that these are populated
+    // regardless of whether or not the subsystem is present.
+    SmartDashboard.putNumber("Launcher RPM", 0.0 );
+    SmartDashboard.putNumber("Launcher RPS", 0.0);
+    SmartDashboard.putBoolean("Launcher Has Fuel", m_HasFuel);
+
+    // Test mode controls
+    SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
+    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
+      
     m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
@@ -103,15 +114,6 @@ public class LauncherSubsystem extends SubsystemBase {
     m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
                    LauncherConstants.kMotorsDriveInOppositeDirections ? 
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
-
-    // Configure the fuel sensor.
-    // TODO: Add this.
-    SmartDashboard.putNumber("Launcher RPM", 0.0 );
-    SmartDashboard.putNumber("Launcher RPS", 0.0);
-
-    // Test mode controls
-    SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
-    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
 
     m_configValid = true;
   }
@@ -198,19 +200,22 @@ public class LauncherSubsystem extends SubsystemBase {
   public boolean isFuelAtLauncher()
   {
         boolean sensorRead = m_Sensor.get();
-        return (sensorRead == LauncherConstants.kUpperFuelSensorIsEmpty) ? false : true;
+        m_HasFuel = (sensorRead == LauncherConstants.kUpperFuelSensorIsEmpty) ? false : true; 
+        return m_HasFuel;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     m_tickCount++;
+    
 
     if(m_configValid && ((m_tickCount % LauncherConstants.kTicksPerUpdate) == 0))
     {
         double speedRPS = m_motorLeader.getVelocity().getValueAsDouble();
         SmartDashboard.putNumber("Launcher RPM", speedRPS * 60.0);
         SmartDashboard.putNumber("Launcher RPS", speedRPS);
+        SmartDashboard.putBoolean("Launcher Has Fuel", isFuelAtLauncher());
     }
   }
 

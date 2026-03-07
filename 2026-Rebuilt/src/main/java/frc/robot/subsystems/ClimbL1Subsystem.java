@@ -15,19 +15,29 @@ public class ClimbL1Subsystem extends SubsystemBase {
     private Solenoid m_RightSolenoid;
     private boolean  m_bRaised = false;
 
-  /** Creates a new ClimbL1Subsystem. */
-  public ClimbL1Subsystem() {
+  /** Creates a new ClimbL1Subsystem. 
+   *  @throws Exception */
+  public ClimbL1Subsystem(Boolean bHasPneumatics) throws Exception  {
+
+    // Create SmartDashboard items regardless of whether or not we instantiate
+    // the subsystem.
+    SmartDashboard.putBoolean("ClimbL1Raised", m_bRaised);
+    SmartDashboard.putBoolean("ClimbL1 TestRaise", false);
+
     // Create member objects in the constructor in the hope that they throw exceptions
     // if underlying hardware is not present and, hence, allow our Optional system to
     // work.
-    m_LeftSolenoid  = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsConstants.kHubType, 
-                                   ClimbL1Constants.kLeftSolenoidChannel);
-    m_RightSolenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                   PneumaticsConstants.kHubType,
-                                   ClimbL1Constants.kLeftSolenoidChannel);
-    SmartDashboard.putBoolean("ClimbL1Raised", m_bRaised);
-    SmartDashboard.putBoolean("ClimbL1 TestRaise", false);
+    if (bHasPneumatics) {
+      m_LeftSolenoid  = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
+                                    PneumaticsConstants.kHubType, 
+                                    ClimbL1Constants.kLeftSolenoidChannel);
+      m_RightSolenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
+                                    PneumaticsConstants.kHubType,
+                                    ClimbL1Constants.kLeftSolenoidChannel);
+    }
+    else {
+      throw new Exception("Climb subsystem requires pneumatics which are not present!");
+    }
   }
 
   // Raise the climb arms.

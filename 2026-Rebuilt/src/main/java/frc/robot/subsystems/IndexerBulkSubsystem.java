@@ -29,6 +29,14 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   /** Creates a new IndexerBulkSubsystem. */
   public IndexerBulkSubsystem() throws Exception {
 
+    // Create SmartDashboard items first so that these are populated
+    // regardless of whether or not the subsystem is present.
+    SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
+    SmartDashboard.putBoolean("IndexerBulk FuelPresent", false);
+
+    // Test mode controls
+    SmartDashboard.putBoolean("IndexerBulk TestBulk", false);
+
     m_motorBulk = new TalonFXS(IndexerBulkConstants.kBulkMoveMotorCANID);
     if (!m_motorBulk.isConnected())
     {
@@ -46,12 +54,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     if (!status.isOK()) {
       System.out.println("Could not apply configs for bulk tranfer motor, error code: " + status.toString());
     }
-
-    SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
-    SmartDashboard.putBoolean("IndexerBulk FuelPresent", false);
-
-    // Test mode controls
-    SmartDashboard.putBoolean("IndexerBulk TestBulk", false);
   }
 
 // Runs the belts that transfer the fuel from bulk storage to the indexer.

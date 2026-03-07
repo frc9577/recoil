@@ -18,23 +18,30 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean m_Extended = false;
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() throws Exception {
+  public IntakeSubsystem(Boolean bHasPneumatics) throws Exception {
+  
+    // Create SmartDashboard items first so that these exist even
+    // if we fail to create the subsystem.
+    SmartDashboard.putBoolean("Intake Extended", m_Extended);
+    SmartDashboard.putBoolean("Intake Running", m_motorRunning);
+
+    // Test mode controls 
+    SmartDashboard.putBoolean("Intake TestExtend", false);
+    SmartDashboard.putBoolean("Intake TestRun", false);
+    
     m_motorIntake = new TalonFX(IntakeConstants.kIntakeMotorCANID);
     if(!m_motorIntake.isConnected())
     {
       throw new Exception("Intake motor is not connected!");
     }
 
-    m_solenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                              PneumaticsConstants.kHubType, 
-                              IntakeConstants.kIntakeSolenoid);
-
-    SmartDashboard.putBoolean("Intake Extended", m_Extended);
-    SmartDashboard.putBoolean("Intake Running", m_motorRunning);
-
-    // Test mode controlls 
-    SmartDashboard.putBoolean("Intake TestExtend", false);
-    SmartDashboard.putBoolean("Intake TestRun", false);
+    if(bHasPneumatics) {
+      m_solenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
+                                PneumaticsConstants.kHubType, 
+                                IntakeConstants.kIntakeSolenoid);
+    } else {
+      throw new Exception("Intake subsystem requires pneumatics which are not present!");
+    }
   }
 
   // Spins the shaft on the intake that will move fuel into the robot.
