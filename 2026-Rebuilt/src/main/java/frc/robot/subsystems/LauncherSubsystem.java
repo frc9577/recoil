@@ -25,6 +25,7 @@ import frc.robot.Constants.LauncherConstants;
 public class LauncherSubsystem extends SubsystemBase {
   private double m_targetSpeedrpm = 0.0;
   private boolean m_liftRunning = false;
+  private boolean m_HasFuel = false;
   private int m_tickCount = 0;
   private boolean m_configValid = false;
 
@@ -104,10 +105,9 @@ public class LauncherSubsystem extends SubsystemBase {
                    LauncherConstants.kMotorsDriveInOppositeDirections ? 
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
 
-    // Configure the fuel sensor.
-    // TODO: Add this.
     SmartDashboard.putNumber("Launcher RPM", 0.0 );
     SmartDashboard.putNumber("Launcher RPS", 0.0);
+    SmartDashboard.putBoolean("Launcher Has Fuel", m_HasFuel);
 
     // Test mode controls
     SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
@@ -198,19 +198,22 @@ public class LauncherSubsystem extends SubsystemBase {
   public boolean isFuelAtLauncher()
   {
         boolean sensorRead = m_Sensor.get();
-        return (sensorRead == LauncherConstants.kUpperFuelSensorIsEmpty) ? false : true;
+        m_HasFuel = (sensorRead == LauncherConstants.kUpperFuelSensorIsEmpty) ? false : true; 
+        return m_HasFuel;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     m_tickCount++;
+    
 
     if(m_configValid && ((m_tickCount % LauncherConstants.kTicksPerUpdate) == 0))
     {
         double speedRPS = m_motorLeader.getVelocity().getValueAsDouble();
         SmartDashboard.putNumber("Launcher RPM", speedRPS * 60.0);
         SmartDashboard.putNumber("Launcher RPS", speedRPS);
+        SmartDashboard.putBoolean("Launcher Has Fuel", isFuelAtLauncher());
     }
   }
 
