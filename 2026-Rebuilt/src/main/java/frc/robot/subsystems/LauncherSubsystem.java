@@ -43,6 +43,16 @@ public class LauncherSubsystem extends SubsystemBase {
      * @throws Exception */
     public LauncherSubsystem() throws Exception {
 
+    // Create SmartDashboard items first so that these are populated
+    // regardless of whether or not the subsystem is present.
+    SmartDashboard.putNumber("Launcher RPM", 0.0 );
+    SmartDashboard.putNumber("Launcher RPS", 0.0);
+    SmartDashboard.putBoolean("Launcher Has Fuel", m_HasFuel);
+
+    // Test mode controls
+    SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
+    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
+      
     m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
@@ -104,14 +114,6 @@ public class LauncherSubsystem extends SubsystemBase {
     m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
                    LauncherConstants.kMotorsDriveInOppositeDirections ? 
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
-
-    SmartDashboard.putNumber("Launcher RPM", 0.0 );
-    SmartDashboard.putNumber("Launcher RPS", 0.0);
-    SmartDashboard.putBoolean("Launcher Has Fuel", m_HasFuel);
-
-    // Test mode controls
-    SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
-    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
 
     m_configValid = true;
   }
