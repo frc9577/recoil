@@ -41,6 +41,10 @@ public class DriveInALineFromPos extends Command {
     Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
     Rotation2d currentRotation = currentPose.getRotation();
 
+    if (m_reversed == true) {
+      m_targetDistance = m_targetDistance * -1.0;
+    }
+
     double currentX = currentPose.getX();
     double currentY = currentPose.getY();
 
@@ -55,9 +59,11 @@ public class DriveInALineFromPos extends Command {
 
     // Create a list of waypoints from poses. Each pose represents one waypoint.
     // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
+    Pose2d startPose = new Pose2d(currentX, currentY, currentRotation);
+    Pose2d endPose = new Pose2d(newX, newY, currentRotation);
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(currentX, currentY, currentRotation),
-            new Pose2d(newX, newY, currentRotation)
+            startPose,
+            endPose
     );
 
     PathConstraints constraints = new PathConstraints(
@@ -65,7 +71,7 @@ public class DriveInALineFromPos extends Command {
             1.0, 
             2 * Math.PI,
             4 * Math.PI
-    ); // The constraints for this path.
+    ); // The constraints for this path. 
 
     // Create the path using the waypoints created above
     PathPlannerPath path = new PathPlannerPath(

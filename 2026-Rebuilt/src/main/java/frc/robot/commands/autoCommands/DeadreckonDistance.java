@@ -4,19 +4,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class DeadreckonForward extends Command {
+public class DeadreckonDistance extends Command {
   private final DriveSubsystem m_driveSubsystem;
-  private final double m_targetDistance;
-  private final double m_speed;
+  private double m_targetDistance;
+  private double m_speed;
 
   private double m_startDistance;
 
   /**
-   * Creates a new DriveForward2mFromPos.
+   * Creates a new DeadreckonDistance.
+   * To reverse please input a negitive speed value but keep targetDistance positive.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DeadreckonForward(DriveSubsystem driveSubsystem, double targetDistance, double speed) 
+  public DeadreckonDistance(DriveSubsystem driveSubsystem, double targetDistance, double speed) 
   {
     m_driveSubsystem = driveSubsystem;
     m_targetDistance = targetDistance;
@@ -53,7 +54,7 @@ public class DeadreckonForward extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double distanceDiff = avrgDistances() - m_startDistance;
+    double distanceDiff = Math.abs(avrgDistances() - m_startDistance);
     // System.out.println(String.valueOf(distanceDiff) + " --> " + String.valueOf(m_targetDistance) + " at " + String.valueOf(m_speed));
 
     if (distanceDiff >= m_targetDistance) {

@@ -44,8 +44,9 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
-import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
+import frc.robot.commands.autoCommands.DeadreckonDistance;
+import frc.robot.commands.autoCommands.DriveInALineFromPos;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -172,8 +173,13 @@ public class RobotContainer {
         new CorralAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
-      m_autoChooser.addOption("[INDEV] Backup And Shoot", 
-        new BackupAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      // Test Autos
+      m_autoChooser.addOption("[TEST] Forward 2 Meters Test", 
+        new DeadreckonDistance(driveSubsystem, 3.0, 2.5)
+      );
+
+      m_autoChooser.addOption("[TEST] Backup 2 Meters Test", 
+        new DeadreckonDistance(driveSubsystem, 3.0, -2.5)
       );
 
       // Warm up Pathfinder
