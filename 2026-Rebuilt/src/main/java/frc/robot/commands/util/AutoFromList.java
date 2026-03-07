@@ -12,11 +12,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.RotateToRotation2D;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.utils.ConditionalRotation;
 import frc.robot.utils.PathUtils;
 import frc.robot.utils.PoseDiff;
 import edu.wpi.first.math.Pair;
@@ -154,37 +153,8 @@ public class AutoFromList extends Command {
                         });
 
                         // decide what to do
-                        Command rotateTwordPathConditional = Commands.either(
-                            new InstantCommand(), 
-                            new RotateToRotation2D(
-                                m_DriveSubsystem, 
-                                m_poseEstimator,
-                                rotToPoint,
-                                2.0
-                            ), 
-                            () -> {
-                                Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
-                                double diff = Math.abs((rotToPoint.minus(currentRot)).getDegrees());
-
-                                return diff <= 90;
-                            }
-                        );
-
-                        Command rotateTwordStartRotationConditional = Commands.either(
-                            new InstantCommand(), 
-                            new RotateToRotation2D(
-                                m_DriveSubsystem, 
-                                m_poseEstimator,
-                                directionRot,
-                                2.0
-                            ), 
-                            () -> {
-                                Rotation2d currentRot = m_poseEstimator.getEstimatedPosition().getRotation();
-                                double diff = Math.abs((directionRot.minus(currentRot)).getDegrees());
-
-                                return diff <= 45;
-                            }
-                        );
+                        Command rotateTwordPathConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, rotToPoint, 90, 2.0);
+                        Command rotateTwordStartRotationConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, directionRot, 45, 2.0);
 
                         // add to group
                         precommandGroup.addCommands(

@@ -45,8 +45,8 @@ import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
 import frc.robot.commands.autoCommands.CorralAndShoot;
+import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
-import frc.robot.commands.autoCommands.DriveInALineFromPos;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -90,12 +90,13 @@ public class RobotContainer {
     m_limelightError
   );
 
+  // The general constraints for most paths.
   PathConstraints m_constraints = new PathConstraints(
           2.0, 
           1.0, 
             (1/2) * Math.PI,
             (1/4) * Math.PI
-  ); // The constraints for this path.
+  );
 
   // Smartdashboard Objects
   private SendableChooser<Command> m_autoChooser;
@@ -169,17 +170,27 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
-      m_autoChooser.addOption("[INDEV] Corral and Shoot", 
-        new CorralAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
-      );
+
 
       // Test Autos
-      m_autoChooser.addOption("[TEST] Forward 2 Meters Test", 
-        new DeadreckonDistance(driveSubsystem, 3.0, 2.5)
+      PathConstraints slowConstraints = new PathConstraints(
+              1.0, 
+              1.0, 
+                (1/2) * Math.PI,
+                (1/4) * Math.PI
       );
 
-      m_autoChooser.addOption("[TEST] Backup 2 Meters Test", 
-        new DeadreckonDistance(driveSubsystem, 3.0, -2.5)
+      // replace slowConstraints to m_contraints after testing.
+      m_autoChooser.addOption("[TEST] Deadreckon Over Bump and Back", 
+        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, isRed)
+      );
+
+      m_autoChooser.addOption("[TEST] Forward Test", 
+        new DeadreckonDistance(driveSubsystem, 2.5, 2.0)
+      );
+
+      m_autoChooser.addOption("[TEST] Backup Test", 
+        new DeadreckonDistance(driveSubsystem, 2.5, -2.0)
       );
 
       // Warm up Pathfinder
