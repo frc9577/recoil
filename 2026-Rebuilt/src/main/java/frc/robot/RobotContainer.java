@@ -213,7 +213,13 @@ public class RobotContainer {
         m_field.getObject("path").setPoses(poses);
       });
     } else {
-      DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
+      try {
+        DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
+      } catch (Exception e) {
+        // If using the SimGUI with no drivetrain components on the robot, the prior call throws
+        // a null pointer exception which is unhelpful. Let's see if this lets us ignore it.
+      }
+
     }
   }
 
