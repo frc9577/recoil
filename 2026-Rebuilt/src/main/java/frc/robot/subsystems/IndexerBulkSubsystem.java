@@ -21,7 +21,6 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 
 public class IndexerBulkSubsystem extends SubsystemBase {
-  private final DigitalInput m_Sensor = new DigitalInput(IndexerBulkConstants.kLowerFuelSensorChannel);
 
   private TalonFXS m_motorBulk;
   private Boolean m_bulkStarted = false;
@@ -32,7 +31,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     // Create SmartDashboard items first so that these are populated
     // regardless of whether or not the subsystem is present.
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
-    SmartDashboard.putBoolean("IndexerBulk FuelPresent", false);
 
     // Test mode controls
     SmartDashboard.putBoolean("IndexerBulk TestBulk", false);
@@ -70,16 +68,9 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
-// Returns true if lower fuel sensor detects fuel.
-  public boolean isFuelPresent() {
-      boolean sensorRead = m_Sensor.get();
-      return (sensorRead == IndexerBulkConstants.kLowerFuelSensorIsEmpty) ? false : true;
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("IndexerBulk FuelPresent", this.isFuelPresent());
   }
 
   @Override
