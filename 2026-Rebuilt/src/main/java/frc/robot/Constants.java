@@ -23,7 +23,7 @@
 // Current DIO Channels:
 //
 // 0 - Upper fuel sensor (launcher subsystem)
-// 1 - Lower fuel sensor (indexer subsystem)
+// 1 - 
 //
 // Current Solenoid Channels:
 //
@@ -202,10 +202,6 @@ public final class Constants {
 
     // Raw motor speeds in range [-1.0,1.0]
     public static final double kBulkMoveMotorSpeed = 0.3;
-
-    // Beam break sensor to detect fuel at the indexer.
-    public static final int kLowerFuelSensorChannel = 1;
-    public static final boolean kLowerFuelSensorIsEmpty = false;
   }
 
   public static class ClimbL1Constants {
