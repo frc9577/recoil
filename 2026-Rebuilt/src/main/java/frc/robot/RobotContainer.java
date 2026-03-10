@@ -44,6 +44,9 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
+import frc.robot.commands.autoCommands.BackupAndClimb;
+import frc.robot.commands.autoCommands.BackupAndShoot;
+import frc.robot.commands.autoCommands.BackupAndShootThenClimb;
 import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
@@ -182,6 +185,17 @@ public class RobotContainer {
 
       // Init Autos
 
+      m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
+        new BackupAndShoot(driveSubsystem, m_PoseEstimator, isRed)
+      );
+
+      m_autoChooser.addOption("[INDEV] Backup and climb", 
+        new BackupAndClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      m_autoChooser.addOption("[INDEV] Backup and shoot then climb", 
+        new BackupAndShootThenClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
 
       // Test Autos
       PathConstraints slowConstraints = new PathConstraints(
@@ -281,6 +295,11 @@ public class RobotContainer {
       // Travel to corner and shoot
       m_driverController.x().onTrue(
         new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      // TEST COMMAND FOR TESTING ACCURACY AFTER BUMP!
+      m_driverController.leftBumper().onTrue(
+        new RotateToRotation2D(driveSubsystem, m_PoseEstimator, Rotation2d.kZero, 2.0)
       );
 
       // cancel the current command running on drive subsystem when

@@ -127,44 +127,47 @@ public class AutoFromList extends Command {
                     PathPlannerPath path = PathPlannerPath.fromPathFile((String) item);
 
                     if (pathFinded == false) {
-                        // needed Values
-                        Pose2d pathStartPose = path.getStartingDifferentialPose(); // Accounts for rotation
+                        Command createEverythingCommand = new InstantCommand(() -> {
+                            // needed Values
+                            Pose2d pathStartPose = path.getStartingDifferentialPose(); // Accounts for rotation
 
-                        Rotation2d directionRot = pathStartPose.getRotation();
-                        System.out.println("Direction ROT: " + String.valueOf(directionRot.getDegrees()));
+                            Rotation2d directionRot = pathStartPose.getRotation();
+                            System.out.println("Direction ROT: " + String.valueOf(directionRot.getDegrees()));
 
-                        PoseDiff dPose = new PoseDiff(m_poseEstimator.getEstimatedPosition(), pathStartPose);
-                        Rotation2d rotToPoint = new Rotation2d(Math.atan2(dPose.y, dPose.x));
+                            PoseDiff dPose = new PoseDiff(m_poseEstimator.getEstimatedPosition(), pathStartPose);
+                            Rotation2d rotToPoint = new Rotation2d(Math.atan2(dPose.y, dPose.x));
 
-                        // pathfind command
-                        Command pathfinderCommand = AutoBuilder.pathfindToPose(
-                            pathStartPose, 
-                            m_constraints, 
-                            path.getIdealStartingState().velocityMPS()
-                        );
+                            // pathfind command
+                            Command pathfinderCommand = AutoBuilder.pathfindToPose(
+                                pathStartPose, 
+                                m_constraints, 
+                                path.getIdealStartingState().velocityMPS()
+                            );
 
-                        Command postPathfindCommand = new InstantCommand(() -> {
-                            Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
+                            Command postPathfindCommand = new InstantCommand(() -> {
+                                Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
 
-                            PathPlannerPath newPath = PathUtils.modifyPath(path, new Pair<>(0, currentPose));
-                            Command newPathCommand = AutoBuilder.followPath(newPath).andThen(commandGroup);
+                                PathPlannerPath newPath = PathUtils.modifyPath(path, new Pair<>(0, currentPose));
+                                Command newPathCommand = AutoBuilder.followPath(newPath).andThen(commandGroup);
 
-                            CommandScheduler.getInstance().schedule(newPathCommand);
+                                CommandScheduler.getInstance().schedule(newPathCommand);
+                            });
+
+                            // decide what to do
+                            Command rotateTwordPathConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, rotToPoint, 90, 2.0);
+                            Command rotateTwordStartRotationConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, directionRot, 45, 2.0);
+
+                            // schedule it
+                            CommandScheduler.getInstance().schedule(
+                                rotateTwordStartRotationConditional
+                                .andThen(pathfinderCommand)
+                                .andThen(rotateTwordPathConditional)
+                                .andThen(postPathfindCommand)
+                            );
                         });
-
-                        // decide what to do
-                        Command rotateTwordPathConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, rotToPoint, 90, 2.0);
-                        Command rotateTwordStartRotationConditional = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, directionRot, 45, 2.0);
-
-                        // add to group
-                        precommandGroup.addCommands(
-                            rotateTwordPathConditional, 
-                            pathfinderCommand, 
-                            rotateTwordStartRotationConditional, 
-                            postPathfindCommand
-                        );
-
+                        
                         pathFinded = true;
+                        precommandGroup.addCommands(createEverythingCommand);
                     } else {
                         Command pathCommand = AutoBuilder.followPath(path);
                         commandGroup.addCommands(pathCommand);
