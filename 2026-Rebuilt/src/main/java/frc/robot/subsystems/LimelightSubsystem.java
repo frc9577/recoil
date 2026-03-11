@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.IMUData;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.utils.LimitedQueue;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -65,29 +66,35 @@ public class LimelightSubsystem extends SubsystemBase {
     boolean doRejectUpdate = false;
 
     LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-    if (mt2 == null) { 
+    PoseEstimate poseEst;
+    if (seenApriltag == true) {
+      poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    } else {
+      poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    }
+
+    if (poseEst == null) { 
       return;
     }
 
-    SmartDashboard.putNumber("mt2 Tag Count", mt2.tagCount);
+    SmartDashboard.putNumber("Tag Count", poseEst.tagCount);
     
     // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-    if(Math.abs(m_gyro.getRate()) > 720)
-    {
-      doRejectUpdate = true;
-    }
+    // if(Math.abs(m_gyro.getRate()) > 720)
+    // {
+    //   doRejectUpdate = true;
+    // }
 
     if (Math.abs(m_gyro.getPitch()) > 5) {
       doRejectUpdate = true;
     }
 
-    if(mt2.tagCount == 0)
+    if(poseEst.tagCount == 0)
     {
       doRejectUpdate = true;
     }
 
-    if (seenApriltag == false && mt2.tagCount >= 2) {
+    if (seenApriltag == false && poseEst.tagCount >= 2) {
       seenApriltag = true;
       doRejectUpdate = true;
     }
@@ -107,8 +114,8 @@ public class LimelightSubsystem extends SubsystemBase {
       m_poseEstimator.setVisionMeasurementStdDevs(errorVec);
 
       m_poseEstimator.addVisionMeasurement(
-        mt2.pose,
-        mt2.timestampSeconds
+        poseEst.pose,
+        poseEst.timestampSeconds
       );
     }
   }

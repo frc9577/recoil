@@ -1,5 +1,6 @@
 package frc.robot.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.pathplanner.lib.path.GoalEndState;
@@ -11,6 +12,7 @@ import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class PathUtils {
     /**
@@ -33,6 +35,61 @@ public class PathUtils {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pathPoses);
         PathPlannerPath newPath = new PathPlannerPath(
             waypoints, 
+            basePath.getGlobalConstraints(), 
+            basePath.getIdealStartingState(), 
+            basePath.getGoalEndState(), 
+            basePath.isReversed()
+        );
+
+        return newPath;
+    }
+
+    /**
+     * Append a set of points to the base path.
+     * 
+     * @param basePath The path that is used as a base.
+     * @param startIndex The index of where to append to, 0 is the start and -1 is the end.
+     * @param pointsToAppend The poses to append at the location, in order.
+     * @return The path with the modified positions.
+    */
+    public static PathPlannerPath appendToPath(PathPlannerPath basePath, Integer index, Pose2d pointToAppend) {
+        List<Waypoint> baseWaypoints = basePath.getWaypoints();
+        List<Waypoint> pathWaypoints = basePath.getWaypoints();
+
+        Translation2d newAnchor = pointToAppend.getTranslation();
+        Translation2d prevControl = null;
+        Translation2d nextControl = null; 
+
+        int lastWaypointIndex = pathWaypoints.size()-1;
+        if (index == -1) {
+            index = lastWaypointIndex;
+        } 
+        
+        if (lastWaypointIndex == index) {
+            Waypoint prev = pathWaypoints.get(index);
+            prevControl = prev.anchor();
+            pathWaypoints.set(index, new Waypoint(prev.prevControl(), prev.anchor(), newAnchor));
+        } else if (index == 0) {
+            Waypoint next = pathWaypoints.get(index);
+            nextControl = next.anchor();
+            pathWaypoints.set(index, new Waypoint(newAnchor, next.anchor(), next.nextControl()));
+        } else if (index > 0 && index < lastWaypointIndex) {
+            Waypoint prev = pathWaypoints.get(index-1);
+            prevControl = prev.anchor();
+            pathWaypoints.set(index-1, new Waypoint(prev.prevControl(), prev.anchor(), newAnchor));
+
+            Waypoint next = pathWaypoints.get(index);
+            nextControl = next.anchor();
+            pathWaypoints.set(index, new Waypoint(newAnchor, next.anchor(), next.nextControl()));
+        }
+
+        if (pathWaypoints.size() > index) {
+            Waypoint point = new Waypoint(prevControl, newAnchor, nextControl);
+            pathWaypoints.add(index, point);
+        }
+
+        PathPlannerPath newPath = new PathPlannerPath(
+            pathWaypoints, 
             basePath.getGlobalConstraints(), 
             basePath.getIdealStartingState(), 
             basePath.getGoalEndState(), 
