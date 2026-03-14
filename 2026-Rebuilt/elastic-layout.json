@@ -275,7 +275,7 @@
             }
           },
           {
-            "title": "Transfer Run",
+            "title": "Bulk Run",
             "x": 640.0,
             "y": 0.0,
             "width": 128.0,
@@ -425,8 +425,8 @@
           },
           {
             "title": "Drive Subsystem",
-            "x": 192.0,
-            "y": 192.0,
+            "x": 0.0,
+            "y": 448.0,
             "width": 192.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -478,7 +478,7 @@
             "title": "Subsystem",
             "x": 0.0,
             "y": 352.0,
-            "width": 192.0,
+            "width": 384.0,
             "height": 64.0,
             "type": "Boolean Box",
             "properties": {
@@ -575,6 +575,24 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
+            }
+          },
+          {
+            "title": "Launcher RPM",
+            "x": 1248.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 416.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher RPM",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 15.0,
+              "min_value": 0.0,
+              "max_value": 4000.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           }
         ]
