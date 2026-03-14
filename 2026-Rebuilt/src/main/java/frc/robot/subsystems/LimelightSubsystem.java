@@ -80,10 +80,10 @@ public class LimelightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Tag Count", poseEst.tagCount);
     
     // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-    // if(Math.abs(m_gyro.getRate()) > 720)
-    // {
-    //   doRejectUpdate = true;
-    // }
+    if(Math.abs(m_gyro.getRate()) > 80)
+    {
+      doRejectUpdate = true;
+    }
 
     if (Math.abs(m_gyro.getPitch()) > 5) {
       doRejectUpdate = true;

@@ -47,6 +47,7 @@ import frc.robot.commands.DriveCommands.TurnLeftTest;
 import frc.robot.commands.autoCommands.BackupAndClimb;
 import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.BackupAndShootThenClimb;
+import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
@@ -195,6 +196,10 @@ public class RobotContainer {
 
       m_autoChooser.addOption("[INDEV] Backup and shoot then climb", 
         new BackupAndShootThenClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
+        new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
       // Test Autos
