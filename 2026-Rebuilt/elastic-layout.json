@@ -1,6 +1,6 @@
 {
   "version": 1.0,
-  "grid_size": 64,
+  "grid_size": 32,
   "tabs": [
     {
       "name": "Toaster Testing",
@@ -229,7 +229,7 @@
           {
             "title": "Raised",
             "x": 448.0,
-            "y": 128.0,
+            "y": 192.0,
             "width": 128.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -246,9 +246,9 @@
           {
             "title": "Hub Distance",
             "x": 192.0,
-            "y": 128.0,
+            "y": 96.0,
             "width": 192.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Hub Distance",
@@ -260,7 +260,7 @@
           {
             "title": "Running",
             "x": 640.0,
-            "y": 128.0,
+            "y": 192.0,
             "width": 128.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -279,7 +279,7 @@
             "x": 640.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/SmartDashboard/IndexerBulk TestBulk",
@@ -289,10 +289,10 @@
           },
           {
             "title": "Intake Extend",
-            "x": 832.0,
+            "x": 960.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/SmartDashboard/Intake TestExtend",
@@ -302,10 +302,10 @@
           },
           {
             "title": "Intake Run",
-            "x": 960.0,
+            "x": 1088.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/SmartDashboard/Intake TestRun",
@@ -315,8 +315,8 @@
           },
           {
             "title": "Running",
-            "x": 960.0,
-            "y": 128.0,
+            "x": 1088.0,
+            "y": 192.0,
             "width": 128.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -332,8 +332,8 @@
           },
           {
             "title": "Extended",
-            "x": 832.0,
-            "y": 128.0,
+            "x": 960.0,
+            "y": 192.0,
             "width": 128.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -350,9 +350,9 @@
           {
             "title": "Launcher RPM",
             "x": 0.0,
-            "y": 128.0,
+            "y": 96.0,
             "width": 192.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Launcher RPM",
@@ -366,7 +366,7 @@
             "x": 0.0,
             "y": 0.0,
             "width": 192.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Launcher TestRPM",
@@ -380,7 +380,7 @@
             "x": 192.0,
             "y": 0.0,
             "width": 192.0,
-            "height": 128.0,
+            "height": 96.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Launcher TestLiftSpeed",
@@ -392,7 +392,7 @@
           {
             "title": "Fuel Present",
             "x": 0.0,
-            "y": 256.0,
+            "y": 192.0,
             "width": 192.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -409,7 +409,7 @@
           {
             "title": "Subsystem",
             "x": 448.0,
-            "y": 320.0,
+            "y": 352.0,
             "width": 128.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -426,7 +426,7 @@
           {
             "title": "Drive Subsystem",
             "x": 192.0,
-            "y": 320.0,
+            "y": 192.0,
             "width": 192.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -443,8 +443,8 @@
           {
             "title": "Subsystem",
             "x": 640.0,
-            "y": 320.0,
-            "width": 128.0,
+            "y": 352.0,
+            "width": 256.0,
             "height": 64.0,
             "type": "Boolean Box",
             "properties": {
@@ -459,8 +459,8 @@
           },
           {
             "title": "Subsystem",
-            "x": 832.0,
-            "y": 320.0,
+            "x": 960.0,
+            "y": 352.0,
             "width": 256.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -477,7 +477,7 @@
           {
             "title": "Subsystem",
             "x": 0.0,
-            "y": 320.0,
+            "y": 352.0,
             "width": 192.0,
             "height": 64.0,
             "type": "Boolean Box",
@@ -489,6 +489,92 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Speed",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk BulkSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Speed",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk IndexerSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Indexer Run",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk TestIndexer",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Running",
+            "x": 768.0,
+            "y": 192.0,
+            "width": 128.0,
+            "height": 64.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk IndexerStarted",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Set Speed",
+            "x": 640.0,
+            "y": 96.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk TestBulkSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Set Speed",
+            "x": 768.0,
+            "y": 96.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerBulk TestIndexerSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]

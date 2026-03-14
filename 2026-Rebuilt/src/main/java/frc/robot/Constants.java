@@ -27,9 +27,10 @@
 //
 // Current Solenoid Channels:
 //
-// 0 - Intake retract
-// 1 - Climb L1 Left
-// 2 - Climb L1 Right
+// 0 - Intake double channel 1
+// 1 - Intake double channel 2
+// 2 - Climb L1 Left
+// 3 - Climb L1 Right
  
 package frc.robot;
 
@@ -150,6 +151,7 @@ public final class Constants {
 
     // Solenoid states required to extend and retract the intake mechanism.
     public static int     kIntakeSolenoid = 0;
+    public static int     kIntakeSolenoid1 = 0;
     public static boolean kIntakeExtend   = true;
     public static boolean kIntakeRetract  = !kIntakeExtend;
   }
@@ -198,10 +200,12 @@ public final class Constants {
   }
 
   public static class IndexerBulkConstants {
-    public static int kBulkMoveMotorCANID = 50;
+    public static int kIndexerMotorCANID  = 50;
+    public static int kBulkMoveMotorCANID = 51;
 
     // Raw motor speeds in range [-1.0,1.0]
     public static final double kBulkMoveMotorSpeed = 0.3;
+    public static final double kIndexerMotorSpeed = 0.3;
   }
 
   public static class ClimbL1Constants {
