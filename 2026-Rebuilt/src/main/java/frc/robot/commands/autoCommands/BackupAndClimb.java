@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RotateToRotation2D;
+import frc.robot.commands.WaitCommand;
 import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.AutoFromList.firstPathType;
 import frc.robot.subsystems.DriveSubsystem;
@@ -67,7 +68,9 @@ public class BackupAndClimb extends Command {
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
       new DeadreckonDistance(m_DriveSubsystem, 1.0, -1),
       "LineupToTower",
-      new RotateToRotation2D(m_DriveSubsystem, m_PoseEstimator, targetRot, 1.0)
+      new RotateToRotation2D(m_DriveSubsystem, m_PoseEstimator, targetRot, 1.0),
+      new WaitCommand(0.2),
+      new DeadreckonDistance(m_DriveSubsystem, 0.5, 1.0)
     ));
 
     // Run the command
