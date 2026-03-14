@@ -594,6 +594,76 @@
               "color": 4278238420,
               "line_width": 2.0
             }
+          },
+          {
+            "title": "Launcher P",
+            "x": 224.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher TestP",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Launcher I",
+            "x": 352.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher TestI",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Launcher D",
+            "x": 480.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher TestD",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "MMAccel",
+            "x": 608.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher TestMMAccel",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "MMJerk",
+            "x": 736.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Launcher TestMMJerk",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
           }
         ]
       }
