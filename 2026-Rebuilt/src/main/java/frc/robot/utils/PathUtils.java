@@ -24,17 +24,23 @@ public class PathUtils {
     */
     @SafeVarargs
     public static PathPlannerPath modifyPath(PathPlannerPath basePath, Pair<Integer, Pose2d>... pointsToModify) {
-        List<Pose2d> pathPoses = basePath.getPathPoses();
+        List<Waypoint> pathWaypoints = basePath.getWaypoints();
         for (Pair<Integer, Pose2d> point : pointsToModify) {
             Integer index = point.getFirst();
-            if (pathPoses.size() > index && index >= 0) {
-                pathPoses.set(index, point.getSecond());
+            if (pathWaypoints.size() > index && index >= 0) {
+                Waypoint oldPoint = pathWaypoints.get(index);
+                Waypoint newPoint = new Waypoint(
+                    oldPoint.prevControl(), 
+                    point.getSecond().getTranslation(), 
+                    oldPoint.nextControl()
+                );
+
+                pathWaypoints.set(index, newPoint);
             }
         }
 
-        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pathPoses);
         PathPlannerPath newPath = new PathPlannerPath(
-            waypoints, 
+            pathWaypoints, 
             basePath.getGlobalConstraints(), 
             basePath.getIdealStartingState(), 
             basePath.getGoalEndState(), 
@@ -53,7 +59,6 @@ public class PathUtils {
      * @return The path with the modified positions.
     */
     public static PathPlannerPath appendToPath(PathPlannerPath basePath, Integer index, Pose2d pointToAppend) {
-        List<Waypoint> baseWaypoints = basePath.getWaypoints();
         List<Waypoint> pathWaypoints = basePath.getWaypoints();
 
         Translation2d newAnchor = pointToAppend.getTranslation();

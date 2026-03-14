@@ -90,4 +90,8 @@ public class RotateToRotation2D extends Command {
       return false;
     }
   }
+
+  protected void setTargetRotation(Rotation2d newRotation) {
+    m_targetRotation = newRotation;
+  }
 }

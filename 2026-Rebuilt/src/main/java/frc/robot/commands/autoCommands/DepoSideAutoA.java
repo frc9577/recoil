@@ -22,6 +22,7 @@ import frc.robot.commands.StartLiftCommand;
 import frc.robot.commands.StopIntakeCommand;
 import frc.robot.commands.StopLiftCommand;
 import frc.robot.commands.util.AutoFromList;
+import frc.robot.commands.util.AutoFromList.firstPathType;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
@@ -114,7 +115,7 @@ public class DepoSideAutoA extends Command {
     ));
 
     // Run the command
-    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, false, false);
+    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.NONE, false);
     CommandScheduler.getInstance().schedule(auto);
   }
 

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.util.AutoFromList;
+import frc.robot.commands.util.AutoFromList.firstPathType;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
@@ -61,7 +62,7 @@ public class TravelToCornerAndShoot extends Command {
     ));
 
     // Run the command
-    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, true, false);
+    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.GO_TO_FIRST_PATH, false);
     CommandScheduler.getInstance().schedule(auto);
   }
 

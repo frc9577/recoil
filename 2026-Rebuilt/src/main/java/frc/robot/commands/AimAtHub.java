@@ -4,15 +4,11 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.HubUtils;
 /** An example command that uses an example subsystem. */
-public class AimAtHub extends Command {
-  private final DriveSubsystem m_driveSubsystem;
+public class AimAtHub extends RotateToRotation2D {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
-  private final double m_maxSpeed;
   private final BooleanSupplier m_isRed;
 
   /**
@@ -25,39 +21,17 @@ public class AimAtHub extends Command {
    */
   public AimAtHub(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, double maxSpeed, BooleanSupplier isRed) 
   {
-    m_driveSubsystem = driveSubsystem;
-    m_poseEstimator = poseEstimator;
-    m_maxSpeed = maxSpeed;
-    m_isRed = isRed;
+    super(driveSubsystem, poseEstimator, Rotation2d.kZero, maxSpeed);
 
-    addRequirements(driveSubsystem);
+    m_poseEstimator = poseEstimator;
+    m_isRed = isRed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     Rotation2d targetRotation = HubUtils.getRobotToHubAngle(m_poseEstimator, m_isRed);
-    RotateToRotation2D aimCommand = new RotateToRotation2D(
-      m_driveSubsystem, 
-      m_poseEstimator, 
-      targetRotation, 
-      m_maxSpeed
-    );
-
-    CommandScheduler.getInstance().schedule(aimCommand);
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return true;
+    super.setTargetRotation(targetRotation);
+    super.initialize();
   }
 }

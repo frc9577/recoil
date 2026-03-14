@@ -17,6 +17,7 @@ import frc.robot.commands.AimAtHub;
 import frc.robot.commands.RotateToRotation2D;
 import frc.robot.commands.WaitCommand;
 import frc.robot.commands.util.AutoFromList;
+import frc.robot.commands.util.AutoFromList.firstPathType;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
@@ -68,13 +69,13 @@ public class BackupAndShootThenClimb extends Command {
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
       new DeadreckonDistance(m_DriveSubsystem, 1.5, -2.0),
       new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 4.0, m_isRed),
-      //new WaitCommand(2.0),
+      new WaitCommand(2.0),
       "LineupToTower",
       new RotateToRotation2D(m_DriveSubsystem, m_PoseEstimator, targetRot, 1.0)
     ));
 
     // Run the command
-    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, true, false);
+    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.REPLACE_FIRST_PATH, false);
     CommandScheduler.getInstance().schedule(auto);
   }
 
