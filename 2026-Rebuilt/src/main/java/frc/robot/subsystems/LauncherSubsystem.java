@@ -32,6 +32,13 @@ public class LauncherSubsystem extends SubsystemBase {
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
   private TalonFX m_motorLift;
+  private TalonFXConfiguration m_MotorConfigs = new TalonFXConfiguration();
+
+  private double m_P = LauncherConstants.kP;
+  private double m_I = LauncherConstants.kI;
+  private double m_D = LauncherConstants.kD;
+  private double m_MMAccel = LauncherConstants.kMotionMagicAcceleration;
+  private double m_MMJerk = LauncherConstants.kMotionMagicJerk;
 
   private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
@@ -52,6 +59,11 @@ public class LauncherSubsystem extends SubsystemBase {
     // Test mode controls
     SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
     SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
+    SmartDashboard.putNumber("Launcher TestP", m_P );
+    SmartDashboard.putNumber("Launcher TestI", m_I );
+    SmartDashboard.putNumber("Launcher TestD", m_D );
+    SmartDashboard.putNumber("Launcher TestMMAccel", m_MMAccel );
+    SmartDashboard.putNumber("Launcher TestMMJerk", m_MMJerk );
       
     m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
@@ -62,35 +74,34 @@ public class LauncherSubsystem extends SubsystemBase {
     {
       throw new Exception("At least one launcher motor is not present!");
     }
-
-    TalonFXConfiguration configs = new TalonFXConfiguration();
     
-    /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
-    configs.Slot0.kS = LauncherConstants.kS; // To account for friction, add 0.1 V of static feedforward
-    configs.Slot0.kV = LauncherConstants.kV; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
-    configs.Slot0.kP = LauncherConstants.kP; // An error of 1 rotation per second results in 0.11 V output
-    configs.Slot0.kI = LauncherConstants.kI; // No output for integrated error
-    configs.Slot0.kD = LauncherConstants.kD; // No output for error derivative
-    // Peak output of 8 volts
-    configs.Voltage.withPeakForwardVoltage(Volts.of(8))
-      .withPeakReverseVoltage(Volts.of(-8));
-
-    var motionMagicConfigs = configs.MotionMagic;
-    motionMagicConfigs.MotionMagicAcceleration = LauncherConstants.kMotionMagicAcceleration;
-    motionMagicConfigs.MotionMagicJerk = LauncherConstants.kMotionMagicJerk;
+    setMotorPIDConfigs(m_MotorConfigs);
 
     // Set coast mode so that the flywheel doesn't slam to a halt when the 
     // motors stop.
-    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    m_MotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Set the basic rotation direction for both motors. Note that this setting
     // will be ignored by the follower since we explicitly tell it whether to
     // run in the same direction as or the opposite direction from the leader
     // when we set up the follow relationship below.
-    configs.MotorOutput.Inverted = LauncherConstants.kLauncherMotorForwardIsCCW ? 
-                                      InvertedValue.CounterClockwise_Positive :
-                                      InvertedValue.Clockwise_Positive;
+    m_MotorConfigs.MotorOutput.Inverted = LauncherConstants.kLauncherMotorForwardIsCCW ? 
+                                          InvertedValue.CounterClockwise_Positive :
+                                          InvertedValue.Clockwise_Positive;
+    applyMotorConfigs(m_MotorConfigs);
 
+    // Set up the follower. Note that setting MotorAlignmentValue tells the system to ignore the
+    // follower's MotorOutput.Inverted setting and either run the same direction as, or the opposite
+    // direction from, the leader.
+    m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
+                   LauncherConstants.kMotorsDriveInOppositeDirections ? 
+                    MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
+
+    m_configValid = true;
+  }
+
+  public void applyMotorConfigs(TalonFXConfiguration configs)
+  {
     /* Retry config apply up to 5 times, report if failure */
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -107,15 +118,23 @@ public class LauncherSubsystem extends SubsystemBase {
     if (!status.isOK()) {
       System.out.println("Could not apply configs 2, error code: " + status.toString());
     }
+  }
 
-    // Set up the follower. Note that setting MotorAlignmentValue tells the system to ignore the
-    // follower's MotorOutput.Inverted setting and either run the same direction as, or the opposite
-    // direction from, the leader.
-    m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
-                   LauncherConstants.kMotorsDriveInOppositeDirections ? 
-                    MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
+  public void setMotorPIDConfigs(TalonFXConfiguration configs)
+  {
+    /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
+    configs.Slot0.kS = LauncherConstants.kS; // To account for friction, add 0.1 V of static feedforward
+    configs.Slot0.kV = LauncherConstants.kV; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / rotation per second
+    configs.Slot0.kP = m_P; // An error of 1 rotation per second results in 0.11 V output
+    configs.Slot0.kI = m_I; // No output for integrated error
+    configs.Slot0.kD = m_D; // No output for error derivative
+    // Peak output of 8 volts
+    configs.Voltage.withPeakForwardVoltage(Volts.of(8))
+      .withPeakReverseVoltage(Volts.of(-8));
 
-    m_configValid = true;
+    var motionMagicConfigs = configs.MotionMagic;
+    motionMagicConfigs.MotionMagicAcceleration = m_MMAccel;
+    motionMagicConfigs.MotionMagicJerk = m_MMJerk;
   }
 
   //
@@ -220,6 +239,27 @@ public class LauncherSubsystem extends SubsystemBase {
   }
 
   public void testPeriodic() {
+
+    double NewP = SmartDashboard.getNumber("Launcher TestP", m_P );
+    double NewI = SmartDashboard.getNumber("Launcher TestI", m_I );
+    double NewD = SmartDashboard.getNumber("Launcher TestD", m_D );
+    double NewMMAccel = SmartDashboard.getNumber("Launcher TestMMAccel", m_MMAccel );
+    double NewMMJerk = SmartDashboard.getNumber("Launcher TestMMJerk", m_MMJerk );
+
+    // Did any of the PID tuning parameters change?
+    if ((NewP != m_P) || (NewI != m_I) || (NewD != m_D) || (NewMMAccel != m_MMAccel) || (NewMMJerk != m_MMJerk))
+    {
+      // Yes - something changed. Update the motor configuration to reflect the new tuning parameters.
+      m_P = NewP;
+      m_I = NewI;
+      m_D = NewD;
+      m_MMAccel = NewMMAccel;
+      m_MMJerk = NewMMJerk;
+    
+      setMotorPIDConfigs(m_MotorConfigs);
+      applyMotorConfigs(m_MotorConfigs);
+    }
+
     double launcherrpm = SmartDashboard.getNumber("Launcher TestRPM", 0.0 );
     double liftspeed = SmartDashboard.getNumber("Launcher TestLiftSpeed", 0.0 );
 
