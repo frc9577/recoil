@@ -166,7 +166,7 @@ public final class Constants {
 
     // Beam break sensor to detect fuel at the top of the lift.
     public static final int kUpperFuelSensorChannel = 0;
-    public static final boolean kUpperFuelSensorIsEmpty = false;
+    public static final boolean kUpperFuelSensorIsEmpty = true;
 
     // These numbers came from the ctre example then tweaked
     public static final double kS = 0.1; // A velocity target of 1 rps results in xV output

@@ -46,10 +46,13 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("IndexerBulk TestIndexerSpeed", m_indexerSpeed);
 
     m_motorBulk = new TalonFXS(IndexerBulkConstants.kBulkMoveMotorCANID);
-    if (!m_motorBulk.isConnected())
-    {
-      throw new Exception("Bult transport motor is not present.");
-    }
+   
+    // TODO: Temporarily removed until bulk motor is populated. Reinstate this!
+    //
+    // if (!m_motorBulk.isConnected())
+    // {
+    //   throw new Exception("Bult transport motor is not present.");
+    // }
 
     m_motorIndexer = new TalonFX(IndexerBulkConstants.kIndexerMotorCANID);
     if (!m_motorIndexer.isConnected())
@@ -95,7 +98,8 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
   // Runs the indexer.
   public void startIndexer() {
-    m_motorBulk.set(m_indexerSpeed);
+    // Indexer runs in the negative direction when operating normally so we negate the commanded speed.
+    m_motorIndexer.set(-m_indexerSpeed);
     m_indexerStarted = true;
     SmartDashboard.putBoolean("IndexerBulk IndexerStarted", m_indexerStarted);
   }
