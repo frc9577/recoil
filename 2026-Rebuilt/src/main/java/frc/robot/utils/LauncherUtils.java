@@ -2,23 +2,17 @@ package frc.robot.utils;
 
 public class LauncherUtils {
     //
-    // TODO: This table must be filled in either data determined experimentally
-    // on the final robot. The first column is the distance from the hub center
-    // and the second is the flywheel RPM required to successfully launch fuel into
-    // the hub from that distance. Values must be ordered by distance with the lowest
-    // distance value first.
-    //
-    // This array must have at least 3 rows!
-    //
-    // The data here is currently completely fabricated just to allow the code to
-    // be debugged!!!!
+    // Characterization data for the launcher. This table links shooting
+    // distance to known-good launcher speeds. Distances are from the centre
+    // of the robot base to the centre of the hub.
     //
     private static final double[][] m_DistanceToRPM = {
-        {1.0, 2000.0},
-        {2.0, 2400.0},
-        {3.0, 3000.0},
-        {4.0, 4000.0},
+        {2.44, 2470.0},
+        {3.12, 2700.0},
+        {3.81, 2800.0},
+        {5.21, 3300.0},
     };
+
     //
     // Given a distance between the robot and the hub, calculate the 
     // launcher flywheel speed needed to successfully score fuel from
