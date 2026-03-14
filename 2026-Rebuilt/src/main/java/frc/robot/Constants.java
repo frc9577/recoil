@@ -9,6 +9,7 @@
 // Current CAN IDs:
 //
 //   01 - Pneumatics hub
+//   02 - Pigeon 2
 //   10 - Drive left primary
 //   11 - Drive left follower
 //   20 - Drive right primary
@@ -53,6 +54,17 @@ public final class Constants {
   public static class FieldConstants {
     public static final Pose2d kBlueHubCenter = new Pose2d(4.607, 4.035, new Rotation2d());
     public static final Pose2d kRedHubCenter = new Pose2d(11.9284, 4.035, new Rotation2d());
+
+    public static final double kFieldWidth = 16.540988; // meters, x axis.
+    public static final double kFieldLength = 8.069326; // meters, y axis.
+  }
+
+  public static class RobotConstants {
+    public static final int kPigeon2CANID = 2;
+    public static final boolean kDoPigeonWarn = true;
+    public static final double kPigeonYawOffset = -5.295877933502197; // degrees (-360, 360)
+    public static final double kPigeonPitchOffset = 0.7246352434158325; // degrees (-360, 360)
+    public static final double kPigeonRollOffset = -0.49318647384643555; // degrees (-360, 360)
   }
 
   public static class AutoConstants {

@@ -13,14 +13,16 @@ import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.AimAtHub;
+import frc.robot.commands.WaitCommand;
 import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.AutoFromList.firstPathType;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class BackupCollectDepoAndShoot extends Command {
+public class DepoAndShootThenClimb extends Command {
   private final ArrayList<Object> m_preloadPaths = new ArrayList<Object>(Arrays.asList(
-    "GatherDepot"
+    "GatherDepot",
+    "FromDepoTowerLineup"
   ));
 
   // Pass-ins
@@ -32,7 +34,7 @@ public class BackupCollectDepoAndShoot extends Command {
   /**
    * Creates a new DSA_BackupTest.
    */
-  public BackupCollectDepoAndShoot(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, BooleanSupplier isRed, PathConstraints constraints) {
+  public DepoAndShootThenClimb(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, BooleanSupplier isRed, PathConstraints constraints) {
     m_DriveSubsystem = driveSubsystem;
     m_PoseEstimator = poseEstimator;
     m_isRed = isRed;
@@ -59,7 +61,9 @@ public class BackupCollectDepoAndShoot extends Command {
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
       new DeadreckonDistance(m_DriveSubsystem, 0.5, -1.0),
       "GatherDepot",
-      new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 3.0, m_isRed)
+      new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 3.0, m_isRed),
+      new WaitCommand(2.0),
+      "FromDepoTowerLineup"
     ));
 
     // Run the command

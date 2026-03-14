@@ -6,10 +6,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.ConditionalRotation;
 import frc.robot.utils.PathUtils;
+import frc.robot.utils.PoseDiff;
 
 // Auto From Path Names And Commands
 public class AutoFromList extends Command {
@@ -136,7 +139,9 @@ public class AutoFromList extends Command {
                         Command createEverythingCommand = Commands.runOnce(() -> {
                             // needed Values
                             Pose2d pathStartPose = path.getStartingDifferentialPose();
-                            Command rotateTwordPathStart = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, pathStartPose.getRotation(), 45, 2.0);
+                            PoseDiff dPose = new PoseDiff(m_poseEstimator.getEstimatedPosition(), pathStartPose);
+                            Rotation2d targetRotation = new Rotation2d(Math.atan2(dPose.y, dPose.x));
+                            Command rotateTwordPathStart = ConditionalRotation.New(m_DriveSubsystem, m_poseEstimator, targetRotation, 45, 2.0);
 
                             // path edits
                             Command pathOnTheFly = Commands.runOnce(() -> {

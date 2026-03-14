@@ -7,37 +7,35 @@ import java.util.Arrays;
 
 import org.ejml.simple.SimpleMatrix;
 
-import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.utils.LimitedQueue;
+import frc.robot.utils.Pigeon;
 
 public class LimelightSubsystem extends SubsystemBase {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
-  private final AHRS m_gyro;
+  private final Pigeon m_pigeon;
 
   private final LimitedQueue<Double> m_YawQue = new LimitedQueue<Double>(5);
-  private boolean seenApriltag = false;
+  private boolean firstApriltagSeen = false;
 
   /** Creates a new PositionSubsystem. */
-  public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, AHRS gyro) {
+  public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator, Pigeon pigeon) {
     m_poseEstimator = poseEstimator;
-    m_gyro = gyro;
-
-    m_gyro.enableLogging(false);
+    m_pigeon = pigeon;
   }
 
   public double getRobotYaw() {  
-    if (seenApriltag == false) {
+    if (firstApriltagSeen == false) {
       System.out.println("No apriltag seen! returning 0!");
       return 0.0;
     }
@@ -63,11 +61,9 @@ public class LimelightSubsystem extends SubsystemBase {
 
   // This is copy and pasted from limelight's documentation for testing.
   private void updateOdometry() {
-    boolean doRejectUpdate = false;
-
-    LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
     PoseEstimate poseEst;
-    if (seenApriltag == true) {
+    if (firstApriltagSeen == true) {
+      LimelightHelpers.SetRobotOrientation("limelight", m_pigeon.getYaw(), 0, m_pigeon.getPitch(), 0, m_pigeon.getRoll(), 0);
       poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
     } else {
       poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
@@ -77,53 +73,53 @@ public class LimelightSubsystem extends SubsystemBase {
       return;
     }
 
+    /// Invalidate the vision measurements if some parameters are not met \\\
+
+    // If theirs no detected tags
     SmartDashboard.putNumber("Tag Count", poseEst.tagCount);
-    
-    // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-    if(Math.abs(m_gyro.getRate()) > 80)
-    {
-      doRejectUpdate = true;
-    }
-
-    if (Math.abs(m_gyro.getPitch()) > 5) {
-      doRejectUpdate = true;
-    }
-
     if(poseEst.tagCount == 0)
     {
-      doRejectUpdate = true;
+      return;
     }
 
-    if (seenApriltag == false && poseEst.tagCount >= 2) {
-      seenApriltag = true;
-      doRejectUpdate = true;
+    // Make sure that the estimated position is within field bounds.
+    Pose2d estimatedPose = poseEst.pose;
+    if (
+      estimatedPose.getX() < 0.0 || estimatedPose.getX() > FieldConstants.kFieldWidth 
+      || estimatedPose.getY() < 0.0 || estimatedPose.getY() > FieldConstants.kFieldLength
+    ) {
+      return;
     }
 
-    if(!doRejectUpdate)
-    {
-      // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
-      Vector<N3> errorVec;
-
-      // When the robot is disabled, trust the gyro from the limelight fully.
-      // Otherwise, in all othr modes, trust the gyro yaw.
-      if (DriverStation.isDisabled()) {
-        errorVec = VecBuilder.fill(.7,.7,0);
-      } else {
-        errorVec = VecBuilder.fill(.7,.7,9999999);
-      }
-      m_poseEstimator.setVisionMeasurementStdDevs(errorVec);
-
-      m_poseEstimator.addVisionMeasurement(
-        poseEst.pose,
-        poseEst.timestampSeconds
-      );
+    // Init the mt2 process once a apriltag is first seen via mt1 and a good rotation is set.
+    if (firstApriltagSeen == false && poseEst.tagCount >= 2 && poseEst.isMegaTag2 == false) {
+      firstApriltagSeen = true;
     }
+
+    /// Actually do the vision measurements \\\
+
+    // A Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
+    Vector<N3> errorVec;
+
+    // Only trust the yaw from the guess if its not via mt2.
+    // TODO: Look into scaling these based off of the ambuguity and size of the tags.
+    if (poseEst.isMegaTag2 == false) {
+      errorVec = VecBuilder.fill(.7,.7,0);
+    } else {
+      errorVec = VecBuilder.fill(.7,.7,9999999);
+    }
+
+    m_poseEstimator.setVisionMeasurementStdDevs(errorVec);
+    m_poseEstimator.addVisionMeasurement(
+      poseEst.pose,
+      poseEst.timestampSeconds
+    );
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler
-    if (seenApriltag == true) {
+    if (firstApriltagSeen == true) {
       IMUData limelightData = LimelightHelpers.getIMUData("limelight");
       m_YawQue.add(limelightData.robotYaw);
     } 

@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.utils.HubUtils;
+import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
@@ -51,6 +53,7 @@ import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
 import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
+import frc.robot.commands.autoCommands.DepoAndShootThenClimb;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -62,6 +65,8 @@ import frc.robot.Constants.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final Pigeon m_pigeon;
+
   // The robot's subsystems and commands are defined here...
   private final Optional<DriveSubsystem> m_driveSubsystem;
   private Optional<IntakeSubsystem> m_intakeSubsystem;
@@ -77,7 +82,6 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController =
       new CommandXboxController(OperatorConstants.kOperatorControllerPort);
 
-  private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
 
   // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
@@ -115,15 +119,18 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Init Pigeon
+    m_pigeon = new Pigeon(RobotConstants.kPigeon2CANID);
+
     // Init DriveSubsystem
     Optional<TalonFX> rightLead = m_TalonFXFactory.construct(DrivetrainConstants.kRightMotorCANID);
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
     Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalRightMotorCANID);
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
-    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_gyro, rightLead, leftLead, rightFollower, leftFollower);
+    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead, leftLead, rightFollower, leftFollower);
 
     // Init the subsystems that don't require pneumatics.
-    m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_gyro);
+    m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_pigeon);
     m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
     m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
 
@@ -200,6 +207,10 @@ public class RobotContainer {
 
       m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
         new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+      );
+
+      m_autoChooser.addOption("[INDEV] Depo Collect, shoot, then climb", 
+        new DepoAndShootThenClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
       );
 
       // Test Autos
@@ -293,7 +304,7 @@ public class RobotContainer {
       m_driverController.b().onTrue(new TurnLeftTest(driveSubsystem));
 
       // Aim to Hub
-      m_driverController.y().onTrue(
+      m_driverController.rightBumper().onTrue(
         new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, isRed)
       );
 
@@ -363,6 +374,14 @@ public class RobotContainer {
     SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
     SmartDashboard.putNumber("mt2 Tag Count", 0.0);
 
+    SmartDashboard.putNumber("Yaw", 0.0);
+    SmartDashboard.putNumber("Pitch", 0.0);
+    SmartDashboard.putNumber("Roll", 0.0);
+
+    SmartDashboard.putNumber("Yaw Rate", 0.0);
+    SmartDashboard.putNumber("Pitch Rate", 0.0);
+    SmartDashboard.putNumber("Roll Rate", 0.0);
+
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
   }
 
@@ -377,6 +396,14 @@ public class RobotContainer {
       SmartDashboard.putNumber("Pose Y (Meter)", estimatedPos.getY());
       SmartDashboard.putNumber("Pose Theta (Degrees)", estimatedPos.getRotation().getDegrees());
     
+      SmartDashboard.putNumber("Yaw", m_pigeon.getYaw());
+      SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
+      SmartDashboard.putNumber("Roll", m_pigeon.getRoll());
+
+      SmartDashboard.putNumber("Yaw Rate", m_pigeon.getYawRate());
+      SmartDashboard.putNumber("Pitch Rate", 0.0);
+      SmartDashboard.putNumber("Roll Rate", 0.0);
+
       SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
       SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
 
@@ -396,7 +423,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("Left Distance (m)", driveSubsystem.getMotorPositionMeters(true));
       SmartDashboard.putNumber("Right Distance (m)", driveSubsystem.getMotorPositionMeters(false));
 
-      SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
+      SmartDashboard.putNumber("Gyro Degrees", m_pigeon.getYaw());
     }
 
     // Pneumatics compressor
@@ -426,7 +453,6 @@ public class RobotContainer {
   // Move to auto init for competition code.
   public void enabledInit() {
     LimelightHelpers.SetIMUMode("limelight", 4);
-    m_gyro.enableLogging(true);
   }
 
   public void teleopInit() {
@@ -447,9 +473,12 @@ public class RobotContainer {
   public void disabledPeriodic() {
     double cameraYaw = m_limelightSubsystem.getRobotYaw();
     
-    m_gyro.enableLogging(false);
-    m_gyro.reset();
-    m_gyro.setAngleAdjustment(-cameraYaw);
+    // m_gyro.enableLogging(false);
+    // m_gyro.reset();
+    // m_gyro.setAngleAdjustment(-cameraYaw);
+
+    m_pigeon.reset();
+    m_pigeon.setYawOffset(cameraYaw);
   }
 
   /**

@@ -39,6 +39,7 @@ import frc.robot.commands.DriveCommands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.DriveCommands.ArcadeFromDashboard;
 import frc.robot.commands.DriveCommands.DifferentialDriveCommand;
 import frc.robot.commands.DriveCommands.NoDriveCommand;
+import frc.robot.utils.Pigeon;
 
 public class DriveSubsystem extends SubsystemBase {
   private TalonFX m_rightMotor;
@@ -53,15 +54,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final DifferentialDriveKinematics m_kinematics;
   private final DifferentialDrivePoseEstimator m_poseEstimator;
-  private final AHRS m_gyro;
+  private final Pigeon m_pigeon;
 
   private final SendableChooser<Class<?>> m_driveChooser = new SendableChooser<>();
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, AHRS gyro, TalonFX rightMotor, TalonFX leftMotor) { 
+  public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, Pigeon pigeon, TalonFX rightMotor, TalonFX leftMotor) { 
     m_poseEstimator = poseEstimator;
     m_kinematics = kinematics;
-    m_gyro = gyro;
+    m_pigeon = pigeon;
     m_rightMotor = rightMotor;
     m_leftMotor = leftMotor;
 
@@ -101,7 +102,7 @@ public class DriveSubsystem extends SubsystemBase {
     );
     
     // Gyro setup
-    m_gyro.reset();
+    //m_pigeon.reset();
 
     // Drive Chooser Init
     m_driveChooser.setDefaultOption("PID Arcade", ArcadeDriveCommand.class);
@@ -128,7 +129,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Get (-1-->1)", 0);
     SmartDashboard.putNumber("Right Get (-1-->1)", 0);  
 
-    SmartDashboard.putNumber("Gyro Degrees", m_gyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Gyro Degrees", m_pigeon.getYaw());
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -254,7 +255,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightMotor.setPosition(0);
 
     m_poseEstimator.resetPosition(
-      m_gyro.getRotation2d(), 
+      m_pigeon.getRotation2d(), 
       0, 0, 
       newPose
     );
@@ -321,8 +322,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run 
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
-    Rotation2d yaw = m_gyro.getRotation2d();
-    //m_gyro.getAngle()
+    Rotation2d yaw = m_pigeon.getRotation2d();
 
     m_poseEstimator.update(
       yaw, 

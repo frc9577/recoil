@@ -15,6 +15,34 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class PathUtils {
+    public static List<Waypoint> deepCopyWaypoints(List<Waypoint> base) {
+        List<Waypoint> newWaypoints = new ArrayList<>();
+        for (Waypoint w : base) {
+            Translation2d prev_o = w.prevControl();
+            Translation2d anchor_o = w.anchor();
+            Translation2d next_o = w.nextControl();
+
+            Translation2d prev = null;
+            if (prev_o != null) {
+                prev = new Translation2d(prev_o.getX(), prev_o.getY());
+            }
+
+            Translation2d anchor = null;
+            if (anchor_o != null) {
+                anchor = new Translation2d(anchor_o.getX(), anchor_o.getY());
+            }
+
+            Translation2d next = null;
+            if (next_o != null) {
+                next = new Translation2d(next_o.getX(), next_o.getY());
+            }
+
+            newWaypoints.add(new Waypoint(prev, anchor, next));            
+        }
+
+        return newWaypoints;
+    }
+
     /**
      * Allows you to do the modification of a path w/o needing to do the jankyness yourself.
      * 
@@ -24,7 +52,7 @@ public class PathUtils {
     */
     @SafeVarargs
     public static PathPlannerPath modifyPath(PathPlannerPath basePath, Pair<Integer, Pose2d>... pointsToModify) {
-        List<Waypoint> pathWaypoints = basePath.getWaypoints();
+        List<Waypoint> pathWaypoints = deepCopyWaypoints(basePath.getWaypoints());
         for (Pair<Integer, Pose2d> point : pointsToModify) {
             Integer index = point.getFirst();
             if (pathWaypoints.size() > index && index >= 0) {
@@ -59,7 +87,7 @@ public class PathUtils {
      * @return The path with the modified positions.
     */
     public static PathPlannerPath appendToPath(PathPlannerPath basePath, Integer index, Pose2d pointToAppend) {
-        List<Waypoint> pathWaypoints = basePath.getWaypoints();
+        List<Waypoint> pathWaypoints = deepCopyWaypoints(basePath.getWaypoints());
 
         Translation2d newAnchor = pointToAppend.getTranslation();
         Translation2d prevControl = null;
