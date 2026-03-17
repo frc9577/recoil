@@ -5,7 +5,7 @@ import frc.robot.subsystems.IndexerBulkSubsystem;
 
 /**
  * 
- * Start bulk move.
+ * Start bulk and indexer motors.
  * 
  **/
 public class StartBulkMoveCommand extends Command {
@@ -28,6 +28,7 @@ public class StartBulkMoveCommand extends Command {
   @Override
   public void initialize() {
     m_subsystem.startBulkTransfer();
+    m_subsystem.startIndexer();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
