@@ -17,7 +17,7 @@ public class AimAtHub extends RotateToRotation2D {
    * @param driveSubsystem The driveSubsystem for the robot.
    * @param poseEstimator The poseEstimator of the robot.
    * @param maxSpeed The max speed the robot is allowed to go in the rotation.
-   * @param isRed Does the robot need to point tword the red or blue goal, default is blue.
+   * @param isRed Does the robot need to point towards the red or blue goal, default is blue.
    */
   public AimAtHub(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, double maxSpeed, BooleanSupplier isRed) 
   {
