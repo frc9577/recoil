@@ -174,7 +174,7 @@ public final class Constants {
     public static final int kLauncherLiftMotorCANID      = 42;
 
     // The speed, in range [-1.0, 1.0], to run the lift motor when started.
-    public static final double kLiftMotorSpeed = 0.3;
+    public static final double kLiftMotorSpeed = 1.0;
 
     // Beam break sensor to detect fuel at the top of the lift.
     public static final int kUpperFuelSensorChannel = 0;
