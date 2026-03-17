@@ -46,13 +46,11 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("IndexerBulk TestIndexerSpeed", m_indexerSpeed);
 
     m_motorBulk = new TalonFXS(IndexerBulkConstants.kBulkMoveMotorCANID);
-   
-    // TODO: Temporarily removed until bulk motor is populated. Reinstate this!
-    //
-    // if (!m_motorBulk.isConnected())
-    // {
-    //   throw new Exception("Bult transport motor is not present.");
-    // }
+    
+     if (!m_motorBulk.isConnected())
+     {
+      throw new Exception("Bult transport motor is not present.");
+     }
 
     m_motorIndexer = new TalonFX(IndexerBulkConstants.kIndexerMotorCANID);
     if (!m_motorIndexer.isConnected())
