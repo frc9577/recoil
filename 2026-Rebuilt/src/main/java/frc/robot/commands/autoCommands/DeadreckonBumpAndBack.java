@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AimAtHub;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.PathUtils;
 
@@ -82,7 +83,13 @@ public class DeadreckonBumpAndBack extends Command {
       Command lineupCommand = AutoBuilder.followPath(lineupPath);
 
       // Create & Schedule the command group.
-      CommandScheduler.getInstance().schedule(lineupCommand.andThen(deadreckonBackward));
+      CommandScheduler.getInstance().schedule(
+        lineupCommand
+        .andThen(deadreckonBackward)
+        .andThen(new AimAtHub(m_driveSubsystem, m_poseEstimator, 2.0, m_isRed))
+        .andThen(new DeadreckonDistance(m_driveSubsystem, 0.75, -1.0))
+        .andThen(new AimAtHub(m_driveSubsystem, m_poseEstimator, 2.0, m_isRed))
+      );
     });
 
     Command pickupScheudle = new InstantCommand(() -> {
@@ -103,8 +110,8 @@ public class DeadreckonBumpAndBack extends Command {
     });
     
     // Create & Schedule the command group.
-    SequentialCommandGroup initialSequential = deadreckonFoward.andThen(pickupScheudle);
-    CommandScheduler.getInstance().schedule(initialSequential);
+    //SequentialCommandGroup initialSequential = deadreckonFoward.andThen(pickupScheudle);
+    CommandScheduler.getInstance().schedule(deadreckonFoward);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

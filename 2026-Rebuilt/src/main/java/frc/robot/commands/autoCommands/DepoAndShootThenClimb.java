@@ -10,9 +10,12 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AimAtHub;
+import frc.robot.commands.RotateToRotation2D;
 import frc.robot.commands.WaitCommand;
 import frc.robot.commands.util.AutoFromList;
 import frc.robot.commands.util.AutoFromList.firstPathType;
@@ -57,18 +60,32 @@ public class DepoAndShootThenClimb extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Rotation2d targetRot;
+    if (m_isRed.getAsBoolean() == true) {
+      targetRot = Rotation2d.kZero;
+    } else {
+      targetRot = Rotation2d.k180deg;
+    }
+
     // Init the new sequence
-    ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
+    ArrayList<Object> sequence2 = new ArrayList<Object>(Arrays.asList(
+      "FromDepoTowerLineup",
+      new RotateToRotation2D(m_DriveSubsystem, m_PoseEstimator, targetRot, 1.0),
+      new WaitCommand(0.2),
+      new DeadreckonDistance(m_DriveSubsystem, 0.5, 1.0)
+    ));
+    Command auto2 = new AutoFromList(sequence2, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.REPLACE_FIRST_PATH, false);
+
+    ArrayList<Object> sequence1 = new ArrayList<Object>(Arrays.asList(
       new DeadreckonDistance(m_DriveSubsystem, 0.5, -1.0),
       "GatherDepot",
       new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 3.0, m_isRed),
       new WaitCommand(2.0),
-      "FromDepoTowerLineup"
+      Commands.runOnce(() -> {CommandScheduler.getInstance().schedule(auto2);})
     ));
+    Command auto1 = new AutoFromList(sequence1, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.GO_TO_FIRST_PATH, false);
 
-    // Run the command
-    Command auto = new AutoFromList(sequence, m_constraints, m_DriveSubsystem, m_PoseEstimator, firstPathType.GO_TO_FIRST_PATH, false);
-    CommandScheduler.getInstance().schedule(auto);
+    CommandScheduler.getInstance().schedule(auto1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -54,6 +54,7 @@ import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.autoCommands.DepoAndShootThenClimb;
+import frc.robot.commands.autoCommands.OverBumpContinousJ;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
@@ -222,8 +223,12 @@ public class RobotContainer {
       );
 
       // replace slowConstraints to m_contraints after testing.
-      m_autoChooser.addOption("[TEST] Deadreckon Over Bump and Back", 
+      m_autoChooser.addOption("[INDEV] Deadreckon Over Bump and Back", 
         new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, isRed)
+      );
+
+      m_autoChooser.addOption("[INDEV] Continous J into nutreal and back", 
+        new OverBumpContinousJ(driveSubsystem, m_PoseEstimator, isRed)
       );
 
       m_autoChooser.addOption("[TEST] Forward Test", 
