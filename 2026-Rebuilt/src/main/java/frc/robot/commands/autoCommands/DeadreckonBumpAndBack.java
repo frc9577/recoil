@@ -110,8 +110,8 @@ public class DeadreckonBumpAndBack extends Command {
     });
     
     // Create & Schedule the command group.
-    //SequentialCommandGroup initialSequential = deadreckonFoward.andThen(pickupScheudle);
-    CommandScheduler.getInstance().schedule(deadreckonFoward);
+    SequentialCommandGroup initialSequential = deadreckonFoward.andThen(pickupScheudle);
+    CommandScheduler.getInstance().schedule(initialSequential);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
