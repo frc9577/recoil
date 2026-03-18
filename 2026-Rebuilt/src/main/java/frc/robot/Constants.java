@@ -208,7 +208,7 @@ public final class Constants {
     public static final int kTicksPerUpdate = 10;
 
     public static final double kFixedTestSpeed = 3000.0;
-    public static final double kFlywheelToleranceRPM = 200.0;
+    public static final double kFlywheelToleranceRPM = 100.0;
   }
 
   public static class IndexerBulkConstants {

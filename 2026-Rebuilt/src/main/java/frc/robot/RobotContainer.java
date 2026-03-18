@@ -308,6 +308,21 @@ public class RobotContainer {
         new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, isRed)
       );
 
+      // Range launcher, turn to face hub and shoot all fuel.
+      if (m_launcherSubsystem.isPresent() & m_indexerBulkSubsystem.isPresent())
+      {
+        LauncherSubsystem launcher = m_launcherSubsystem.get();
+        IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
+
+        // This is intended to keep shooting until the button is released.
+        m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
+                                                                launcher,
+                                                                indexer,
+                                                                m_PoseEstimator,
+                                                                isRed,
+                                                                LauncherConstants.kFlywheelToleranceRPM));
+      }
+
       // Travel to corner and shoot
       m_driverController.x().onTrue(
         new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
