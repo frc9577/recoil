@@ -667,10 +667,10 @@
           },
           {
             "title": "Pneumatic Subsystem",
-            "x": 736.0,
-            "y": 480.0,
-            "width": 192.0,
-            "height": 96.0,
+            "x": 640.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 64.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/SmartDashboard/Pneumatic Subsystem",
@@ -684,7 +684,7 @@
           },
           {
             "title": "Compressor Running",
-            "x": 928.0,
+            "x": 640.0,
             "y": 480.0,
             "width": 128.0,
             "height": 96.0,
@@ -701,13 +701,27 @@
           },
           {
             "title": "Pressure",
-            "x": 1056.0,
+            "x": 768.0,
             "y": 480.0,
             "width": 128.0,
             "height": 96.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Pressure",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Set Speed",
+            "x": 960.0,
+            "y": 96.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Intake TestSpeed",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true

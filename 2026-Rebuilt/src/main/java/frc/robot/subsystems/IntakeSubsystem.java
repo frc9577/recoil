@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;
@@ -13,9 +13,10 @@ import frc.robot.Constants.PneumaticsConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   private TalonFX m_motorIntake;
-  private Solenoid m_solenoid;
+  private DoubleSolenoid m_solenoid;
   private boolean m_motorRunning = false;
   private boolean m_Extended = false;
+  private double m_MotorSpeed = IntakeConstants.kIntakeMotorSpeed;
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(Boolean bHasPneumatics) throws Exception {
@@ -28,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // Test mode controls 
     SmartDashboard.putBoolean("Intake TestExtend", false);
     SmartDashboard.putBoolean("Intake TestRun", false);
+    SmartDashboard.putNumber("Intake TestSpeed", m_MotorSpeed);
     
     m_motorIntake = new TalonFX(IntakeConstants.kIntakeMotorCANID);
     if(!m_motorIntake.isConnected())
@@ -36,9 +38,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     if(bHasPneumatics) {
-      m_solenoid = new Solenoid(PneumaticsConstants.kPneumaticsHubCANID,
-                                PneumaticsConstants.kHubType, 
-                                IntakeConstants.kIntakeSolenoid);
+      m_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubCANID,
+                                      PneumaticsConstants.kHubType, 
+                                      IntakeConstants.kIntakeSolenoidForward,
+                                      IntakeConstants.kIntakeSolenoidReverse);
     } else {
       throw new Exception("Intake subsystem requires pneumatics which are not present!");
     }
@@ -46,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Spins the shaft on the intake that will move fuel into the robot.
   public void start() {
-    m_motorIntake.set(IntakeConstants.kIntakeMotorSpeed);
+    m_motorIntake.set(m_MotorSpeed);
     m_motorRunning = true;
     SmartDashboard.putBoolean("Intake Running", m_motorRunning);
   }
@@ -70,6 +73,11 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Extended", m_Extended);
   }
 
+    // Retracts the intake mechanism over the bumpers and inside of the robot.
+  public void pneumatics_off() {
+    m_solenoid.set(DoubleSolenoid.Value.kOff);
+  }
+
   // Returns true if the intake shaft is spinning.
   public boolean isIntakeStarted() {
     return m_motorRunning;
@@ -80,6 +88,13 @@ public class IntakeSubsystem extends SubsystemBase {
     return m_Extended;
   }
 
+  public void setIntakeSpeed(double speed) {
+    m_MotorSpeed = speed;
+    if(m_motorRunning)
+    {
+      start();
+    }
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -89,6 +104,9 @@ public class IntakeSubsystem extends SubsystemBase {
     // Set the motor states based on the SmartDashboard test controls.
     Boolean Extend = SmartDashboard.getBoolean("Intake TestExtend", false);
     Boolean Run = SmartDashboard.getBoolean("Intake TestRun", false);
+    double Speed = SmartDashboard.getNumber("Intake TestSpeed", m_MotorSpeed);
+
+    setIntakeSpeed(Speed);
     
     // Turn the intake on or off depending upon test control, only changing the state if the control actually changed.
     if(Run) {
