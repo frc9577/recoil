@@ -14,6 +14,8 @@ public class Pigeon {
     private boolean m_exists;
     private double m_yawOffset = 0;
 
+    private boolean m_isAccurate = false;
+
     public Pigeon(int PigeonCanId) {
         m_pigeon2 = new Pigeon2(PigeonCanId);
         m_exists = m_pigeon2.isConnected();
@@ -123,5 +125,13 @@ public class Pigeon {
 
     public double getYawOffset() {
         return m_yawOffset;
+    }
+
+    public boolean isAccurate() {
+        return m_isAccurate;
+    }
+
+    public void setAccuracy(boolean isAccurate) {
+        m_isAccurate = isAccurate;
     }
 }

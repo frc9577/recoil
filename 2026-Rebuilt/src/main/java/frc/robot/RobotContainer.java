@@ -224,7 +224,7 @@ public class RobotContainer {
 
       // replace slowConstraints to m_contraints after testing.
       m_autoChooser.addOption("[INDEV] Deadreckon Over Bump and Back", 
-        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, isRed)
+        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, isRed, m_pigeon)
       );
 
       m_autoChooser.addOption("[INDEV] Continous J into nutreal and back", 
@@ -403,9 +403,11 @@ public class RobotContainer {
     SmartDashboard.putNumber("Roll Rate", 0.0);
 
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
+    SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
   }
 
   // This function is called every 20mS.  
+  private boolean oldPigeonValue = false;
   public void UpdateSmartDashboard() {
     // Non-subsystem specific stuff
     if ((m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0) {
@@ -424,10 +426,23 @@ public class RobotContainer {
       SmartDashboard.putNumber("Pitch Rate", 0.0);
       SmartDashboard.putNumber("Roll Rate", 0.0);
 
-      SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
+      //SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
       SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
 
       SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
+
+      boolean pigeonAccuracy = m_pigeon.isAccurate();
+      boolean dashboardAccuracy = SmartDashboard.getBoolean("Pidgeon Accurate", pigeonAccuracy);
+
+      if (pigeonAccuracy != dashboardAccuracy) {
+        if (pigeonAccuracy == oldPigeonValue) {
+          m_pigeon.setAccuracy(dashboardAccuracy);
+          pigeonAccuracy = dashboardAccuracy;
+        } else {
+          SmartDashboard.putBoolean("Pidgeon Accurate", pigeonAccuracy);
+        }
+      }
+      oldPigeonValue = pigeonAccuracy;
     }
 
     // Drive subsystem
@@ -491,14 +506,25 @@ public class RobotContainer {
 
   // Gets called every disabled tick.
   public void disabledPeriodic() {
-    double cameraYaw = m_limelightSubsystem.getRobotYaw();
-    
-    // m_gyro.enableLogging(false);
-    // m_gyro.reset();
-    // m_gyro.setAngleAdjustment(-cameraYaw);
+    // Get Starting Orientation
+    Double robotYaw; // Degree
+    if (isRed.getAsBoolean() == true) {
+      robotYaw = 180.0;
+    } else {
+      robotYaw = 0.0;
+    }
 
+    // Reset Pidgeon
     m_pigeon.reset();
-    m_pigeon.setYawOffset(cameraYaw);
+    m_pigeon.setYawOffset(robotYaw);
+    m_pigeon.setAccuracy(true);
+
+    // Reset Limelight
+    LimelightHelpers.SetIMUMode("limelight", 1);
+    LimelightHelpers.SetRobotOrientation("limelight", robotYaw, 0, 0, 0, 0, 0);
+
+    // Reset Pose Estimator
+    m_PoseEstimator.resetRotation(new Rotation2d(robotYaw * (Math.PI/180)));
   }
 
   /**

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AimAtHub;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.PathUtils;
+import frc.robot.utils.Pigeon;
 
 /** An example command that uses an example subsystem. */
 public class DeadreckonBumpAndBack extends Command {
@@ -25,6 +26,7 @@ public class DeadreckonBumpAndBack extends Command {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
   private final PathConstraints m_constraints;
   private final BooleanSupplier m_isRed;
+  private final Pigeon m_pigeon;
 
   /**
    * Creates a new DeadreckonBumpAndBack.
@@ -33,12 +35,13 @@ public class DeadreckonBumpAndBack extends Command {
    * @param targetPose The pose the robot will make a point to go to.
    * @param constraints The constraints the robot will follow while following the path. 
    */
-  public DeadreckonBumpAndBack(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, PathConstraints constraints, BooleanSupplier isRed) 
+  public DeadreckonBumpAndBack(DriveSubsystem driveSubsystem, DifferentialDrivePoseEstimator poseEstimator, PathConstraints constraints, BooleanSupplier isRed, Pigeon pigeon) 
   {
     m_driveSubsystem = driveSubsystem;
     m_poseEstimator = poseEstimator;
     m_constraints = constraints;
     m_isRed = isRed;
+    m_pigeon = pigeon;
   }
 
   // Called when the command is initially scheduled.
@@ -110,8 +113,11 @@ public class DeadreckonBumpAndBack extends Command {
     });
     
     // Create & Schedule the command group.
-    SequentialCommandGroup initialSequential = deadreckonFoward.andThen(pickupScheudle);
-    CommandScheduler.getInstance().schedule(initialSequential);
+    CommandScheduler.getInstance().schedule(
+      deadreckonFoward
+      .andThen(new InstantCommand(() -> m_pigeon.setAccuracy(false)))
+      //.andThen(pickupScheudle)
+    );
   }
 
   // Called every time the scheduler runs while the command is scheduled.
