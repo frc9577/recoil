@@ -664,6 +664,68 @@
               "data_type": "double",
               "show_submit_button": true
             }
+          },
+          {
+            "title": "Pneumatic Subsystem",
+            "x": 640.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 64.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Pneumatic Subsystem",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Compressor Running",
+            "x": 640.0,
+            "y": 480.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Compressor Running",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Pressure",
+            "x": 768.0,
+            "y": 480.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Pressure",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Set Speed",
+            "x": 960.0,
+            "y": 96.0,
+            "width": 128.0,
+            "height": 96.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Intake TestSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
           }
         ]
       }

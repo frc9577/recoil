@@ -42,6 +42,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -101,7 +102,7 @@ public final class Constants {
     public static final PneumaticsModuleType kHubType = PneumaticsModuleType.REVPH;
     public static final int kPneumaticsHubCANID = 1;
     public static final double kMinPneumaticsPressure = 80.0;
-    public static final double kMaxPneumaticsPressure = 120.0;
+    public static final double kMaxPneumaticsPressure = 115.0;
 
     public static final int kTicksPerUpdate = 5;
   }
@@ -162,10 +163,10 @@ public final class Constants {
     public static double kIntakeMotorSpeed = 0.3;
 
     // Solenoid states required to extend and retract the intake mechanism.
-    public static int     kIntakeSolenoid = 0;
-    public static int     kIntakeSolenoid1 = 0;
-    public static boolean kIntakeExtend   = true;
-    public static boolean kIntakeRetract  = !kIntakeExtend;
+    public static int     kIntakeSolenoidForward = 15;
+    public static int     kIntakeSolenoidReverse = 13;
+    public static DoubleSolenoid.Value kIntakeExtend   = DoubleSolenoid.Value.kForward;
+    public static DoubleSolenoid.Value kIntakeRetract  = DoubleSolenoid.Value.kReverse;
   }
 
   public static class LauncherConstants {
