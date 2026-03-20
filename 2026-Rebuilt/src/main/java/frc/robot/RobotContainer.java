@@ -7,13 +7,10 @@ package frc.robot;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -50,7 +47,6 @@ import frc.robot.commands.autoCommands.BackupAndClimb;
 import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.BackupAndShootThenClimb;
 import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
-import frc.robot.commands.autoCommands.CorralAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.autoCommands.DepoAndShootThenClimb;
@@ -131,7 +127,7 @@ public class RobotContainer {
     m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead, leftLead, rightFollower, leftFollower);
 
     // Init the subsystems that don't require pneumatics.
-    m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator, m_pigeon);
+    m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator);
     m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
     m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
 
@@ -509,24 +505,25 @@ public class RobotContainer {
   // Gets called every disabled tick.
   public void disabledPeriodic() {
     // Get Starting Orientation
-    Double robotYaw; // Degree
-    if (isRed.getAsBoolean() == true) {
-      robotYaw = 180.0;
-    } else {
-      robotYaw = 0.0;
-    }
+    // Double robotYaw; // Degree
+    // if (isRed.getAsBoolean() == true) {
+    //   robotYaw = 180.0;
+    // } else {
+    //   robotYaw = 0.0;
+    // }
 
     // Reset Pidgeon
+    Double robotYaw = m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees();
     m_pigeon.reset();
     m_pigeon.setYawOffset(robotYaw);
     m_pigeon.setAccuracy(true);
 
-    // Reset Limelight
-    LimelightHelpers.SetIMUMode("limelight", 1);
-    LimelightHelpers.SetRobotOrientation("limelight", robotYaw, 0, 0, 0, 0, 0);
+    // // Reset Limelight
+    // LimelightHelpers.SetIMUMode("limelight", 1);
+    // LimelightHelpers.SetRobotOrientation("limelight", robotYaw, 0, 0, 0, 0, 0);
 
-    // Reset Pose Estimator
-    m_PoseEstimator.resetRotation(new Rotation2d(robotYaw * (Math.PI/180)));
+    // // Reset Pose Estimator
+    // m_PoseEstimator.resetRotation(new Rotation2d(robotYaw * (Math.PI/180)));
   }
 
   /**
