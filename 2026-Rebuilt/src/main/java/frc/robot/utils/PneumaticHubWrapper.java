@@ -5,6 +5,7 @@
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.hal.REVPHVersion;
 
 public class PneumaticHubWrapper extends PneumaticHub {
@@ -13,7 +14,7 @@ public class PneumaticHubWrapper extends PneumaticHub {
     /* @throws Exception */
     public PneumaticHubWrapper() throws Exception {
         m_Hub = new PneumaticHub();
-
+        
         if (!isAvailable())
         {
             throw new Exception("Pneumatic hub is not connected or is malfunctioning.");

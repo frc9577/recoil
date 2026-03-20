@@ -293,6 +293,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("ClimbL1 Subsystem", m_climbL1Subsystem.isPresent());
     SmartDashboard.putBoolean("Launcher Subsystem", m_launcherSubsystem.isPresent());
     SmartDashboard.putBoolean("IndexerBulk Subsystem", m_indexerBulkSubsystem.isPresent());
+    SmartDashboard.putBoolean("Pneumatic Subsystem", m_pneumaticHub.isPresent());
+
 
     // Note that some of our command bindings require that multiple subsystems
     // are present. We only enable a binding if all its requirements are met!
@@ -447,12 +449,12 @@ public class RobotContainer {
     }
 
     // Pneumatics compressor
-    // if(m_pneumaticHub.isPresent() && ((m_iTickCount % PneumaticsConstants.kTicksPerUpdate) == 0))
-    // {
-    //   PneumaticHub hub = m_pneumaticHub.get();
-    //   SmartDashboard.putNumber("Pressure", hub.getPressure(0));
-    //   SmartDashboard.putBoolean("Compressor Running", hub.getCompressor());
-    // }
+    if(m_pneumaticHub.isPresent() && ((m_iTickCount % PneumaticsConstants.kTicksPerUpdate) == 0))
+    {
+      PneumaticHub hub = m_pneumaticHub.get();
+      SmartDashboard.putNumber("Pressure", hub.getPressure(0));
+      SmartDashboard.putBoolean("Compressor Running", hub.getCompressor());
+    }
     
     m_iTickCount++;
   }
