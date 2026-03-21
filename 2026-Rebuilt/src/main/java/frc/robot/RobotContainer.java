@@ -497,7 +497,7 @@ public class RobotContainer {
     // Safe-to-shoot indicator.
     if(m_launcherSubsystem.isPresent() && ((m_iTickCount % LauncherConstants.kTicksPerDistanceUpdate) == 0))
     {
-      Boolean bCanShoot = LauncherUtils.canScoreFromHere(m_PoseEstimator, isRed);
+      Boolean bCanShoot = LauncherUtils.canScoreFromHere(m_PoseEstimator, m_isRed);
       SmartDashboard.putBoolean("Launcher SafeToShoot", bCanShoot);
     }
 
