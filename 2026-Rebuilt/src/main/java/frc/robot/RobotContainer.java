@@ -53,6 +53,7 @@ import frc.robot.commands.autoCommands.DepoAndShootThenClimb;
 import frc.robot.commands.autoCommands.OverBumpContinousJ;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
+import frc.robot.utils.LauncherUtils;
 import frc.robot.Constants.*;
 import frc.robot.Constants.RobotConstants.kStartingNames;
 
@@ -394,6 +395,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, m_isRed));
     SmartDashboard.putNumber("mt2 Tag Count", 0.0);
 
+    SmartDashboard.putBoolean("Launcher SafeToShoot", false);
+
     SmartDashboard.putNumber("Yaw", 0.0);
     SmartDashboard.putNumber("Pitch", 0.0);
     SmartDashboard.putNumber("Roll", 0.0);
@@ -491,6 +494,13 @@ public class RobotContainer {
       SmartDashboard.putBoolean("Compressor Running", hub.getCompressor());
     }
     
+    // Safe-to-shoot indicator.
+    if(m_launcherSubsystem.isPresent() && ((m_iTickCount % LauncherConstants.kTicksPerDistanceUpdate) == 0))
+    {
+      Boolean bCanShoot = LauncherUtils.canScoreFromHere(m_PoseEstimator, isRed);
+      SmartDashboard.putBoolean("Launcher SafeToShoot", bCanShoot);
+    }
+
     m_iTickCount++;
   }
 
