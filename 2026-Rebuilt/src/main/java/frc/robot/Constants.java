@@ -207,6 +207,7 @@ public final class Constants {
 
     // Frequency at which we send current launcher speed back to the driver station.
     public static final int kTicksPerUpdate = 10;
+    public static final int kTicksPerDistanceUpdate = 45;
 
     public static final double kFixedTestSpeed = 3000.0;
     public static final double kFlywheelToleranceRPM = 100.0;

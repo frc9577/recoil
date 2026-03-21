@@ -1,5 +1,10 @@
 package frc.robot.utils;
 
+import java.util.function.BooleanSupplier;
+
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import frc.robot.utils.HubUtils;
+
 public class LauncherUtils {
     //
     // Characterization data for the launcher. This table links shooting
@@ -13,6 +18,24 @@ public class LauncherUtils {
         {5.21, 3300.0},
     };
 
+    //
+    // Return the minimum robot-to-hub distance from which we know we
+    // can score fuel.
+    //
+    public static double getMinShootingDistance() {
+        return m_DistanceToRPM[0][0];
+    }
+
+    public static Boolean canScoreFromHere(DifferentialDrivePoseEstimator poseEstimator, BooleanSupplier isRed) {
+        // How far are we from our alliance hub?
+        double distance = HubUtils.getHubDistance(poseEstimator, isRed);
+
+        // This doesn't take into consideration which part of the field we are in so will 
+        // report true even in the neutral zone. We assume the driver is aware enough of the
+        // robot position to know this!
+        return ((distance >= m_DistanceToRPM[0][0]) && (distance <= m_DistanceToRPM[m_DistanceToRPM.length - 1][0]));
+    }
+    
     //
     // Given a distance between the robot and the hub, calculate the 
     // launcher flywheel speed needed to successfully score fuel from
