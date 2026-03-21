@@ -117,6 +117,17 @@ public class RobotContainer {
   // Keep track of time for SmartDashboard updates.
   static int m_iTickCount = 0;
 
+  // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
+  public BooleanSupplier m_isRed = () -> {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+    } else {
+      System.out.println("Could not fetch alliance! Defaulting to blue!");
+      return false;
+    }
+  };
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Init Pigeon
@@ -406,7 +417,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Roll Rate", 0.0);
 
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
-    SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
+    // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
 
     m_startingChooser = new SendableChooser<kStartingNames>();  
     for (kStartingNames startingName : kStartingNames.values()) {
@@ -420,19 +431,9 @@ public class RobotContainer {
   private kStartingNames oldStartEnum;
   public void periodic() {
     UpdateSmartDashboard();
-
-    boolean isRed = m_isRed.getAsBoolean();
-    kStartingNames startEnum = m_startingChooser.getSelected();
-    if ((isRed != oldIsRed) || (startEnum != null && (startEnum != oldStartEnum))) {
-      oldIsRed = isRed;
-      oldStartEnum = startEnum;
-
-      Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
-      m_PoseEstimator.resetPose(startingPose);
-    }
   }
 
-  private boolean oldPigeonValue = false;
+  //private boolean oldPigeonValue = false;
   private void UpdateSmartDashboard() {
     // Non-subsystem specific stuff
     if ((m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0) {
@@ -456,18 +457,18 @@ public class RobotContainer {
 
       SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 
-      boolean pigeonAccuracy = m_pigeon.isAccurate();
-      boolean dashboardAccuracy = SmartDashboard.getBoolean("Pidgeon Accurate", pigeonAccuracy);
+      // boolean pigeonAccuracy = m_pigeon.isAccurate();
+      // boolean dashboardAccuracy = SmartDashboard.getBoolean("Pidgeon Accurate", pigeonAccuracy);
 
-      if (pigeonAccuracy != dashboardAccuracy) {
-        if (pigeonAccuracy == oldPigeonValue) {
-          m_pigeon.setAccuracy(dashboardAccuracy);
-          pigeonAccuracy = dashboardAccuracy;
-        } else {
-          SmartDashboard.putBoolean("Pidgeon Accurate", pigeonAccuracy);
-        }
-      }
-      oldPigeonValue = pigeonAccuracy;
+      // if (pigeonAccuracy != dashboardAccuracy) {
+      //   if (pigeonAccuracy == oldPigeonValue) {
+      //     m_pigeon.setAccuracy(dashboardAccuracy);
+      //     pigeonAccuracy = dashboardAccuracy;
+      //   } else {
+      //     SmartDashboard.putBoolean("Pidgeon Accurate", pigeonAccuracy);
+      //   }
+      // }
+      // oldPigeonValue = pigeonAccuracy;
     }
 
     // Drive subsystem
@@ -504,24 +505,6 @@ public class RobotContainer {
     m_iTickCount++;
   }
 
-  // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
-  public BooleanSupplier m_isRed = () -> {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      return alliance.get() == DriverStation.Alliance.Red;
-    } else {
-      System.out.println("Could not fetch alliance! Defaulting to blue!");
-      return false;
-    }
-  };
-
-  private int disabledTick = 0;
-  public void disabledInit() {
-    disabledTick = 0;
-    LimelightHelpers.SetIMUMode("limelight", 3);
-    m_limelightSubsystem.setAllowJumps(true);
-  }
-
   // Move to auto init for competition code.
   public void enabledInit() {
     LimelightHelpers.SetIMUMode("limelight", 3);
@@ -542,6 +525,13 @@ public class RobotContainer {
     // }
   }
 
+  private int disabledTick = 0;
+  public void disabledInit() {
+    disabledTick = 0;
+    LimelightHelpers.SetIMUMode("limelight", 3);
+    m_limelightSubsystem.setAllowJumps(true);
+  }
+
   // Gets called every disabled tick.
   public void disabledPeriodic() {
     // Reset Pidgeon
@@ -549,7 +539,17 @@ public class RobotContainer {
       Double robotYaw = m_limelightSubsystem.getRobotYaw();
       m_pigeon.reset();
       m_pigeon.setYawOffset(robotYaw);
-      m_pigeon.setAccuracy(true);
+    }
+
+    // Check the side
+    boolean isRed = m_isRed.getAsBoolean();
+    kStartingNames startEnum = m_startingChooser.getSelected();
+    if ((isRed != oldIsRed) || (startEnum != null && (startEnum != oldStartEnum))) {
+      oldIsRed = isRed;
+      oldStartEnum = startEnum;
+
+      Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
+      m_PoseEstimator.resetPose(startingPose);
     }
 
     disabledTick += 1;

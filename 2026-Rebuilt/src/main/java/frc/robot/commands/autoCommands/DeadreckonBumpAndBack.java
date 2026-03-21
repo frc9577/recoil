@@ -115,8 +115,7 @@ public class DeadreckonBumpAndBack extends Command {
     // Create & Schedule the command group.
     CommandScheduler.getInstance().schedule(
       deadreckonFoward
-      .andThen(new InstantCommand(() -> m_pigeon.setAccuracy(false)))
-      //.andThen(pickupScheudle)
+      .andThen(pickupScheudle)
     );
   }
 
