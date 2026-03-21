@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Spins the shaft on the intake that will move fuel into the robot.
   public void start() {
-    m_motorIntake.set(m_MotorSpeed);
+    m_motorIntake.set(-m_MotorSpeed);
     m_motorRunning = true;
     SmartDashboard.putBoolean("Intake Running", m_motorRunning);
   }
@@ -107,7 +107,7 @@ public class IntakeSubsystem extends SubsystemBase {
     double Speed = SmartDashboard.getNumber("Intake TestSpeed", m_MotorSpeed);
 
     setIntakeSpeed(Speed);
-    
+
     // Turn the intake on or off depending upon test control, only changing the state if the control actually changed.
     if(Run) {
       if(!m_motorRunning) {
