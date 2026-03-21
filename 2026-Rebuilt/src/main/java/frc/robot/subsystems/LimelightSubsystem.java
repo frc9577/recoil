@@ -32,10 +32,10 @@ public class LimelightSubsystem extends SubsystemBase {
     m_poseEstimator = poseEstimator;
   }
 
-  public double getRobotYaw() {  
+  public Double getRobotYaw() {  
     if (m_YawQue.isEmpty()) {
       System.out.println("No yaws to avrg! returning 0!");
-      return 0.0;
+      return null;
     }
 
     Double[] doubleObjects = m_YawQue.toArray(new Double[0]);

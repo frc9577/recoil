@@ -419,7 +419,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
 
-    m_startingChooser = new SendableChooser<kStartingNames>();  
+    m_startingChooser = new SendableChooser<kStartingNames>(); 
+    m_startingChooser.setDefaultOption("NONE", null);
     for (kStartingNames startingName : kStartingNames.values()) {
       m_startingChooser.addOption(startingName.name(), startingName);
     }
@@ -427,8 +428,6 @@ public class RobotContainer {
   }
 
   // This function is called every 20mS.
-  private boolean oldIsRed;
-  private kStartingNames oldStartEnum;
   public void periodic() {
     UpdateSmartDashboard();
   }
@@ -533,23 +532,37 @@ public class RobotContainer {
   }
 
   // Gets called every disabled tick.
+  private boolean oldIsRed;
+  private kStartingNames oldStartEnum;
   public void disabledPeriodic() {
     // Reset Pidgeon
     if ((disabledTick % 5) == 0) {
       Double robotYaw = m_limelightSubsystem.getRobotYaw();
-      m_pigeon.reset();
-      m_pigeon.setYawOffset(robotYaw);
+      if (robotYaw != null) {
+        m_pigeon.reset();
+        m_pigeon.setYawOffset(robotYaw);
+      }
     }
 
     // Check the side
     boolean isRed = m_isRed.getAsBoolean();
     kStartingNames startEnum = m_startingChooser.getSelected();
-    if ((isRed != oldIsRed) || (startEnum != null && (startEnum != oldStartEnum))) {
-      oldIsRed = isRed;
-      oldStartEnum = startEnum;
+    if (startEnum != null) {
+      if ((isRed != oldIsRed) || (startEnum != oldStartEnum)) {
+        oldIsRed = isRed;
+        oldStartEnum = startEnum;
 
-      Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
-      m_PoseEstimator.resetPose(startingPose);
+        Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
+
+        m_pigeon.reset();
+        m_pigeon.setYawOffset(startingPose.getRotation().getDegrees());
+
+        m_PoseEstimator.resetPose(startingPose);
+
+        System.out.println("Reset starting pose!");
+      }
+    } else if(startEnum != oldStartEnum) {
+      oldStartEnum = null;
     }
 
     disabledTick += 1;
