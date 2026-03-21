@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Send subsystem and robot state back to the driver station.
-    m_robotContainer.UpdateSmartDashboard();
+    m_robotContainer.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

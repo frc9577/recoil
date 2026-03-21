@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+
+import org.ejml.simple.SimpleMatrix;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
@@ -14,17 +18,45 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.utils.LimitedQueue;
 
 public class LimelightSubsystem extends SubsystemBase {
   private final DifferentialDrivePoseEstimator m_poseEstimator;
+  private final LimitedQueue<Double> m_YawQue = new LimitedQueue<Double>(5);
+  private boolean m_allowJumps = true;
 
   /** Creates a new PositionSubsystem. */
   public LimelightSubsystem(DifferentialDrivePoseEstimator poseEstimator) {
     m_poseEstimator = poseEstimator;
   }
 
-  // This is copy and pasted from limelight's documentation for testing.
+  public double getRobotYaw() {  
+    if (m_YawQue.isEmpty()) {
+      System.out.println("No yaws to avrg! returning 0!");
+      return 0.0;
+    }
+
+    Double[] doubleObjects = m_YawQue.toArray(new Double[0]);
+    int queSize = doubleObjects.length;
+
+    double[] primitiveDoubles = new double[queSize];
+    for (int i = 0; i < queSize; i++) {
+        primitiveDoubles[i] = doubleObjects[i].doubleValue();
+    }
+
+    SimpleMatrix samplesMatrix = new SimpleMatrix(primitiveDoubles);
+
+    double[] weightsArray = new double[queSize];
+    Arrays.fill(weightsArray, 1.0);
+
+    SimpleMatrix weightsMatrix = new SimpleMatrix(1, queSize, true, weightsArray);
+    
+    double avrg = samplesMatrix.dot(weightsMatrix)/weightsMatrix.elementSum();
+    return avrg;
+  }
+
   private void updateOdometry() {
     PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
@@ -33,18 +65,25 @@ public class LimelightSubsystem extends SubsystemBase {
       return;
     }
 
+    Pose2d estimatedPose = poseEst.pose;
+    Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
+
     // If detected tags are not enough
     SmartDashboard.putNumber("Tag Count", poseEst.tagCount);
-    if(poseEst.tagCount < 2 || poseEst.rawFiducials.length > 0) {
+    if(poseEst.tagCount < 2 || poseEst.rawFiducials.length <= 0) {
       return;
     }
 
     // Make sure that the estimated position is within field bounds.
-    Pose2d estimatedPose = poseEst.pose;
     if (
       estimatedPose.getX() < 0.0 || estimatedPose.getX() > FieldConstants.kFieldWidth 
       || estimatedPose.getY() < 0.0 || estimatedPose.getY() > FieldConstants.kFieldLength
     ) {
+      return;
+    }
+
+    double distanceDiff = currentPose.getTranslation().getDistance(estimatedPose.getTranslation());
+    if (m_allowJumps == false && distanceDiff > 2.0) {
       return;
     }
 
@@ -79,5 +118,12 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+
+    IMUData limelightData = LimelightHelpers.getIMUData("limelight");
+    m_YawQue.add(limelightData.robotYaw);
+  }
+
+  public void setAllowJumps(boolean allowJumps) {
+    m_allowJumps = allowJumps;
   }
 }

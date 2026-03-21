@@ -54,6 +54,7 @@ import frc.robot.commands.autoCommands.OverBumpContinousJ;
 import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.Constants.*;
+import frc.robot.Constants.RobotConstants.kStartingNames;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -105,6 +106,7 @@ public class RobotContainer {
 
   // Smartdashboard Objects
   private SendableChooser<Command> m_autoChooser;
+  private SendableChooser<kStartingNames> m_startingChooser;
   private final Field2d m_field = new Field2d();
 
   // Factorys
@@ -124,7 +126,7 @@ public class RobotContainer {
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
     Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalRightMotorCANID);
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
-    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead, leftLead, rightFollower, leftFollower);
+    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead, leftLead, rightFollower, leftFollower, m_isRed);
 
     // Init the subsystems that don't require pneumatics.
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator);
@@ -191,23 +193,23 @@ public class RobotContainer {
       // Init Autos
 
       m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
-        new BackupAndShoot(driveSubsystem, m_PoseEstimator, isRed)
+        new BackupAndShoot(driveSubsystem, m_PoseEstimator, m_isRed)
       );
 
       m_autoChooser.addOption("[INDEV] Backup and climb", 
-        new BackupAndClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+        new BackupAndClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       m_autoChooser.addOption("[INDEV] Backup and shoot then climb", 
-        new BackupAndShootThenClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+        new BackupAndShootThenClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
-        new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+        new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       m_autoChooser.addOption("[INDEV] Depo Collect, shoot, then climb", 
-        new DepoAndShootThenClimb(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+        new DepoAndShootThenClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       // Test Autos
@@ -220,11 +222,11 @@ public class RobotContainer {
 
       // replace slowConstraints to m_contraints after testing.
       m_autoChooser.addOption("[INDEV] Deadreckon Over Bump and Back", 
-        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, isRed, m_pigeon)
+        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, m_isRed, m_pigeon)
       );
 
       m_autoChooser.addOption("[INDEV] Continous J into nutreal and back", 
-        new OverBumpContinousJ(driveSubsystem, m_PoseEstimator, isRed)
+        new OverBumpContinousJ(driveSubsystem, m_PoseEstimator, m_isRed)
       );
 
       m_autoChooser.addOption("[TEST] Forward Test", 
@@ -308,7 +310,7 @@ public class RobotContainer {
 
       // Aim to Hub
       m_driverController.rightBumper().onTrue(
-        new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, isRed)
+        new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, m_isRed)
       );
 
       // Range launcher, turn to face hub and shoot all fuel.
@@ -322,13 +324,13 @@ public class RobotContainer {
                                                                 launcher,
                                                                 indexer,
                                                                 m_PoseEstimator,
-                                                                isRed,
+                                                                m_isRed,
                                                                 LauncherConstants.kFlywheelToleranceRPM));
       }
 
       // Travel to corner and shoot
       m_driverController.x().onTrue(
-        new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, isRed, m_constraints)
+        new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       // TEST COMMAND FOR TESTING ACCURACY AFTER BUMP!
@@ -389,7 +391,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Target Angle Diff Abs", 0);
     SmartDashboard.putNumber("Rotation Speed", 0);
 
-    SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
+    SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, m_isRed));
     SmartDashboard.putNumber("mt2 Tag Count", 0.0);
 
     SmartDashboard.putNumber("Yaw", 0.0);
@@ -402,11 +404,33 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
+
+    m_startingChooser = new SendableChooser<kStartingNames>();  
+    for (kStartingNames startingName : kStartingNames.values()) {
+      m_startingChooser.addOption(startingName.name(), startingName);
+    }
+    SmartDashboard.putData("Starting Position", m_startingChooser);
   }
 
-  // This function is called every 20mS.  
+  // This function is called every 20mS.
+  private boolean oldIsRed;
+  private kStartingNames oldStartEnum;
+  public void periodic() {
+    UpdateSmartDashboard();
+
+    boolean isRed = m_isRed.getAsBoolean();
+    kStartingNames startEnum = m_startingChooser.getSelected();
+    if ((isRed != oldIsRed) || (startEnum != null && (startEnum != oldStartEnum))) {
+      oldIsRed = isRed;
+      oldStartEnum = startEnum;
+
+      Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
+      m_PoseEstimator.resetPose(startingPose);
+    }
+  }
+
   private boolean oldPigeonValue = false;
-  public void UpdateSmartDashboard() {
+  private void UpdateSmartDashboard() {
     // Non-subsystem specific stuff
     if ((m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0) {
       Pose2d estimatedPos = m_PoseEstimator.getEstimatedPosition();
@@ -425,7 +449,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("Roll Rate", 0.0);
 
       //SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
-      SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, isRed));
+      SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, m_isRed));
 
       SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 
@@ -471,7 +495,7 @@ public class RobotContainer {
   }
 
   // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
-  public BooleanSupplier isRed = () -> {
+  public BooleanSupplier m_isRed = () -> {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       return alliance.get() == DriverStation.Alliance.Red;
@@ -481,11 +505,17 @@ public class RobotContainer {
     }
   };
 
-  public void disabledInit() {}
+  private int disabledTick = 0;
+  public void disabledInit() {
+    disabledTick = 0;
+    LimelightHelpers.SetIMUMode("limelight", 3);
+    m_limelightSubsystem.setAllowJumps(true);
+  }
 
   // Move to auto init for competition code.
   public void enabledInit() {
-    LimelightHelpers.SetIMUMode("limelight", 4);
+    LimelightHelpers.SetIMUMode("limelight", 3);
+    m_limelightSubsystem.setAllowJumps(false);
   }
 
   public void teleopInit() {
@@ -504,26 +534,15 @@ public class RobotContainer {
 
   // Gets called every disabled tick.
   public void disabledPeriodic() {
-    // Get Starting Orientation
-    // Double robotYaw; // Degree
-    // if (isRed.getAsBoolean() == true) {
-    //   robotYaw = 180.0;
-    // } else {
-    //   robotYaw = 0.0;
-    // }
-
     // Reset Pidgeon
-    Double robotYaw = m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees();
-    m_pigeon.reset();
-    m_pigeon.setYawOffset(robotYaw);
-    m_pigeon.setAccuracy(true);
+    if ((disabledTick % 5) == 0) {
+      Double robotYaw = m_limelightSubsystem.getRobotYaw();
+      m_pigeon.reset();
+      m_pigeon.setYawOffset(robotYaw);
+      m_pigeon.setAccuracy(true);
+    }
 
-    // // Reset Limelight
-    // LimelightHelpers.SetIMUMode("limelight", 1);
-    // LimelightHelpers.SetRobotOrientation("limelight", robotYaw, 0, 0, 0, 0, 0);
-
-    // // Reset Pose Estimator
-    // m_PoseEstimator.resetRotation(new Rotation2d(robotYaw * (Math.PI/180)));
+    disabledTick += 1;
   }
 
   /**

@@ -7,6 +7,8 @@
 package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -58,7 +60,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SendableChooser<Class<?>> m_driveChooser = new SendableChooser<>();
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, Pigeon pigeon, TalonFX rightMotor, TalonFX leftMotor) { 
+  public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, Pigeon pigeon, TalonFX rightMotor, TalonFX leftMotor, BooleanSupplier isRed) { 
     m_poseEstimator = poseEstimator;
     m_kinematics = kinematics;
     m_pigeon = pigeon;
@@ -85,18 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
       (speeds, feedforwards) -> driveRobotRelative(speeds), 
       new PPLTVController(0.02), 
       AutoConstants.kRobotConfig, 
-      () -> {
-        // Boolean supplier that controls when the path will be mirrored for the red alliance
-        // This will flip the path being followed to the red side of the field.
-        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          DriverStation.Alliance currentAlliance = alliance.get();
-          return currentAlliance == DriverStation.Alliance.Red;
-        }
-        return false;
-      }, 
+      isRed,
       this
     );
     

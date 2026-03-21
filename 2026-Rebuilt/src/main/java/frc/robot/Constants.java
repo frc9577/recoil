@@ -35,11 +35,14 @@
  
 package frc.robot;
 
+import java.util.Map;
+
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -67,6 +70,27 @@ public final class Constants {
     public static final double kPigeonYawOffset = -5.295877933502197; // degrees (-360, 360)
     public static final double kPigeonPitchOffset = 0.7246352434158325; // degrees (-360, 360)
     public static final double kPigeonRollOffset = -0.49318647384643555; // degrees (-360, 360)
+
+    public static enum kStartingNames {
+      DEPOT_SIDE,
+      HUB,
+      OUTPOST_SIDE
+    }
+
+    public static final Map<kStartingNames, Map<Boolean, Pose2d>> kStartingPositions = Map.ofEntries(
+      Map.entry(kStartingNames.DEPOT_SIDE, Map.ofEntries(
+          Map.entry(true, new Pose2d(new Translation2d(12.956, 2.884), Rotation2d.k180deg)), // red
+          Map.entry(false, new Pose2d(new Translation2d(3.607, 5.186), Rotation2d.kZero)) // blue
+      )),
+      Map.entry(kStartingNames.HUB, Map.ofEntries(
+          Map.entry(true, new Pose2d(new Translation2d(), Rotation2d.k180deg)), // red
+          Map.entry(false, new Pose2d(new Translation2d(), Rotation2d.kZero)) // blue
+      )),
+      Map.entry(kStartingNames.OUTPOST_SIDE, Map.ofEntries(
+          Map.entry(true, new Pose2d(new Translation2d(), Rotation2d.k180deg)), // red
+          Map.entry(false, new Pose2d(new Translation2d(), Rotation2d.kZero)) // blue
+      ))
+    );
   }
 
   public static class AutoConstants {
