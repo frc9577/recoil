@@ -40,6 +40,8 @@ public class LauncherSubsystem extends SubsystemBase {
   private double m_MMAccel = LauncherConstants.kMotionMagicAcceleration;
   private double m_MMJerk = LauncherConstants.kMotionMagicJerk;
 
+  private double m_listSpeed = LauncherConstants.kLiftMotorSpeed;
+
   private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
   /* Be able to switch which control request to use based on a button press */
@@ -58,7 +60,8 @@ public class LauncherSubsystem extends SubsystemBase {
 
     // Test mode controls
     SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
-    SmartDashboard.putNumber("Launcher TestLiftSpeed", 0.0 );
+    SmartDashboard.putNumber("Launcher TestLiftSpeed", LauncherConstants.kLiftMotorSpeed);
+    SmartDashboard.putBoolean("Launcher TestLiftRun", false);
     SmartDashboard.putNumber("Launcher TestP", m_P );
     SmartDashboard.putNumber("Launcher TestI", m_I );
     SmartDashboard.putNumber("Launcher TestD", m_D );
@@ -178,7 +181,7 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void startLift()
   {
-    m_motorLift.set(LauncherConstants.kLiftMotorSpeed);
+    m_motorLift.set(m_listSpeed);
     m_liftRunning = true;
   }
 
@@ -193,15 +196,11 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public void setLiftSpeed(double speed)
   {
-    m_motorLift.set(speed);
+    m_listSpeed = speed;
 
-    if(speed == 0.0)
+    if(m_liftRunning)
     {
-      m_liftRunning = false;
-    }
-    else 
-    {
-      m_liftRunning = true;
+      startLift();
     }
   }
 
@@ -262,9 +261,22 @@ public class LauncherSubsystem extends SubsystemBase {
 
     double launcherrpm = SmartDashboard.getNumber("Launcher TestRPM", 0.0 );
     double liftspeed = SmartDashboard.getNumber("Launcher TestLiftSpeed", 0.0 );
-
+    Boolean liftRun = SmartDashboard.getBoolean("Launcher TestLiftRun", false);
+    
     this.setLiftSpeed(liftspeed);
     this.setTargetSpeedrpm(launcherrpm);
+
+        // Turn the intake on or off depending upon test control, only changing the state if the control actually changed.
+    if(liftRun) {
+      if(!m_liftRunning) {
+        this.startLift();
+      }
+    }
+    else {
+        if(m_liftRunning) {
+        this.stopLift();
+      }  
+    }
   }
 
   @Override
