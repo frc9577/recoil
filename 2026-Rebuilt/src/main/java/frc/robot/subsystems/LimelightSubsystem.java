@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.LimelightHelpers.IMUData;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.utils.LimitedQueue;
 
@@ -34,7 +33,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public Double getRobotYaw() {  
     if (m_YawQue.isEmpty()) {
-      System.out.println("No yaws to avrg! returning 0!");
       return null;
     }
 
@@ -97,33 +95,34 @@ public class LimelightSubsystem extends SubsystemBase {
 
     // A Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
     // TODO: Look into scaling these based off of the ambuguity and size of the tags. -- Kinda done (3/20/2025)
-    Vector<N3> errorVec;
     double stdDev = 0.5 + bestTargetAmbiguity;
+    Vector<N3> errorVec = VecBuilder.fill(stdDev, stdDev,9999999);
 
     // Trusting the yaw when disabled to get our robot orientation.
-    if (DriverStation.isDisabled()) {
-      errorVec = VecBuilder.fill(stdDev, stdDev,0);
-    } else {
-      errorVec = VecBuilder.fill(stdDev, stdDev,9999999);
-    }
+    // if (DriverStation.isDisabled()) {
+    //   errorVec = VecBuilder.fill(stdDev, stdDev,0);
+    // }
 
     // Add the measurements to the pose estimator
     m_poseEstimator.setVisionMeasurementStdDevs(errorVec);
     m_poseEstimator.addVisionMeasurement(
-      poseEst.pose,
+      estimatedPose,
       poseEst.timestampSeconds
     );
+
+    m_YawQue.add(estimatedPose.getRotation().getDegrees());
   }
 
   @Override
   public void periodic() {
     updateOdometry();
-
-    IMUData limelightData = LimelightHelpers.getIMUData("limelight");
-    m_YawQue.add(limelightData.robotYaw);
   }
 
   public void setAllowJumps(boolean allowJumps) {
     m_allowJumps = allowJumps;
+  }
+
+  public void resetYawQue() {
+    m_YawQue.clear();
   }
 }

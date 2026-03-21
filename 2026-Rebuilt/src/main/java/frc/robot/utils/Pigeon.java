@@ -49,7 +49,10 @@ public class Pigeon {
 
     public Rotation2d getRotation2d() {
         if (m_exists) {
-            return m_pigeon2.getRotation2d().rotateBy(new Rotation2d(m_yawOffset * (Math.PI/180)));
+            Rotation2d readRotation = m_pigeon2.getRotation2d();
+            Rotation2d offset = new Rotation2d(m_yawOffset * (Math.PI/180));
+            Rotation2d newRotation = readRotation.rotateBy(offset);
+            return newRotation;
         } else {
             dosntExist();
             return Rotation2d.kZero;
