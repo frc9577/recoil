@@ -85,7 +85,7 @@ public class RobotContainer {
 
   // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
   private Vector<N3> m_drivetrainError = VecBuilder.fill(0.2, 0.2, 0);
-  private Vector<N3> m_limelightError = VecBuilder.fill(.7,.7,9999999);
+  private Vector<N3> m_limelightError = VecBuilder.fill(.7,.7,9999999); // This gets updated per report
 
   private DifferentialDrivePoseEstimator m_PoseEstimator = new DifferentialDrivePoseEstimator(
     m_DriveKinematics, 
@@ -536,11 +536,14 @@ public class RobotContainer {
   private kStartingNames oldStartEnum;
   public void disabledPeriodic() {
     // Reset Pidgeon
-    if ((disabledTick % 5) == 0) {
+    if ((disabledTick % 20) == 0) {
       Double robotYaw = m_limelightSubsystem.getRobotYaw();
       if (robotYaw != null) {
-        m_pigeon.reset();
-        m_pigeon.setYawOffset(robotYaw);
+        Rotation2d currentRotation = m_pigeon.getRotation2d();
+        if (Math.abs(robotYaw - currentRotation.getDegrees()) > 1) {
+          m_pigeon.reset();
+          m_pigeon.setYawOffset(robotYaw);
+        }
       }
     }
 
@@ -555,9 +558,20 @@ public class RobotContainer {
         Pose2d startingPose = RobotConstants.kStartingPositions.get(startEnum).get(m_isRed.getAsBoolean());
 
         m_pigeon.reset();
-        m_pigeon.setYawOffset(startingPose.getRotation().getDegrees());
+        m_pigeon.setYawOffset(-startingPose.getRotation().getDegrees());
 
-        m_PoseEstimator.resetPose(startingPose);
+        m_limelightSubsystem.resetYawQue();
+
+        if (m_driveSubsystem.isPresent()) {
+          DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+          driveSubsystem.resetPose(startingPose);
+        } else {
+          m_PoseEstimator.resetPosition(
+            m_pigeon.getRotation2d(), 
+            0, 0, 
+            startingPose
+          );
+        }
 
         System.out.println("Reset starting pose!");
       }

@@ -83,12 +83,12 @@ public final class Constants {
           Map.entry(false, new Pose2d(new Translation2d(3.607, 5.186), Rotation2d.kZero)) // blue
       )),
       Map.entry(kStartingNames.HUB, Map.ofEntries(
-          Map.entry(true, new Pose2d(new Translation2d(), Rotation2d.k180deg)), // red
-          Map.entry(false, new Pose2d(new Translation2d(), Rotation2d.kZero)) // blue
+          Map.entry(true, new Pose2d(new Translation2d(12.945, 4.0), Rotation2d.k180deg)), // red
+          Map.entry(false, new Pose2d(new Translation2d(3.561, 4.0), Rotation2d.kZero)) // blue
       )),
       Map.entry(kStartingNames.OUTPOST_SIDE, Map.ofEntries(
-          Map.entry(true, new Pose2d(new Translation2d(), Rotation2d.k180deg)), // red
-          Map.entry(false, new Pose2d(new Translation2d(), Rotation2d.kZero)) // blue
+          Map.entry(true, new Pose2d(new Translation2d(12.979, 5.163), Rotation2d.k180deg)), // red
+          Map.entry(false, new Pose2d(new Translation2d(3.6, 2.9), Rotation2d.kZero)) // blue
       ))
     );
   }
