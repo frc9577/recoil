@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -44,8 +46,8 @@ import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
-import frc.robot.commands.autoCommands.BackupAndShoot;
 import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
+import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.utils.LauncherUtils;
 import frc.robot.Constants.*;
@@ -202,9 +204,16 @@ public class RobotContainer {
 
       // Init Autos
       m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
-
       m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
-        new BackupAndShoot(driveSubsystem, launcherSubsystem, liftSubsystem, m_PoseEstimator, m_isRed)
+        new ParallelCommandGroup(
+          new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed),
+          new SequentialCommandGroup(
+            new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
+            new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, m_isRed),
+            new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
+            new StartLiftCommand(liftSubsystem) // Replace with the combo launcher, indexer, mover command later
+          )
+        )
       );
 
       m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
