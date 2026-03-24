@@ -10,7 +10,6 @@ import frc.robot.subsystems.LauncherSubsystem;
  * 
  **/
 public class StopLauncherCommand extends Command {
-  private final LiftSubsystem m_lift;
   private final LauncherSubsystem m_launcher;
   
   /**
@@ -18,20 +17,17 @@ public class StopLauncherCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StopLauncherCommand(LauncherSubsystem launcher, LiftSubsystem lift) 
+  public StopLauncherCommand(LauncherSubsystem launcher) 
   {
-    m_lift = lift;
-    m_launcher = launcher.
+    m_launcher = launcher;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_lift);
     addRequirements(m_launcher);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_lift.stopLift();
     m_launcher.setTargetSpeedrpm(0.0);
   }
 

@@ -34,6 +34,7 @@ import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.IndexerBulkSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbL1Subsystem;
@@ -43,15 +44,8 @@ import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveCommands.TurnLeftTest;
-import frc.robot.commands.autoCommands.BackupAndClimb;
 import frc.robot.commands.autoCommands.BackupAndShoot;
-import frc.robot.commands.autoCommands.BackupAndShootThenClimb;
 import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
-import frc.robot.commands.autoCommands.DeadreckonBumpAndBack;
-import frc.robot.commands.autoCommands.DeadreckonDistance;
-import frc.robot.commands.autoCommands.DepoAndShootThenClimb;
-import frc.robot.commands.autoCommands.OverBumpContinousJ;
-import frc.robot.commands.autoCommands.TravelToCornerAndShoot;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.utils.LauncherUtils;
 import frc.robot.Constants.*;
@@ -72,6 +66,7 @@ public class RobotContainer {
   private Optional<ClimbL1Subsystem> m_climbL1Subsystem;
   private final Optional<IndexerBulkSubsystem> m_indexerBulkSubsystem;
   private final Optional<LauncherSubsystem> m_launcherSubsystem;
+  private final Optional<LiftSubsystem> m_liftSubsystem;
   private final Optional<PneumaticHubWrapper> m_pneumaticHub;
   private final LimelightSubsystem m_limelightSubsystem;
 
@@ -144,6 +139,7 @@ public class RobotContainer {
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator);
     m_launcherSubsystem = getSubsystem(LauncherSubsystem.class);
     m_indexerBulkSubsystem = getSubsystem(IndexerBulkSubsystem.class);
+    m_liftSubsystem = getSubsystem(LiftSubsystem.class);
 
     // Init pneumatics system and subsystems that rely upon it.
     m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
@@ -266,6 +262,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Intake Subsystem", m_intakeSubsystem.isPresent());
     SmartDashboard.putBoolean("ClimbL1 Subsystem", m_climbL1Subsystem.isPresent());
     SmartDashboard.putBoolean("Launcher Subsystem", m_launcherSubsystem.isPresent());
+    SmartDashboard.putBoolean("Lift Subsystem", m_liftSubsystem.isPresent());
     SmartDashboard.putBoolean("IndexerBulk Subsystem", m_indexerBulkSubsystem.isPresent());
     SmartDashboard.putBoolean("Pneumatic Subsystem", m_pneumaticHub.isPresent());
 
@@ -293,21 +290,30 @@ public class RobotContainer {
       if (m_launcherSubsystem.isPresent()) {
         LauncherSubsystem launcher = m_launcherSubsystem.get();
         m_operatorController.y().onTrue(new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed));
-        m_operatorController.a().onTrue(new StopLauncherCommand(launcher));
-        m_operatorController.x().onTrue(new StartLiftCommand(launcher));
-        m_operatorController.b().onTrue(new StopLiftCommand(launcher));
-        
-        if (m_indexerBulkSubsystem.isPresent())
-        {
-          IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
 
-          // This is intended to keep shooting until the button is released.
-          m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
-                                                                  launcher,
-                                                                  indexer,
-                                                                  m_PoseEstimator,
-                                                                  m_isRed,
-                                                                  LauncherConstants.kFlywheelToleranceRPM));
+        if (m_liftSubsystem.isPresent()) {
+          LiftSubsystem lift = m_liftSubsystem.get();
+
+          m_operatorController.a().onTrue(new StopLauncherCommand(launcher).alongWith(new StopLiftCommand(lift)));
+
+          m_operatorController.x().onTrue(new StartLiftCommand(lift));
+          m_operatorController.b().onTrue(new StopLiftCommand(lift));
+          
+          if (m_indexerBulkSubsystem.isPresent())
+          {
+            IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
+
+            // This is intended to keep shooting until the button is released.
+            m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
+                                                                    launcher,
+                                                                    lift,
+                                                                    indexer,
+                                                                    m_PoseEstimator,
+                                                                    m_isRed,
+                                                                    LauncherConstants.kFlywheelToleranceRPM));
+          }
+        } else {
+          m_operatorController.a().onTrue(new StopLauncherCommand(launcher));
         }
       }
 
@@ -503,10 +509,14 @@ public class RobotContainer {
     LimelightHelpers.SetIMUMode("limelight", 3);
     m_limelightSubsystem.setAllowJumps(true);
 
+    if (m_liftSubsystem.isPresent()) {
+      LiftSubsystem lift = m_liftSubsystem.get();
+      lift.stopLift();
+    }
+
     if(m_launcherSubsystem.isPresent())
     {
       LauncherSubsystem launcher = m_launcherSubsystem.get();
-      launcher.stopLift();
       launcher.setTargetSpeedrpm(0.0);
     }
   }
