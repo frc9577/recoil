@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 
 /**
@@ -9,26 +10,29 @@ import frc.robot.subsystems.LauncherSubsystem;
  * 
  **/
 public class StopLauncherCommand extends Command {
-  private final LauncherSubsystem m_subsystem;
+  private final LiftSubsystem m_lift;
+  private final LauncherSubsystem m_launcher;
   
   /**
    * Creates a new StopLauncherCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StopLauncherCommand(LauncherSubsystem subsystem) 
+  public StopLauncherCommand(LauncherSubsystem launcher, LiftSubsystem lift) 
   {
-    m_subsystem = subsystem;
+    m_lift = lift;
+    m_launcher = launcher.
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_subsystem);
+    addRequirements(m_lift);
+    addRequirements(m_launcher);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.stopLift();
-    m_subsystem.setTargetSpeedrpm(0.0);
+    m_lift.stopLift();
+    m_launcher.setTargetSpeedrpm(0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

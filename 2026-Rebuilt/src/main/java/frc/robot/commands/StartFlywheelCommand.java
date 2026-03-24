@@ -5,7 +5,7 @@ import frc.robot.subsystems.LauncherSubsystem;
 
 /**
  * 
- * Stop the launcher lift motor and spin down the flywheel.
+ * Start the launcher flywheel and get it up to the target speed.
  * 
  **/
 public class StartFlywheelCommand extends Command {

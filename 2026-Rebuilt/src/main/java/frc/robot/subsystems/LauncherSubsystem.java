@@ -25,14 +25,12 @@ import frc.robot.Constants.LauncherConstants;
 
 public class LauncherSubsystem extends SubsystemBase {
   private double m_targetSpeedrpm = 0.0;
-  private boolean m_liftRunning = false;
   private boolean m_HasFuel = false;
   private int m_tickCount = 0;
   private boolean m_configValid = false;
 
   private TalonFX m_motorLeader;
   private TalonFX m_motorFollower;
-  private TalonFX m_motorLift;
   private TalonFXConfiguration m_MotorConfigs = new TalonFXConfiguration();
 
   private double m_P = LauncherConstants.kP;
@@ -40,8 +38,6 @@ public class LauncherSubsystem extends SubsystemBase {
   private double m_D = LauncherConstants.kD;
   private double m_MMAccel = LauncherConstants.kMotionMagicAcceleration;
   private double m_MMJerk = LauncherConstants.kMotionMagicJerk;
-
-  private double m_listSpeed = LauncherConstants.kLiftMotorSpeed;
 
   private final DigitalInput m_Sensor = new DigitalInput(LauncherConstants.kUpperFuelSensorChannel);
 
@@ -61,20 +57,17 @@ public class LauncherSubsystem extends SubsystemBase {
 
     // Test mode controls
     SmartDashboard.putNumber("Launcher TestRPM", 0.0 );
-    SmartDashboard.putNumber("Launcher TestLiftSpeed", LauncherConstants.kLiftMotorSpeed);
-    SmartDashboard.putBoolean("Launcher TestLiftRun", false);
     SmartDashboard.putNumber("Launcher TestP", m_P );
     SmartDashboard.putNumber("Launcher TestI", m_I );
     SmartDashboard.putNumber("Launcher TestD", m_D );
     SmartDashboard.putNumber("Launcher TestMMAccel", m_MMAccel );
     SmartDashboard.putNumber("Launcher TestMMJerk", m_MMJerk );
       
-    m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
     m_motorLeader   = new TalonFX(LauncherConstants.kLauncherFlywheelMotor1CANID);
     m_motorFollower = new TalonFX(LauncherConstants.kLauncherFlywheelMotor2CANID);
 
     // Check that the launcher motors exist and throw an exception if they don't.
-    if(!m_motorLeader.isConnected() || !m_motorFollower.isConnected() || !m_motorLift.isConnected())
+    if(!m_motorLeader.isConnected() || !m_motorFollower.isConnected())
     {
       throw new Exception("At least one launcher motor is not present!");
     }
@@ -178,41 +171,6 @@ public class LauncherSubsystem extends SubsystemBase {
   }
 
   //
-  // Start the lift mechanism motor.
-  //
-  public void startLift()
-  {
-    m_motorLift.set(m_listSpeed);
-    m_liftRunning = true;
-  }
-
-  //
-  // Stop the lift mechanism motor.
-  //
-  public void stopLift()
-  {
-    m_motorLift.set(0.0);
-    m_liftRunning = false;
-  }
-
-  public void setLiftSpeed(double speed)
-  {
-    m_listSpeed = speed;
-
-    if(m_liftRunning)
-    {
-      startLift();
-    }
-  }
-
-  // 
-  // Determine whether or not the lift motor is running.
-  public boolean isLiftMotorStarted()
-  {
-    return m_liftRunning;
-  }
-
-  //
   // Determine whether or not a fuel is in position beneath the launcher
   // entrance.
   //
@@ -261,23 +219,7 @@ public class LauncherSubsystem extends SubsystemBase {
     }
 
     double launcherrpm = SmartDashboard.getNumber("Launcher TestRPM", 0.0 );
-    double liftspeed = SmartDashboard.getNumber("Launcher TestLiftSpeed", 0.0 );
-    Boolean liftRun = SmartDashboard.getBoolean("Launcher TestLiftRun", false);
-    
-    this.setLiftSpeed(liftspeed);
     this.setTargetSpeedrpm(launcherrpm);
-
-        // Turn the intake on or off depending upon test control, only changing the state if the control actually changed.
-    if(liftRun) {
-      if(!m_liftRunning) {
-        this.startLift();
-      }
-    }
-    else {
-        if(m_liftRunning) {
-        this.stopLift();
-      }  
-    }
   }
 
   @Override

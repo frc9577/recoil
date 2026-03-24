@@ -2,15 +2,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerBulkSubsystem;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 
 /**
  * 
- * Start shooting fuel by starting the launcher lift motor and both motors in the indexer/bulk subsystem.
+ * Start shooting fuel by starting the lift motor and both motors in the indexer/bulk subsystem.
  * 
  **/
 public class StartShootCommand extends Command {
-  private final LauncherSubsystem m_Launcher;
+  private final LiftSubsystem m_Lift;
   private final IndexerBulkSubsystem m_IndexerBulk;
   
   /**
@@ -18,13 +18,13 @@ public class StartShootCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StartShootCommand(LauncherSubsystem launcher, IndexerBulkSubsystem indexerbulk) 
+  public StartShootCommand(LiftSubsystem lift, IndexerBulkSubsystem indexerbulk) 
   {
-    m_Launcher = launcher;
+    m_Lift = lift;
     m_IndexerBulk = indexerbulk;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_Launcher);
+    addRequirements(m_Lift);
     addRequirements(m_IndexerBulk);
   }
 
@@ -33,7 +33,7 @@ public class StartShootCommand extends Command {
   public void initialize() {
     m_IndexerBulk.startBulkTransfer();
     m_IndexerBulk.startIndexer();
-    m_Launcher.startLift();
+    m_Lift.startLift();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

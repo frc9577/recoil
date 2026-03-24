@@ -1,22 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 
 /**
  * 
- * Stop the launcher lift motor and spin down the flywheel.
+ * Start the launcher lift motor.
  * 
  **/
 public class StartLiftCommand extends Command {
-  private final LauncherSubsystem m_subsystem;
+  private final LiftSubsystem m_subsystem;
   
   /**
    * Creates a new StartLiftCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StartLiftCommand(LauncherSubsystem subsystem) 
+  public StartLiftCommand(LiftSubsystem subsystem) 
   {
     m_subsystem = subsystem;
 

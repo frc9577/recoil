@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 
 /**
  * 
@@ -9,14 +9,14 @@ import frc.robot.subsystems.LauncherSubsystem;
  * 
  **/
 public class StopLiftCommand extends Command {
-  private final LauncherSubsystem m_subsystem;
+  private final LiftSubsystem m_subsystem;
   
   /**
    * Creates a new StopLiftCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StopLiftCommand(LauncherSubsystem subsystem) 
+  public StopLiftCommand(LiftSubsystem subsystem) 
   {
     m_subsystem = subsystem;
 

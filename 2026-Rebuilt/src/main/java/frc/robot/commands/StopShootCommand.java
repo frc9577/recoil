@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerBulkSubsystem;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 
 /**
  * 
@@ -10,7 +10,7 @@ import frc.robot.subsystems.LauncherSubsystem;
  * 
  **/
 public class StopShootCommand extends Command {
-  private final LauncherSubsystem m_Launcher;
+  private final LiftSubsystem m_Lift;
   private final IndexerBulkSubsystem m_IndexerBulk;
   
   /**
@@ -18,13 +18,13 @@ public class StopShootCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StopShootCommand(LauncherSubsystem launcher, IndexerBulkSubsystem indexerbulk) 
+  public StopShootCommand(LiftSubsystem lift, IndexerBulkSubsystem indexerbulk) 
   {
-    m_Launcher = launcher;
+    m_Lift = lift;
     m_IndexerBulk = indexerbulk;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_Launcher);
+    addRequirements(m_Lift);
     addRequirements(m_IndexerBulk);
   }
 
@@ -33,7 +33,7 @@ public class StopShootCommand extends Command {
   public void initialize() {
     m_IndexerBulk.stopBulkTransfer();
     m_IndexerBulk.stopIndexer();
-    m_Launcher.stopLift();
+    m_Lift.stopLift();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

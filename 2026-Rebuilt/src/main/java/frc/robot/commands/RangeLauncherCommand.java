@@ -11,7 +11,7 @@ import frc.robot.utils.LauncherUtils;
 
 /**
  * 
- * Stop the launcher lift motor and spin down the flywheel.
+ * Stop the launcher motor and spin down the flywheel.
  * 
  **/
 public class RangeLauncherCommand extends Command {
