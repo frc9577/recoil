@@ -67,9 +67,9 @@ public final class Constants {
   public static class RobotConstants {
     public static final int kPigeon2CANID = 2;
     public static final boolean kDoPigeonWarn = true;
-    public static final double kPigeonYawOffset = -5.295877933502197; // degrees (-360, 360)
-    public static final double kPigeonPitchOffset = 0.7246352434158325; // degrees (-360, 360)
-    public static final double kPigeonRollOffset = -0.49318647384643555; // degrees (-360, 360)
+    public static final double kPigeonYawOffset = -90.00460052490234; // degrees (-360, 360)
+    public static final double kPigeonPitchOffset = 1.5642017126083374; // degrees (-360, 360)
+    public static final double kPigeonRollOffset = 89.49134826660156; // degrees (-360, 360)
 
     public static enum kStartingNames {
       DEPOT_SIDE,
@@ -231,7 +231,7 @@ public final class Constants {
 
     // Frequency at which we send current launcher speed back to the driver station.
     public static final int kTicksPerUpdate = 10;
-    public static final int kTicksPerDistanceUpdate = 45;
+    public static final int kTicksPerDistanceUpdate = 12;
 
     public static final double kFixedTestSpeed = 3000.0;
     public static final double kFlywheelToleranceRPM = 100.0;

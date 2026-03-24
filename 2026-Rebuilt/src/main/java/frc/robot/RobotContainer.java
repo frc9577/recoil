@@ -203,50 +203,14 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
+      m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
 
       m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
         new BackupAndShoot(driveSubsystem, m_PoseEstimator, m_isRed)
       );
 
-      m_autoChooser.addOption("[INDEV] Backup and climb", 
-        new BackupAndClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
-      );
-
-      m_autoChooser.addOption("[INDEV] Backup and shoot then climb", 
-        new BackupAndShootThenClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
-      );
-
       m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
         new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
-      );
-
-      m_autoChooser.addOption("[INDEV] Depo Collect, shoot, then climb", 
-        new DepoAndShootThenClimb(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
-      );
-
-      // Test Autos
-      PathConstraints slowConstraints = new PathConstraints(
-              1.0, 
-              1.0, 
-                (1/2) * Math.PI,
-                (1/4) * Math.PI
-      );
-
-      // replace slowConstraints to m_contraints after testing.
-      m_autoChooser.addOption("[INDEV] Deadreckon Over Bump and Back", 
-        new DeadreckonBumpAndBack(driveSubsystem, m_PoseEstimator, slowConstraints, m_isRed, m_pigeon)
-      );
-
-      m_autoChooser.addOption("[INDEV] Continous J into nutreal and back", 
-        new OverBumpContinousJ(driveSubsystem, m_PoseEstimator, m_isRed)
-      );
-
-      m_autoChooser.addOption("[TEST] Forward Test", 
-        new DeadreckonDistance(driveSubsystem, 2.5, 2.0)
-      );
-
-      m_autoChooser.addOption("[TEST] Backup Test", 
-        new DeadreckonDistance(driveSubsystem, 2.5, -2.0)
       );
 
       // Warm up Pathfinder
@@ -325,25 +289,32 @@ public class RobotContainer {
         new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, m_isRed)
       );
 
-      // Range launcher, turn to face hub and shoot all fuel.
-      if (m_launcherSubsystem.isPresent() & m_indexerBulkSubsystem.isPresent())
-      {
+      // Range launcher, turn to face hub and shoot all fuel
+      if (m_launcherSubsystem.isPresent()) {
         LauncherSubsystem launcher = m_launcherSubsystem.get();
-        IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
+        m_operatorController.y().onTrue(new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed));
+        m_operatorController.a().onTrue(new StopLauncherCommand(launcher));
+        m_operatorController.x().onTrue(new StartLiftCommand(launcher));
+        m_operatorController.b().onTrue(new StopLiftCommand(launcher));
+        
+        if (m_indexerBulkSubsystem.isPresent())
+        {
+          IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
 
-        // This is intended to keep shooting until the button is released.
-        m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
-                                                                launcher,
-                                                                indexer,
-                                                                m_PoseEstimator,
-                                                                m_isRed,
-                                                                LauncherConstants.kFlywheelToleranceRPM));
+          // This is intended to keep shooting until the button is released.
+          m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
+                                                                  launcher,
+                                                                  indexer,
+                                                                  m_PoseEstimator,
+                                                                  m_isRed,
+                                                                  LauncherConstants.kFlywheelToleranceRPM));
+        }
       }
 
       // Travel to corner and shoot
-      m_driverController.x().onTrue(
-        new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
-      );
+      // m_driverController.x().onTrue(
+      //   new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
+      // );
 
       // TEST COMMAND FOR TESTING ACCURACY AFTER BUMP!
       m_driverController.leftBumper().onTrue(
@@ -415,6 +386,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("Yaw Rate", 0.0);
     SmartDashboard.putNumber("Pitch Rate", 0.0);
     SmartDashboard.putNumber("Roll Rate", 0.0);
+
+    SmartDashboard.putNumber("Auto Wait Time", 0.0);
 
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
@@ -529,6 +502,13 @@ public class RobotContainer {
     disabledTick = 0;
     LimelightHelpers.SetIMUMode("limelight", 3);
     m_limelightSubsystem.setAllowJumps(true);
+
+    if(m_launcherSubsystem.isPresent())
+    {
+      LauncherSubsystem launcher = m_launcherSubsystem.get();
+      launcher.stopLift();
+      launcher.setTargetSpeedrpm(0.0);
+    }
   }
 
   // Gets called every disabled tick.
