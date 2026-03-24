@@ -25,8 +25,8 @@ public class LiftSubsystem extends SubsystemBase {
     public LiftSubsystem() throws Exception {
 
     // Test mode controls
-    SmartDashboard.putNumber("Launcher TestLiftSpeed", LauncherConstants.kLiftMotorSpeed);
-    SmartDashboard.putBoolean("Launcher TestLiftRun", false);
+    SmartDashboard.putNumber("Lift TestLiftSpeed", LauncherConstants.kLiftMotorSpeed);
+    SmartDashboard.putBoolean("Lift TestLiftRun", false);
 
       
     m_motorLift     = new TalonFX(LauncherConstants.kLauncherLiftMotorCANID);
@@ -80,8 +80,8 @@ public class LiftSubsystem extends SubsystemBase {
 
   public void testPeriodic() {
 
-    double liftspeed = SmartDashboard.getNumber("Launcher TestLiftSpeed", 0.0 );
-    Boolean liftRun = SmartDashboard.getBoolean("Launcher TestLiftRun", false);
+    double liftspeed = SmartDashboard.getNumber("Lift TestLiftSpeed", 0.0 );
+    Boolean liftRun = SmartDashboard.getBoolean("Lift TestLiftRun", false);
     
     this.setLiftSpeed(liftspeed);
 
