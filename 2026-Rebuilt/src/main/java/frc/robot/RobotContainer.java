@@ -193,16 +193,18 @@ public class RobotContainer {
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
   private void configureAutos() {
-    if (m_driveSubsystem.isPresent()) {
+    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent()) {
       // Init Needed values
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+      LauncherSubsystem launcherSubsystem = m_launcherSubsystem.get();
+      LiftSubsystem liftSubsystem = m_liftSubsystem.get();
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
       m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
 
       m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
-        new BackupAndShoot(driveSubsystem, m_PoseEstimator, m_isRed)
+        new BackupAndShoot(driveSubsystem, launcherSubsystem, liftSubsystem, m_PoseEstimator, m_isRed)
       );
 
       m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
@@ -278,12 +280,9 @@ public class RobotContainer {
       // Cancel All Drive Commands
       m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
 
-      // Turn left to produce stall error.
-      m_driverController.b().onTrue(new TurnLeftTest(driveSubsystem));
-
       // Aim to Hub
       m_driverController.rightBumper().onTrue(
-        new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, m_isRed)
+        new AimAtHub(driveSubsystem, m_PoseEstimator, 3.0, m_isRed)
       );
 
       // Range launcher, turn to face hub and shoot all fuel

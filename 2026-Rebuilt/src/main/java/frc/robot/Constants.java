@@ -172,9 +172,10 @@ public final class Constants {
     public static final double kDrivetrainGearRatio = 0.2;
     public static final double kWheelRadiusMeters = (4.0 / 2.0) * 0.0254; // Four Inch Wheels
     public static final double kWheelCircumference = 2 * Math.PI * DrivetrainConstants.kWheelRadiusMeters;
-    public static final double kWidthMeters = 0.760;
-    public static final double kLengthMeters = 0.760;
-    public static final double kTrackWidthMeters = 29.0 * 0.0254;//0.74; 
+    public static final double kBumpersMeters = 0.0889;
+    public static final double kWidthMeters = 0.8636-kBumpersMeters; // width w/ bumpers - bumpers
+    public static final double kLengthMeters = 0.8636-kBumpersMeters;
+    public static final double kTrackWidthMeters = kLengthMeters;//29.0 * 0.0254;//0.74; 
 
     // SmartDashboard update frequency for drive subsystem state in 20ms counts.
     public static final int kTicksPerUpdate = 5;

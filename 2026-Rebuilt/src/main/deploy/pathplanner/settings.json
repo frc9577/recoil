@@ -14,7 +14,7 @@
   "defaultNominalVoltage": 12.0,
   "robotMass": 74.088,
   "robotMOI": 6.883,
-  "robotTrackwidth": 0.7874,
+  "robotTrackwidth": 0.787,
   "driveWheelRadius": 0.0508,
   "driveGearing": 5.143,
   "maxDriveSpeed": 5.45,
