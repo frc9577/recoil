@@ -516,6 +516,23 @@ public class RobotContainer {
     LimelightHelpers.SetIMUMode("limelight", 3);
     m_limelightSubsystem.setAllowJumps(true);
 
+    // Disable all motors on disabled init
+    if (m_driveSubsystem.isPresent()) {
+      DriveSubsystem drive = m_driveSubsystem.get();
+      drive.setDifferentialSpeedNoPid(0,0);
+    }
+
+    if (m_intakeSubsystem.isPresent()) {
+      IntakeSubsystem intake = m_intakeSubsystem.get();
+      intake.stop();
+    }
+
+    if (m_indexerBulkSubsystem.isPresent()) {
+      IndexerBulkSubsystem indexBulk = m_indexerBulkSubsystem.get();
+      indexBulk.stopBulkTransfer();
+      indexBulk.stopIndexer();
+    }
+
     if (m_liftSubsystem.isPresent()) {
       LiftSubsystem lift = m_liftSubsystem.get();
       lift.stopLift();
