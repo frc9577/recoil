@@ -45,7 +45,6 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
-import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.utils.LauncherUtils;
@@ -194,11 +193,12 @@ public class RobotContainer {
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
   private void configureAutos() {
-    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent()) {
+    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent() && m_indexerBulkSubsystem.isPresent()) {
       // Init Needed values
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       LauncherSubsystem launcherSubsystem = m_launcherSubsystem.get();
       LiftSubsystem liftSubsystem = m_liftSubsystem.get();
+      IndexerBulkSubsystem indexerBulkSubsystem = m_indexerBulkSubsystem.get();
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
@@ -208,15 +208,11 @@ public class RobotContainer {
           new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed),
           new SequentialCommandGroup(
             new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
-            new AimAtHub(driveSubsystem, m_PoseEstimator, 4.0, m_isRed),
+            new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
             new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
-            new StartLiftCommand(liftSubsystem) // Replace with the combo launcher, indexer, mover command later
+            new StartShootCommand(liftSubsystem, indexerBulkSubsystem)
           )
         )
-      );
-
-      m_autoChooser.addOption("[INDEV] Backup and collect from depot then shoot", 
-        new BackupCollectDepoAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
       );
 
       // Warm up Pathfinder
@@ -285,12 +281,9 @@ public class RobotContainer {
     if (m_driveSubsystem.isPresent()) {
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
 
-      // Cancel All Drive Commands
-      m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
-
-      // Aim to Hub
+      // Aim to Hub (TESTING?)
       m_driverController.rightBumper().onTrue(
-        new AimAtHub(driveSubsystem, m_PoseEstimator, 3.0, m_isRed)
+        new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed)
       );
 
       // Range launcher, turn to face hub and shoot all fuel
@@ -301,8 +294,6 @@ public class RobotContainer {
         if (m_liftSubsystem.isPresent()) {
           LiftSubsystem lift = m_liftSubsystem.get();
 
-          m_operatorController.a().onTrue(new StopLauncherCommand(launcher).alongWith(new StopLiftCommand(lift)));
-
           m_operatorController.x().onTrue(new StartLiftCommand(lift));
           m_operatorController.b().onTrue(new StopLiftCommand(lift));
           
@@ -310,14 +301,28 @@ public class RobotContainer {
           {
             IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
 
+            m_operatorController.a().onTrue(
+              new StopShootCommand(lift, indexer)
+              .andThen(new StopLauncherCommand(launcher))
+            );
+
+
             // This is intended to keep shooting until the button is released.
-            m_driverController.y().whileTrue(new RotateAndShootCommand(driveSubsystem,
-                                                                    launcher,
-                                                                    lift,
-                                                                    indexer,
-                                                                    m_PoseEstimator,
-                                                                    m_isRed,
-                                                                    LauncherConstants.kFlywheelToleranceRPM));
+            m_driverController.y().whileTrue(
+              new ParallelCommandGroup(
+                new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed),
+                new SequentialCommandGroup(
+                  new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
+                  new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
+                  new StartShootCommand(lift, indexer)
+                )
+              )
+            );
+
+            m_driverController.y().onFalse(
+              new StopShootCommand(lift, indexer)
+              .andThen(new StopLauncherCommand(launcher))
+            );
           }
         } else {
           m_operatorController.a().onTrue(new StopLauncherCommand(launcher));
@@ -341,6 +346,9 @@ public class RobotContainer {
 
       new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
         .onTrue(new CancelDriveCommand(driveSubsystem));
+
+       // Also do it on back press
+      m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
     }
 
     //

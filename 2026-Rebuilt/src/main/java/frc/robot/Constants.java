@@ -91,6 +91,8 @@ public final class Constants {
           Map.entry(false, new Pose2d(new Translation2d(3.6, 2.9), Rotation2d.kZero)) // blue
       ))
     );
+
+    public static final double kRotateToHubSpeed = 3.0;
   }
 
   public static class AutoConstants {
