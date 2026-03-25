@@ -610,5 +610,9 @@ public class RobotContainer {
     {
       m_launcherSubsystem.get().testPeriodic();
     }
+    if (m_liftSubsystem.isPresent())
+    {
+      m_liftSubsystem.get().testPeriodic();
+    }
   }
 }
