@@ -36,6 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
     {
       throw new Exception("Intake motor is not connected!");
     }
+    m_motorIntake.set(0.0);
 
     if(bHasPneumatics) {
       m_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubCANID,

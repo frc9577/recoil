@@ -36,6 +36,8 @@ public class LiftSubsystem extends SubsystemBase {
     {
       throw new Exception("Lift motor is not present!");
     }
+
+    m_motorLift.set(0.0);
   }
 
   //

@@ -57,6 +57,9 @@ public class IndexerBulkSubsystem extends SubsystemBase {
       throw new Exception("Indexer motor is not present.");
     }
 
+    m_motorBulk.set(0.0);
+    m_motorIndexer.set(0.0);
+
     TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
     motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
     StatusCode status = StatusCode.StatusCodeNotInitialized;

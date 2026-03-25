@@ -3,7 +3,6 @@ package frc.robot.utils;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
-import frc.robot.utils.HubUtils;
 
 public class LauncherUtils {
     //

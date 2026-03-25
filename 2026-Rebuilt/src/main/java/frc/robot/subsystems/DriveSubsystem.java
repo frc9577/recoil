@@ -68,11 +68,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotor = leftMotor;
 
     // Right Motor
-    setConfig(m_rightMotor, InvertedValue.CounterClockwise_Positive); 
+    setConfig(m_rightMotor, InvertedValue.CounterClockwise_Positive);
+    m_rightMotor.set(0.0);
     SendableRegistry.setName(m_rightMotor, "DriveSubsystem", "rightMotor");
 
     // Left Motor
     setConfig(m_leftMotor, InvertedValue.Clockwise_Positive); 
+    m_leftMotor.set(0.0);
     SendableRegistry.setName(m_leftMotor, "DriveSubsystem", "leftMotor");
 
     // Zeroing the encoders

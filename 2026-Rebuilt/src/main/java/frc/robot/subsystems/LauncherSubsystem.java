@@ -18,7 +18,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.LauncherConstants;
@@ -93,6 +92,8 @@ public class LauncherSubsystem extends SubsystemBase {
     m_motorFollower.setControl(new Follower(m_motorLeader.getDeviceID(), 
                    LauncherConstants.kMotorsDriveInOppositeDirections ? 
                     MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
+
+    m_motorLeader.set(0.0);
 
     m_configValid = true;
   }
