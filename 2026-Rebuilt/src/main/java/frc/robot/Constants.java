@@ -244,7 +244,7 @@ public final class Constants {
 
     // Raw motor speeds in range [-1.0,1.0]
     public static final double kBulkMoveMotorSpeed = 0.5;
-    public static final double kIndexerMotorSpeed = 0.3;
+    public static final double kIndexerMotorSpeed = 0.5;
   }
 
   public static class ClimbL1Constants {
