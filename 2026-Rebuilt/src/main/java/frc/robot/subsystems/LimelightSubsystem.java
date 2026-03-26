@@ -93,7 +93,6 @@ public class LimelightSubsystem extends SubsystemBase {
     /// Actually do the vision measurements \\\
 
     // A Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
-    // TODO: Look into scaling these based off of the ambuguity and size of the tags. -- Kinda done (3/20/2025)
     double stdDev = 0.5 + bestTargetAmbiguity;
     Vector<N3> errorVec = VecBuilder.fill(stdDev, stdDev,9999999);
 
