@@ -294,6 +294,7 @@ public class RobotContainer {
         if (m_liftSubsystem.isPresent()) {
           LiftSubsystem lift = m_liftSubsystem.get();
 
+          // TODO: IMPORTANT - These should be Start/StopShootCommand since we have bulk move now.
           m_operatorController.x().onTrue(new StartLiftCommand(lift));
           m_operatorController.b().onTrue(new StopLiftCommand(lift));
           
@@ -369,6 +370,8 @@ public class RobotContainer {
       m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));    
     }
 
+    // TODO: IMPORTANT - these buttons are already bound above. I suspect the following 
+    // block needs to be removed.
     if (m_launcherSubsystem.isPresent())
     {
       // Operator's manual launcher override.
@@ -378,11 +381,7 @@ public class RobotContainer {
       m_operatorController.a().onTrue(new StartFlywheelCommand(m_launcherSubsystem.get(),
                                                                LauncherConstants.kFixedTestSpeed,
                                                                LauncherConstants.kFlywheelToleranceRPM));
-      
-      // TODO: Need composite command for manual shoot (spin up flywheel, wait for target, start lift motor)
     }
-
-    // TODO: Write and bind composite commands for driver controls.
   }
 
   // Populate the SmartDashboard on robot init.
