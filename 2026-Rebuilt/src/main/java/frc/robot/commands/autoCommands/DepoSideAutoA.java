@@ -76,7 +76,6 @@ public class DepoSideAutoA extends Command {
     }
 
     // Init the new sequence
-    // TODO: Replace placeholder InstantCommands with real ones.
     ArrayList<Object> sequence = new ArrayList<Object>(Arrays.asList(
       new ExtendIntakeCommand(null), // Extend Intake
       new InstantCommand(), // Drive Over bump fwd
