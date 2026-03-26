@@ -196,8 +196,6 @@ public class DriveSubsystem extends SubsystemBase {
     // setDefaultCommand(new ArcadeDriveCommand(this, Controller));
   }
 
-  // TODO: Work on a naming scheme for conversion functions
-
   // This converts rotations of the motor shaft to meters travled.
   public double ConvertRotationsToMeters(double rotations) {
     return rotations * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
