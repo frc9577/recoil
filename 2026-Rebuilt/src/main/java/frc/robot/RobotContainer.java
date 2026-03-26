@@ -293,13 +293,12 @@ public class RobotContainer {
 
         if (m_liftSubsystem.isPresent()) {
           LiftSubsystem lift = m_liftSubsystem.get();
-
-          m_operatorController.x().onTrue(new StartLiftCommand(lift));
-          m_operatorController.b().onTrue(new StopLiftCommand(lift));
           
-          if (m_indexerBulkSubsystem.isPresent())
-          {
+          if (m_indexerBulkSubsystem.isPresent()) {
             IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
+
+            m_operatorController.x().onTrue(new StartShootCommand(lift, indexer));
+            m_operatorController.b().onTrue(new StopShootCommand(lift, indexer));
 
             m_operatorController.a().onTrue(
               new StopShootCommand(lift, indexer)
@@ -323,6 +322,9 @@ public class RobotContainer {
               new StopShootCommand(lift, indexer)
               .andThen(new StopLauncherCommand(launcher))
             );
+          } else {
+            m_operatorController.x().onTrue(new StartLiftCommand(lift));
+            m_operatorController.b().onTrue(new StopLiftCommand(lift));
           }
         } else {
           m_operatorController.a().onTrue(new StopLauncherCommand(launcher));
