@@ -370,19 +370,6 @@ public class RobotContainer {
       m_operatorController.start().onTrue(new RaiseClimbCommand(m_climbL1Subsystem.get()));
       m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));    
     }
-
-    // TODO: IMPORTANT - these buttons are already bound above. I suspect the following 
-    // block needs to be removed.
-    if (m_launcherSubsystem.isPresent())
-    {
-      // Operator's manual launcher override.
-      m_operatorController.b().onTrue(new StopLauncherCommand(m_launcherSubsystem.get()));
-      
-      // FOR TEST PURPOSES ONLY!
-      m_operatorController.a().onTrue(new StartFlywheelCommand(m_launcherSubsystem.get(),
-                                                               LauncherConstants.kFixedTestSpeed,
-                                                               LauncherConstants.kFlywheelToleranceRPM));
-    }
   }
 
   // Populate the SmartDashboard on robot init.
