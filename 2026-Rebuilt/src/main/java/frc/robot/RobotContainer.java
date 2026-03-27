@@ -305,6 +305,9 @@ public class RobotContainer {
               .andThen(new StopLauncherCommand(launcher))
             );
 
+            m_operatorController.rightStick().whileTrue(new ReverseIndexBulk(indexer));
+            m_operatorController.rightStick().onFalse(new StopShootCommand(lift, indexer));
+
 
             // This is intended to keep shooting until the button is released.
             m_driverController.y().whileTrue(

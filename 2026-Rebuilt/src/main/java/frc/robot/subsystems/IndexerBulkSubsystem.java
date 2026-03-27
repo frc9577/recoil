@@ -80,6 +80,12 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
+  public void reverseBulkTransfer() {
+    m_motorBulk.set(-m_bulkSpeed/2);
+    m_bulkStarted = true;
+    SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
+  }
+
 // Stops the belts in bulk storage.
   public void stopBulkTransfer() {
     m_motorBulk.set(0.0);
@@ -100,6 +106,13 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   public void startIndexer() {
     // Indexer runs in the negative direction when operating normally so we negate the commanded speed.
     m_motorIndexer.set(-m_indexerSpeed);
+    m_indexerStarted = true;
+    SmartDashboard.putBoolean("IndexerBulk IndexerStarted", m_indexerStarted);
+  }
+
+  public void reverseIndexer() {
+    // Indexer runs in the negative direction when operating normally so we dont the commanded speed.
+    m_motorIndexer.set(m_indexerSpeed/2);
     m_indexerStarted = true;
     SmartDashboard.putBoolean("IndexerBulk IndexerStarted", m_indexerStarted);
   }
