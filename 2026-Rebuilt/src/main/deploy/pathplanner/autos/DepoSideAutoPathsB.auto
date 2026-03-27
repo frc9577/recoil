@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "CrossBumpFwd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DSA_PickupFwd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateOtherSide"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DSA_PickupBwd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CrossBumpBwd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DSA_ParkAtWall"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DSA_B_PickupDepo"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,36 @@
+# This YML defines the basic build CI job. For syntax, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+# This workflow file is based on this WPILib Reference with modifications: https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/robot-code-ci.html
+name: robot_ci
+
+# This action runs on all pull requests into main and when the result of the pull request is merged.
+on: 
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+# The concurrency setting prevents multiple runs of this workflow on the same ref/hash
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+# We define one job called 'ci' which runs the gradle build. A separate ruleset in the repository will make this a commit gate by requiring the job to pass
+# In the job, we tell the orchestrator to run on a github provided ubuntu 22.04 instance and to use the WPILib provided docker container
+# Using that docker container makes the build look like a developer machine install with WPILib available
+# The job then runs gradlew build
+# If the project structure significantly changes (e.g. gradlew moves) then the path below for both the chmod and the gradlew invocation need to match the change.
+jobs:
+  ci:
+    runs-on: ubuntu-22.04
+    container:
+      image: docker://wpilib/roborio-cross-ubuntu:2025-22.04
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+      - name: Git Clone Common Repo
+        run: |
+          sh common-repo-sync.sh
+      - name: Gradle Build
+        run: |
+          chmod +x gradlew
+          ./gradlew build

@@ -1,0 +1,18 @@
+Depo Side Auto:
+1. Deadreackon forward for x meters (over bump)
+2. Relocate
+3. DSA_PickupFwd
+4. Face opponent wall
+5. DSA_PickupBwd
+6. Deadreckon backward for x meters (over bump)
+7. Relocate
+8. DSA_ParkAtWall
+9. Aim & Shoot
+
+10A. Drive to Bump
+11A. Deadreckon Forward
+12A. Relocate
+13A. Drive to balls
+
+10B. Pickup Depo
+11B. Aim & Shoot
