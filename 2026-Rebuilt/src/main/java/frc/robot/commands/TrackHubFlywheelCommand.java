@@ -64,7 +64,9 @@ public class TrackHubFlywheelCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    if (interrupted == true) {
+      m_subsystem.setTargetSpeedrpm(0);
+    }
   }
 
   // This command never ends. It will be interrupted by the scheduler if

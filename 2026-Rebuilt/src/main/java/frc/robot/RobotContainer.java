@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -193,25 +194,31 @@ public class RobotContainer {
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
   private void configureAutos() {
-    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent() && m_indexerBulkSubsystem.isPresent()) {
+    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent() && m_indexerBulkSubsystem.isPresent() && m_intakeSubsystem.isPresent()) {
       // Init Needed values
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       LauncherSubsystem launcherSubsystem = m_launcherSubsystem.get();
       LiftSubsystem liftSubsystem = m_liftSubsystem.get();
       IndexerBulkSubsystem indexerBulkSubsystem = m_indexerBulkSubsystem.get();
+      IntakeSubsystem intakeSubsystem = m_intakeSubsystem.get();
       m_autoChooser = new SendableChooser<Command>();
 
       // Init Autos
       m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
-      m_autoChooser.addOption("[INDEV] Basic backup and shoot", 
-        new ParallelCommandGroup(
+      m_autoChooser.addOption("Basic backup and shoot", 
+        new ParallelRaceGroup(
           new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed),
           new SequentialCommandGroup(
+            new ExtendIntakeCommand(intakeSubsystem),
             new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
             new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
             new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
-            new StartShootCommand(liftSubsystem, indexerBulkSubsystem)
+            new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
+            new WaitCommand(7)
           )
+        ).andThen(
+          new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
+          new StopLauncherCommand(launcherSubsystem)
         )
       );
 
@@ -289,7 +296,11 @@ public class RobotContainer {
       // Range launcher, turn to face hub and shoot all fuel
       if (m_launcherSubsystem.isPresent()) {
         LauncherSubsystem launcher = m_launcherSubsystem.get();
-        m_operatorController.y().onTrue(new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed));
+
+        // Change speed with operator left y axis when y is being pressed
+        // else auto track hub distance
+        m_operatorController.y().onTrue(new ManualFlywheelCommand(
+          launcher, m_operatorController, m_PoseEstimator, m_isRed));
 
         if (m_liftSubsystem.isPresent()) {
           LiftSubsystem lift = m_liftSubsystem.get();
@@ -305,9 +316,7 @@ public class RobotContainer {
               .andThen(new StopLauncherCommand(launcher))
             );
 
-            m_operatorController.rightStick().whileTrue(new ReverseIndexBulk(indexer));
             m_operatorController.rightStick().onFalse(new StopShootCommand(lift, indexer));
-
 
             // This is intended to keep shooting until the button is released.
             m_driverController.y().whileTrue(
@@ -325,6 +334,13 @@ public class RobotContainer {
               new StopShootCommand(lift, indexer)
               .andThen(new StopLauncherCommand(launcher))
             );
+
+            if (m_intakeSubsystem.isPresent()) {
+              IntakeSubsystem intake = m_intakeSubsystem.get();
+              m_operatorController.rightStick().whileTrue(new ReverseIndexBulkIntake(indexer, intake));
+            } else {
+              m_operatorController.rightStick().whileTrue(new ReverseIndexBulk(indexer));
+            }
           } else {
             m_operatorController.x().onTrue(new StartLiftCommand(lift));
             m_operatorController.b().onTrue(new StopLiftCommand(lift));
@@ -346,15 +362,48 @@ public class RobotContainer {
 
       // cancel the current command running on drive subsystem when
       // left y or right x is > half and the default command is not running.
-      new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      // new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      //   .onTrue(new CancelDriveCommand(driveSubsystem));
+
+      // new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      //   .onTrue(new CancelDriveCommand(driveSubsystem));
+
+      // false == default, true == not default
+      BooleanSupplier isNotDefault = () -> {
+        try {
+          Command currentCommand = driveSubsystem.getCurrentCommand();
+          Command defaultCommand = driveSubsystem.getDefaultCommand();
+          if (currentCommand != null && defaultCommand != null) {
+            return driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass();
+          } else {
+            return false;
+          }
+        } catch (Error e) {
+          System.out.println("Error in isNotDefault! Returning false " + e.toString());
+          return false;
+        }
+      };
+
+      new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (isNotDefault.getAsBoolean()))
         .onTrue(new CancelDriveCommand(driveSubsystem));
 
-      new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
+      new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (isNotDefault.getAsBoolean()))
         .onTrue(new CancelDriveCommand(driveSubsystem));
 
        // Also do it on back press
       m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
     }
+
+    m_driverController.start().onTrue(new InstantCommand(() -> {
+      Double robotYaw = m_limelightSubsystem.getRobotYaw();
+      if (robotYaw != null) {
+        Rotation2d currentRotation = m_pigeon.getRotation2d();
+        if (Math.abs(robotYaw - currentRotation.getDegrees()) > 1) {
+          m_pigeon.reset();
+          m_pigeon.setYawOffset(robotYaw);
+        }
+      }
+    }));
 
     //
     // Operator Controls
@@ -548,16 +597,16 @@ public class RobotContainer {
   private kStartingNames oldStartEnum;
   public void disabledPeriodic() {
     // Reset Pidgeon
-    if ((disabledTick % 20) == 0) {
-      Double robotYaw = m_limelightSubsystem.getRobotYaw();
-      if (robotYaw != null) {
-        Rotation2d currentRotation = m_pigeon.getRotation2d();
-        if (Math.abs(robotYaw - currentRotation.getDegrees()) > 1) {
-          m_pigeon.reset();
-          m_pigeon.setYawOffset(robotYaw);
-        }
-      }
-    }
+    // if ((disabledTick % 20) == 0) {
+    //   Double robotYaw = m_limelightSubsystem.getRobotYaw();
+    //   if (robotYaw != null) {
+    //     Rotation2d currentRotation = m_pigeon.getRotation2d();
+    //     if (Math.abs(robotYaw - currentRotation.getDegrees()) > 1) {
+    //       m_pigeon.reset();
+    //       m_pigeon.setYawOffset(robotYaw);
+    //     }
+    //   }
+    // }
 
     // Check the side
     boolean isRed = m_isRed.getAsBoolean();
