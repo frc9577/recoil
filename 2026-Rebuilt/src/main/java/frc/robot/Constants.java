@@ -245,8 +245,11 @@ public final class Constants {
     public static int kBulkMoveMotorCANID = 51;
 
     // Raw motor speeds in range [-1.0,1.0]
-    public static final double kBulkMoveMotorSpeed = 0.5;
-    public static final double kIndexerMotorSpeed = 0.5;
+    public static final double kBulkMoveMotorSpeed = 0.7;
+    public static final double kIndexerMotorSpeed = 0.7;
+
+    public static final int kJigglePeriod = 25;
+    public static final double kJigglFactor = 0.2; // The factor of the max motor speed to subtract
   }
 
   public static class ClimbL1Constants {

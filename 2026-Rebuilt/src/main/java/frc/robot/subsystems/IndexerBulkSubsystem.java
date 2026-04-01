@@ -10,8 +10,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IndexerBulkConstants;
+import frc.robot.Constants.IntakeConstants;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
@@ -25,9 +27,12 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   private TalonFXS m_motorBulk;
   private TalonFX m_motorIndexer;
   private Boolean m_bulkStarted = false;
+  private Boolean m_bulkReversed = false;
   private Boolean m_indexerStarted = false;
   private double m_bulkSpeed = IndexerBulkConstants.kBulkMoveMotorSpeed;
   private double m_indexerSpeed = IndexerBulkConstants.kIndexerMotorSpeed;
+  
+  private int m_tickCount = 0;
 
   /** Creates a new IndexerBulkSubsystem. */
   public IndexerBulkSubsystem() throws Exception {
@@ -62,6 +67,7 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
     TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
     motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+    motorConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = m_motorBulk.getConfigurator().apply(motorConfig);
@@ -77,12 +83,14 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   public void startBulkTransfer() {
     m_motorBulk.set(m_bulkSpeed);
     m_bulkStarted = true;
+    m_bulkReversed = false;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
   public void reverseBulkTransfer() {
     m_motorBulk.set(-m_bulkSpeed/2);
     m_bulkStarted = true;
+    m_bulkReversed = true;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
@@ -90,6 +98,7 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   public void stopBulkTransfer() {
     m_motorBulk.set(0.0);
     m_bulkStarted = false;
+    m_bulkReversed = false;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
@@ -137,6 +146,22 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (DriverStation.isDisabled() == false) {
+      if (m_bulkStarted == true && m_bulkReversed == false) {
+        if (m_tickCount % IndexerBulkConstants.kJigglePeriod == 0) {
+          double newSpeed;
+          if (m_bulkSpeed == IndexerBulkConstants.kBulkMoveMotorSpeed) {
+            newSpeed = m_bulkSpeed - (m_indexerSpeed*IndexerBulkConstants.kJigglFactor);
+          } else {
+            newSpeed = IndexerBulkConstants.kBulkMoveMotorSpeed;
+          }
+
+          setBulkTransferSpeed(newSpeed);
+        }
+      }
+    }
+
+    m_tickCount++;
   }
 
   @Override
