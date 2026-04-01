@@ -45,6 +45,8 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("IndexerBulk BulkSpeed", m_bulkSpeed);
     SmartDashboard.putNumber("IndexerBulk IndexerSpeed", m_indexerSpeed);
 
+    SmartDashboard.putNumber("Minion Temp (C)", -1000.0); // clearly bad data just for clarity
+
     // Test mode controls
     SmartDashboard.putBoolean("IndexerBulk TestBulk", false);
     SmartDashboard.putBoolean("IndexerBulk TestIndexer", false);
@@ -163,6 +165,10 @@ public class IndexerBulkSubsystem extends SubsystemBase {
           setBulkTransferSpeed(newSpeed);
         }
       }
+    }
+
+    if (m_tickCount % 20 == 0) {
+      SmartDashboard.putNumber("Minion Temp (C)", m_motorBulk.getDeviceTemp().getValueAsDouble());
     }
 
     m_tickCount++;
