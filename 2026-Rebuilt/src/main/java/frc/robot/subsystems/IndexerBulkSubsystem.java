@@ -20,6 +20,7 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
 public class IndexerBulkSubsystem extends SubsystemBase {
@@ -67,7 +68,10 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
     TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
     motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
-    motorConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
+    motorConfig.CurrentLimits.SupplyCurrentLimit = 20.0;
+    motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = m_motorBulk.getConfigurator().apply(motorConfig);
@@ -151,7 +155,7 @@ public class IndexerBulkSubsystem extends SubsystemBase {
         if (m_tickCount % IndexerBulkConstants.kJigglePeriod == 0) {
           double newSpeed;
           if (m_bulkSpeed == IndexerBulkConstants.kBulkMoveMotorSpeed) {
-            newSpeed = m_bulkSpeed - (m_indexerSpeed*IndexerBulkConstants.kJigglFactor);
+            newSpeed = m_bulkSpeed - (m_indexerSpeed*IndexerBulkConstants.kJiggleFactor);
           } else {
             newSpeed = IndexerBulkConstants.kBulkMoveMotorSpeed;
           }
