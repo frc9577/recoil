@@ -557,9 +557,9 @@ public class RobotContainer {
     // }
   }
 
-  private int disabledTick = 0;
+  //private int disabledTick = 0;
   public void disabledInit() {
-    disabledTick = 0;
+    //disabledTick = 0;
     LimelightHelpers.SetIMUMode("limelight", 3);
     m_limelightSubsystem.setAllowJumps(true);
 
@@ -640,7 +640,7 @@ public class RobotContainer {
       oldStartEnum = null;
     }
 
-    disabledTick += 1;
+    //disabledTick += 1;
   }
 
   /**
