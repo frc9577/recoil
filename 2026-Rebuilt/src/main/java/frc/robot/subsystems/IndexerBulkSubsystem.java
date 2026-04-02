@@ -86,14 +86,16 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
 // Runs the belts that transfer the fuel from bulk storage to the indexer.
   public void startBulkTransfer() {
-    m_motorBulk.set(m_bulkSpeed);
+    // Bulk runs in the negative direction when operating normally so we negate the commanded speed.
+    m_motorBulk.set(-m_bulkSpeed);
     m_bulkStarted = true;
     m_bulkReversed = false;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
   public void reverseBulkTransfer() {
-    m_motorBulk.set(-m_bulkSpeed/2);
+    // Bulk runs in the negative direction when operating normally so we dont negate the commanded speed.
+    m_motorBulk.set(m_bulkSpeed/2);
     m_bulkStarted = true;
     m_bulkReversed = true;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
