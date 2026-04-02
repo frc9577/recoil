@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
@@ -22,7 +24,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -35,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import frc.robot.factorys.DriveSubsystemFactory;
 import frc.robot.factorys.TalonFXFactory;
+import frc.robot.io.ControllerIOInputsAutoLogged;
+import frc.robot.io.DriverControllerIO;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
@@ -102,9 +105,12 @@ public class RobotContainer {
   );
 
   // Smartdashboard Objects
-  private SendableChooser<Command> m_autoChooser;
-  private SendableChooser<kStartingNames> m_startingChooser;
+  private LoggedDashboardChooser<Command> m_autoChooser;
+  private LoggedDashboardChooser<kStartingNames> m_startingChooser;
   private final Field2d m_field = new Field2d();
+
+  private final DriverControllerIO DriveControllerIO = new DriverControllerIO();
+  private final ControllerIOInputsAutoLogged DriverControllerInputs = new ControllerIOInputsAutoLogged();
 
   // Factorys
   private TalonFXFactory m_TalonFXFactory = new TalonFXFactory();
@@ -201,10 +207,10 @@ public class RobotContainer {
       LiftSubsystem liftSubsystem = m_liftSubsystem.get();
       IndexerBulkSubsystem indexerBulkSubsystem = m_indexerBulkSubsystem.get();
       IntakeSubsystem intakeSubsystem = m_intakeSubsystem.get();
-      m_autoChooser = new SendableChooser<Command>();
+      m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
 
       // Init Autos
-      m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
+      m_autoChooser.addDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
       m_autoChooser.addOption("Basic backup and shoot", 
         new ParallelRaceGroup(
           new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed),
@@ -231,7 +237,7 @@ public class RobotContainer {
       );
 
       // Add to dashboard
-      SmartDashboard.putData("Auto Chooser", m_autoChooser);
+      //SmartDashboard.putData("Auto Chooser", m_autoChooser);
 
       // Field wigit update
       PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -452,17 +458,18 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
 
-    m_startingChooser = new SendableChooser<kStartingNames>(); 
-    m_startingChooser.setDefaultOption("NONE", null);
+    m_startingChooser = new LoggedDashboardChooser<kStartingNames>("Starting Position"); 
+    m_startingChooser.addDefaultOption("NONE", null);
     for (kStartingNames startingName : kStartingNames.values()) {
       m_startingChooser.addOption(startingName.name(), startingName);
     }
-    SmartDashboard.putData("Starting Position", m_startingChooser);
+    //SmartDashboard.putData("Starting Position", m_startingChooser);
   }
 
   // This function is called every 20mS.
   public void periodic() {
     UpdateSmartDashboard();
+    DriveControllerIO.updateInputs(DriverControllerInputs, m_driverController);
   }
 
   //private boolean oldPigeonValue = false;
@@ -610,7 +617,7 @@ public class RobotContainer {
 
     // Check the side
     boolean isRed = m_isRed.getAsBoolean();
-    kStartingNames startEnum = m_startingChooser.getSelected();
+    kStartingNames startEnum = m_startingChooser.get();
     if (startEnum != null) {
       if ((isRed != oldIsRed) || (startEnum != oldStartEnum)) {
         oldIsRed = isRed;
@@ -649,7 +656,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
+    return m_autoChooser.get();
   }
 
   public void testInit() {

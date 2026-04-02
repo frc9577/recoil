@@ -40,6 +40,9 @@ import frc.robot.commands.DriveCommands.ArcadeDriveCommandNoPID;
 import frc.robot.commands.DriveCommands.ArcadeFromDashboard;
 import frc.robot.commands.DriveCommands.DifferentialDriveCommand;
 import frc.robot.commands.DriveCommands.NoDriveCommand;
+import frc.robot.io.DriveIOInputsAutoLogged;
+import frc.robot.io.DriveIO;
+import frc.robot.io.DriveIOTalonFX;
 import frc.robot.utils.Pigeon;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -58,6 +61,9 @@ public class DriveSubsystem extends SubsystemBase {
   private final Pigeon m_pigeon;
 
   private final SendableChooser<Class<?>> m_driveChooser = new SendableChooser<>();
+
+  private final DriveIO io = new DriveIOTalonFX();
+  private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(DifferentialDrivePoseEstimator poseEstimator, DifferentialDriveKinematics kinematics, Pigeon pigeon, TalonFX rightMotor, TalonFX leftMotor, BooleanSupplier isRed) { 
@@ -122,6 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Get (-1-->1)", 0);  
 
     SmartDashboard.putNumber("Gyro Degrees", m_pigeon.getYaw());
+
+    io.updateCurrentValues(inputs, m_leftMotor, m_rightMotor);
   }
 
   private void setConfig(TalonFX motor, InvertedValue Inverted) {
@@ -170,6 +178,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_optionalLeftMotor.setControl(
       new Follower(m_leftMotor.getDeviceID(), MotorAlignmentValue.Aligned)
     );
+
+    // Update logger
+    io.updateCurrentValues(inputs, m_leftMotor, m_optionalLeftMotor, m_rightMotor, m_optionalRightMotor);
   }
 
   // This takes the current class selected in the drive chooser and attempts to initilize a command object from it & run it.
@@ -197,13 +208,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // This converts rotations of the motor shaft to meters travled.
-  public double ConvertRotationsToMeters(double rotations) {
+  public static double ConvertRotationsToMeters(double rotations) {
     return rotations * DrivetrainConstants.kDrivetrainGearRatio * DrivetrainConstants.kWheelCircumference;
   }
 
   // This converts meters travled to rotations of the motor shaft.
   // This is the inverse function of the one above, calculated it myself. - Owen
-  public double ConvertMetersToRotations(double meters) {
+  public static double ConvertMetersToRotations(double meters) {
     return (meters / DrivetrainConstants.kDrivetrainGearRatio) / DrivetrainConstants.kWheelCircumference;
   }
 
@@ -223,6 +234,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_leftMotor.setControl(m_leftVelocityVoltage.withVelocity(leftSpeedRPS));
     m_rightMotor.setControl(m_rightVelocityVoltage.withVelocity(rightSpeedRPS));
+
+    io.updateSetValues(inputs, leftSpeedMPS, leftSpeedMPS);
   }
 
   // pass in -1 to 1 for the motor speed with no closed loop control.
@@ -310,6 +323,12 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run 
+    if (inputs.leftFollowerExists == true && inputs.rightFollowerExists == true) {
+      io.updateCurrentValues(inputs, m_leftMotor, m_optionalLeftMotor, m_rightMotor, m_optionalRightMotor);
+    } else {
+      io.updateCurrentValues(inputs, m_leftMotor, m_rightMotor);
+    }
+
     double lPositionMeters = getMotorPositionMeters(true);
     double rPositionMeters = getMotorPositionMeters(false);
     Rotation2d yaw = m_pigeon.getRotation2d();
