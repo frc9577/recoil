@@ -344,7 +344,7 @@ public class RobotContainer {
 
             if (m_intakeSubsystem.isPresent()) {
               IntakeSubsystem intake = m_intakeSubsystem.get();
-              m_operatorController.rightStick().whileTrue(new ReverseEverything(indexer, intake));
+              m_operatorController.rightStick().whileTrue(new ReverseEverything(indexer, intake, launcher, lift));
             } else {
               m_operatorController.rightStick().whileTrue(new ReverseIndexBulk(indexer));
             }
