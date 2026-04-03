@@ -323,6 +323,8 @@ public class RobotContainer {
 
             m_operatorController.rightStick().onFalse(new StopShootCommand(lift, indexer));
 
+            m_driverController.povUp().whileTrue(new UnjamJiggleCommand(driveSubsystem, indexer));
+
             // This is intended to keep shooting until the button is released.
             m_driverController.y().whileTrue(
               new ParallelCommandGroup(
@@ -342,7 +344,7 @@ public class RobotContainer {
 
             if (m_intakeSubsystem.isPresent()) {
               IntakeSubsystem intake = m_intakeSubsystem.get();
-              m_operatorController.rightStick().whileTrue(new ReverseIndexBulkIntake(indexer, intake));
+              m_operatorController.rightStick().whileTrue(new ReverseEverything(indexer, intake));
             } else {
               m_operatorController.rightStick().whileTrue(new ReverseIndexBulk(indexer));
             }

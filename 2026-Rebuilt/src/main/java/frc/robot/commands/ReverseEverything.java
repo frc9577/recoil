@@ -9,7 +9,7 @@ import frc.robot.subsystems.IntakeSubsystem;
  * Start shooting fuel by starting the lift motor and both motors in the indexer/bulk subsystem.
  * 
  **/
-public class ReverseIndexBulkIntake extends Command {
+public class ReverseEverything extends Command {
   private final IndexerBulkSubsystem m_IndexerBulk;
   private final IntakeSubsystem m_IntakeSubsystem;
   
@@ -18,7 +18,7 @@ public class ReverseIndexBulkIntake extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ReverseIndexBulkIntake(IndexerBulkSubsystem indexerbulk, IntakeSubsystem intake) 
+  public ReverseEverything(IndexerBulkSubsystem indexerbulk, IntakeSubsystem intake) 
   {
     m_IndexerBulk = indexerbulk;
     m_IntakeSubsystem = intake;
