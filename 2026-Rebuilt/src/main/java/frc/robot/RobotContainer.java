@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -205,18 +206,22 @@ public class RobotContainer {
 
       // Init Autos
       m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
-      m_autoChooser.addOption("Basic backup and shoot", 
-        new ParallelRaceGroup(
-          new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed),
-          new SequentialCommandGroup(
-            new ExtendIntakeCommand(intakeSubsystem),
-            new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
-            new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
-            new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
-            new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
-            new WaitCommand(7)
-          )
-        ).andThen(
+      m_autoChooser.addOption("Basic backup and shoot",
+        new SequentialCommandGroup(
+          new ParallelDeadlineGroup(
+            new SequentialCommandGroup(
+              new ExtendIntakeCommand(intakeSubsystem),
+              new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
+              new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
+              new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
+              new StartIntakeCommand(intakeSubsystem),
+              new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
+              new WaitCommand(3),
+              new StopIntakeCommand(intakeSubsystem),
+              new WaitCommand(4)
+            ),
+            new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)
+          ),
           new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
           new StopLauncherCommand(launcherSubsystem)
         )

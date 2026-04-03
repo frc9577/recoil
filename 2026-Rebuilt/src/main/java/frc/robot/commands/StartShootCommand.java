@@ -46,10 +46,9 @@ public class StartShootCommand extends Command {
   public void end(boolean interrupted) {
   }
 
-  // This command only ends when another command is scheduled on the
-  // subsystem.
   @Override
   public boolean isFinished() {
-        return false;
+    // The command signals end immediately.
+    return true;
   }
 }
