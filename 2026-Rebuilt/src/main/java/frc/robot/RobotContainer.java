@@ -218,7 +218,7 @@ public class RobotContainer {
               new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
               new WaitCommand(3),
               new StopIntakeCommand(intakeSubsystem),
-              new WaitCommand(7)
+              new WaitCommand(4)
             ),
             new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)
           ),
