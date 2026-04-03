@@ -187,7 +187,7 @@ public final class Constants {
     public static int kIntakeMotorCANID = 30;
 
     // Raw intake motor speed in range [-1.0,1.0]
-    public static double kIntakeMotorSpeed = 0.75;
+    public static double kIntakeMotorSpeed = 0.7;
 
     // Solenoid states required to extend and retract the intake mechanism.
     public static int     kIntakeSolenoidForward = 15;
