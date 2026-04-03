@@ -332,6 +332,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                   new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
                   new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
+                  new WaitCommand(0.5), // Hard coded wait due to shooting short
                   new StartShootCommand(lift, indexer)
                 )
               )

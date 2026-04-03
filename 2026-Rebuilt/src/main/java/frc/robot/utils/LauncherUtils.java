@@ -9,12 +9,12 @@ public class LauncherUtils {
     // Characterization data for the launcher. This table links shooting
     // distance to known-good launcher speeds. Distances are from the centre
     // of the robot base to the centre of the hub.
-    //
+    // NOTE: I upped the rpm's by 50 due to a bit of short shooting.
     private static final double[][] m_DistanceToRPM = {
-        {2.44, 2470.0},
-        {3.12, 2700.0},
-        {3.81, 2800.0},
-        {5.21, 3300.0},
+        {2.44, 2520.0},
+        {3.12, 2750.0},
+        {3.81, 2500.0},
+        {5.21, 3350.0},
     };
 
     //
