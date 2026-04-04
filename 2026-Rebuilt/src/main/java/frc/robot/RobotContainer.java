@@ -214,6 +214,7 @@ public class RobotContainer {
               new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
               new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
               new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
+              new WaitCommand(0.5), // Just in-case spped wait
               new StartIntakeCommand(intakeSubsystem),
               new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
               new WaitCommand(3),
