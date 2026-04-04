@@ -11,10 +11,10 @@ public class LauncherUtils {
     // of the robot base to the centre of the hub.
     // NOTE: I upped the rpm's by 50 due to a bit of short shooting.
     private static final double[][] m_DistanceToRPM = {
-        {2.44, 2520.0},
-        {3.12, 2750.0},
-        {3.81, 2500.0},
-        {5.21, 3350.0},
+        {2.44, 2570.0},
+        {3.12, 2800.0},
+        {3.81, 2550.0},
+        {5.21, 3400.0},
     };
 
     //
