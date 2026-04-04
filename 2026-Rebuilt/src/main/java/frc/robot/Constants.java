@@ -147,7 +147,7 @@ public final class Constants {
     public static final int kRightMotorCANID = 20;
     public static final int kOptionalRightMotorCANID = 21;
 
-    public static final double kTurnDivider = 3;
+    public static final double kTurnDivider = 2.5;
     public static final double kSpeedDivider = 2.5;
 
     // These numbers came from the ctre example then tweaked
