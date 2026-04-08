@@ -101,20 +101,22 @@ public class LauncherSubsystem extends SubsystemBase {
   public void applyMotorConfigs(TalonFXConfiguration configs)
   {
     /* Retry config apply up to 5 times, report if failure */
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    StatusCode statusLeader = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_motorLeader.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      statusLeader = m_motorLeader.getConfigurator().apply(configs);
+      if (statusLeader.isOK()) break;
     }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs 1, error code: " + status.toString());
+    if (!statusLeader.isOK()) {
+      System.out.println("Could not apply configs 1, error code: " + statusLeader.toString());
     }
+
+    StatusCode statusFollower = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_motorFollower.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      statusFollower = m_motorFollower.getConfigurator().apply(configs);
+      if (statusFollower.isOK()) break;
     }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs 2, error code: " + status.toString());
+    if (!statusFollower.isOK()) {
+      System.out.println("Could not apply configs 2, error code: " + statusFollower.toString());
     }
   }
 
