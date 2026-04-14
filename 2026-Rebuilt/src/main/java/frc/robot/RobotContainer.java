@@ -47,6 +47,7 @@ import frc.robot.utils.HubUtils;
 import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
+import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.utils.LauncherUtils;
@@ -54,9 +55,12 @@ import frc.robot.Constants.*;
 import frc.robot.Constants.RobotConstants.kStartingNames;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -73,34 +77,34 @@ public class RobotContainer {
   private final LimelightSubsystem m_limelightSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandXboxController m_operatorController =
-      new CommandXboxController(OperatorConstants.kOperatorControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(
+      OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_operatorController = new CommandXboxController(
+      OperatorConstants.kOperatorControllerPort);
 
-  private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.kTrackWidthMeters);
+  private final DifferentialDriveKinematics m_DriveKinematics = new DifferentialDriveKinematics(
+      DrivetrainConstants.kTrackWidthMeters);
 
-  // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and radians.
+  // A Static Standard Deviation, in the form of [x, y, theta]ᵀ in meters and
+  // radians.
   private Vector<N3> m_drivetrainError = VecBuilder.fill(0.2, 0.2, 0);
-  private Vector<N3> m_limelightError = VecBuilder.fill(.7,.7,9999999); // This gets updated per report
+  private Vector<N3> m_limelightError = VecBuilder.fill(.7, .7, 9999999); // This gets updated per report
 
   private DifferentialDrivePoseEstimator m_PoseEstimator = new DifferentialDrivePoseEstimator(
-    m_DriveKinematics, 
-    Rotation2d.fromDegrees(0.0), 
-    0, 
-    0, 
-    new Pose2d(0.0, 0.0, new Rotation2d()),
-    m_drivetrainError,
-    m_limelightError
-  );
+      m_DriveKinematics,
+      Rotation2d.fromDegrees(0.0),
+      0,
+      0,
+      new Pose2d(0.0, 0.0, new Rotation2d()),
+      m_drivetrainError,
+      m_limelightError);
 
   // The general constraints for most paths.
   PathConstraints m_constraints = new PathConstraints(
-          2.0, 
-          1.0, 
-            (1/2) * Math.PI,
-            (1/4) * Math.PI
-  );
+      2.0,
+      1.0,
+      (1 / 2) * Math.PI,
+      (1 / 4) * Math.PI);
 
   // Smartdashboard Objects
   private SendableChooser<Command> m_autoChooser;
@@ -114,7 +118,8 @@ public class RobotContainer {
   // Keep track of time for SmartDashboard updates.
   static int m_iTickCount = 0;
 
-  // Checks if the robot is on the blue or red alliance. If it cannot get the data it defaults to blue.
+  // Checks if the robot is on the blue or red alliance. If it cannot get the data
+  // it defaults to blue.
   public BooleanSupplier m_isRed = () -> {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -125,7 +130,15 @@ public class RobotContainer {
     }
   };
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  Boolean bHasPneumatics;
+  private boolean b_isCompressorEnabled = false;
+
+  /**
+  The container for
+  the robot.
+  Contains subsystems, OI devices,
+  and commands.*/
+
   public RobotContainer() {
     // Init Pigeon
     m_pigeon = new Pigeon(RobotConstants.kPigeon2CANID);
@@ -135,7 +148,8 @@ public class RobotContainer {
     Optional<TalonFX> leftLead = m_TalonFXFactory.construct(DrivetrainConstants.kLeftMotorCANID);
     Optional<TalonFX> rightFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalRightMotorCANID);
     Optional<TalonFX> leftFollower = m_TalonFXFactory.construct(DrivetrainConstants.kOptionalLeftMotorCANID);
-    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead, leftLead, rightFollower, leftFollower, m_isRed);
+    m_driveSubsystem = m_DriveSubsystemFactory.construct(m_PoseEstimator, m_DriveKinematics, m_pigeon, rightLead,
+        leftLead, rightFollower, leftFollower, m_isRed);
 
     // Init the subsystems that don't require pneumatics.
     m_limelightSubsystem = new LimelightSubsystem(m_PoseEstimator);
@@ -145,13 +159,12 @@ public class RobotContainer {
 
     // Init pneumatics system and subsystems that rely upon it.
     m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
-    Boolean bHasPneumatics = m_pneumaticHub.isPresent();
-
-    if (bHasPneumatics)
-    {
+    bHasPneumatics = m_pneumaticHub.isPresent();
+    if (bHasPneumatics) {
       PneumaticHub hub = m_pneumaticHub.get();
       hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
-                                 PneumaticsConstants.kMaxPneumaticsPressure);
+          PneumaticsConstants.kMaxPneumaticsPressure);
+
     }
 
     // Instantiate subsystems that rely upon pneumatics. We want to run
@@ -163,7 +176,7 @@ public class RobotContainer {
     } catch (Exception e) {
       m_climbL1Subsystem = Optional.empty();
     }
-    
+
     try {
       IntakeSubsystem intake = new IntakeSubsystem(bHasPneumatics);
       m_intakeSubsystem = Optional.ofNullable(intake);
@@ -195,7 +208,8 @@ public class RobotContainer {
 
   // Init Autos (/home/lvuser/deploy/pathplanner/autos)
   private void configureAutos() {
-    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent() && m_indexerBulkSubsystem.isPresent() && m_intakeSubsystem.isPresent()) {
+    if (m_driveSubsystem.isPresent() && m_launcherSubsystem.isPresent() && m_liftSubsystem.isPresent()
+        && m_indexerBulkSubsystem.isPresent() && m_intakeSubsystem.isPresent()) {
       // Init Needed values
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       LauncherSubsystem launcherSubsystem = m_launcherSubsystem.get();
@@ -207,34 +221,28 @@ public class RobotContainer {
       // Init Autos
       m_autoChooser.setDefaultOption("NONE", new CancelDriveCommand(driveSubsystem));
       m_autoChooser.addOption("Basic backup and shoot",
-        new SequentialCommandGroup(
-          new ParallelDeadlineGroup(
-            new SequentialCommandGroup(
-              new ExtendIntakeCommand(intakeSubsystem),
-              new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
-              new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
-              new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
-              new WaitCommand(0.5), // Just in-case spped wait
-              new StartIntakeCommand(intakeSubsystem),
-              new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
-              new WaitCommand(3),
-              new StopIntakeCommand(intakeSubsystem),
-              new WaitCommand(4)
-            ),
-            new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)
-          ),
-          new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
-          new StopLauncherCommand(launcherSubsystem)
-        )
-      );
+          new SequentialCommandGroup(
+              new ParallelDeadlineGroup(
+                  new SequentialCommandGroup(
+                      new ExtendIntakeCommand(intakeSubsystem),
+                      new DeadreckonDistance(driveSubsystem, 1.5, -2.0),
+                      new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
+                      new WaitForFlywheelAtTarget(launcherSubsystem, LauncherConstants.kFlywheelToleranceRPM),
+                      new WaitCommand(0.5), // Just in-case spped wait
+                      new StartIntakeCommand(intakeSubsystem),
+                      new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
+                      new WaitCommand(3),
+                      new StopIntakeCommand(intakeSubsystem),
+                      new WaitCommand(4)),
+                  new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)),
+              new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
+              new StopLauncherCommand(launcherSubsystem)));
 
       // Warm up Pathfinder
       CommandScheduler.getInstance().schedule(
-        PathfindingCommand.warmupCommand()
-        .andThen(new InstantCommand(
-          () -> m_field.getObject("target").setPose(new Pose2d())  
-        ))
-      );
+          PathfindingCommand.warmupCommand()
+              .andThen(new InstantCommand(
+                  () -> m_field.getObject("target").setPose(new Pose2d()))));
 
       // Add to dashboard
       SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -251,28 +259,34 @@ public class RobotContainer {
       try {
         DriverStation.reportWarning("Drive Subsystem is not present! No Auto's configured.", null);
       } catch (Exception e) {
-        // If using the SimGUI with no drivetrain components on the robot, the prior call throws
-        // a null pointer exception which is unhelpful. Let's see if this lets us ignore it.
+        // If using the SimGUI with no drivetrain components on the robot, the prior
+        // call throws
+        // a null pointer exception which is unhelpful. Let's see if this lets us ignore
+        // it.
       }
 
     }
   }
 
   private void configureDefaultCommands() {
-    if (m_driveSubsystem.isPresent())
-    {
+    if (m_driveSubsystem.isPresent()) {
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
       driveSubsystem.initDefaultCommand(m_driverController);
     }
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary
    * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link
+   * CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
@@ -285,19 +299,18 @@ public class RobotContainer {
     SmartDashboard.putBoolean("IndexerBulk Subsystem", m_indexerBulkSubsystem.isPresent());
     SmartDashboard.putBoolean("Pneumatic Subsystem", m_pneumaticHub.isPresent());
 
-
     // Note that some of our command bindings require that multiple subsystems
     // are present. We only enable a binding if all its requirements are met!
     // The command bindings here are implemented based on the 2026 Robot User Manual
-    // found at https://docs.google.com/document/d/1VfiFjz9N2ol3pl7xUKzU2Jam5AbL1xXlS_cHFYYanFM
+    // found at
+    // https://docs.google.com/document/d/1VfiFjz9N2ol3pl7xUKzU2Jam5AbL1xXlS_cHFYYanFM
 
     if (m_driveSubsystem.isPresent()) {
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
 
       // Aim to Hub (TESTING?)
       m_driverController.rightBumper().onTrue(
-        new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed)
-      );
+          new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed));
 
       // Range launcher, turn to face hub and shoot all fuel
       if (m_launcherSubsystem.isPresent()) {
@@ -306,11 +319,11 @@ public class RobotContainer {
         // Change speed with operator left y axis when y is being pressed
         // else auto track hub distance
         m_operatorController.y().onTrue(new ManualFlywheelCommand(
-          launcher, m_operatorController, m_PoseEstimator, m_isRed));
+            launcher, m_operatorController, m_PoseEstimator, m_isRed));
 
         if (m_liftSubsystem.isPresent()) {
           LiftSubsystem lift = m_liftSubsystem.get();
-          
+
           if (m_indexerBulkSubsystem.isPresent()) {
             IndexerBulkSubsystem indexer = m_indexerBulkSubsystem.get();
 
@@ -318,9 +331,8 @@ public class RobotContainer {
             m_operatorController.b().onTrue(new StopShootCommand(lift, indexer));
 
             m_operatorController.a().onTrue(
-              new StopShootCommand(lift, indexer)
-              .andThen(new StopLauncherCommand(launcher))
-            );
+                new StopShootCommand(lift, indexer)
+                    .andThen(new StopLauncherCommand(launcher)));
 
             m_operatorController.rightStick().onFalse(new StopShootCommand(lift, indexer));
 
@@ -328,21 +340,17 @@ public class RobotContainer {
 
             // This is intended to keep shooting until the button is released.
             m_driverController.y().whileTrue(
-              new ParallelCommandGroup(
-                new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed),
-                new SequentialCommandGroup(
-                  new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
-                  new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
-                  new WaitCommand(0.5), // Hard coded wait due to shooting short
-                  new StartShootCommand(lift, indexer)
-                )
-              )
-            );
+                new ParallelCommandGroup(
+                    new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed),
+                    new SequentialCommandGroup(
+                        new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
+                        new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
+                        new WaitCommand(0.5), // Hard coded wait due to shooting short
+                        new StartShootCommand(lift, indexer))));
 
             m_driverController.y().onFalse(
-              new StopShootCommand(lift, indexer)
-              .andThen(new StopLauncherCommand(launcher))
-            );
+                new StopShootCommand(lift, indexer)
+                    .andThen(new StopLauncherCommand(launcher)));
 
             if (m_intakeSubsystem.isPresent()) {
               IntakeSubsystem intake = m_intakeSubsystem.get();
@@ -361,21 +369,25 @@ public class RobotContainer {
 
       // Travel to corner and shoot
       // m_driverController.x().onTrue(
-      //   new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, m_isRed, m_constraints)
+      // new TravelToCornerAndShoot(driveSubsystem, m_PoseEstimator, m_isRed,
+      // m_constraints)
       // );
 
       // TEST COMMAND FOR TESTING ACCURACY AFTER BUMP!
       m_driverController.leftBumper().onTrue(
-        new RotateToRotation2D(driveSubsystem, m_PoseEstimator, Rotation2d.kZero, 2.0)
-      );
+          new RotateToRotation2D(driveSubsystem, m_PoseEstimator, Rotation2d.kZero, 2.0));
 
       // cancel the current command running on drive subsystem when
       // left y or right x is > half and the default command is not running.
-      // new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
-      //   .onTrue(new CancelDriveCommand(driveSubsystem));
+      // new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) &&
+      // (driveSubsystem.getCurrentCommand().getClass() !=
+      // driveSubsystem.getDefaultCommand().getClass()))
+      // .onTrue(new CancelDriveCommand(driveSubsystem));
 
-      // new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (driveSubsystem.getCurrentCommand().getClass() != driveSubsystem.getDefaultCommand().getClass()))
-      //   .onTrue(new CancelDriveCommand(driveSubsystem));
+      // new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) &&
+      // (driveSubsystem.getCurrentCommand().getClass() !=
+      // driveSubsystem.getDefaultCommand().getClass()))
+      // .onTrue(new CancelDriveCommand(driveSubsystem));
 
       // false == default, true == not default
       BooleanSupplier isNotDefault = () -> {
@@ -394,12 +406,12 @@ public class RobotContainer {
       };
 
       new Trigger(() -> (Math.abs(m_driverController.getLeftY()) > 0.5) && (isNotDefault.getAsBoolean()))
-        .onTrue(new CancelDriveCommand(driveSubsystem));
+          .onTrue(new CancelDriveCommand(driveSubsystem));
 
       new Trigger(() -> (Math.abs(m_driverController.getRightX()) > 0.5) && (isNotDefault.getAsBoolean()))
-        .onTrue(new CancelDriveCommand(driveSubsystem));
+          .onTrue(new CancelDriveCommand(driveSubsystem));
 
-       // Also do it on back press
+      // Also do it on back press
       m_driverController.back().onTrue(new CancelDriveCommand(driveSubsystem));
     }
 
@@ -417,19 +429,17 @@ public class RobotContainer {
     //
     // Operator Controls
     //
-    if (m_intakeSubsystem.isPresent())
-    {
+    if (m_intakeSubsystem.isPresent()) {
       m_operatorController.rightBumper().onTrue(new StartIntakeCommand(m_intakeSubsystem.get()));
       m_operatorController.leftBumper().onTrue(new StopIntakeCommand(m_intakeSubsystem.get()));
       m_operatorController.povUp().onTrue(new ExtendIntakeCommand(m_intakeSubsystem.get()));
       m_operatorController.povDown().onTrue(new RetractIntakeCommand(m_intakeSubsystem.get()));
     }
 
-    if (m_climbL1Subsystem.isPresent())
-    {
+    if (m_climbL1Subsystem.isPresent()) {
       // Operator's manual climb overrides.
       m_operatorController.start().onTrue(new RaiseClimbCommand(m_climbL1Subsystem.get()));
-      m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));    
+      m_operatorController.back().onTrue(new LowerClimbCommand(m_climbL1Subsystem.get()));
     }
   }
 
@@ -461,7 +471,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
     // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
 
-    m_startingChooser = new SendableChooser<kStartingNames>(); 
+    m_startingChooser = new SendableChooser<kStartingNames>();
     m_startingChooser.setDefaultOption("NONE", null);
     for (kStartingNames startingName : kStartingNames.values()) {
       m_startingChooser.addOption(startingName.name(), startingName);
@@ -472,9 +482,35 @@ public class RobotContainer {
   // This function is called every 20mS.
   public void periodic() {
     UpdateSmartDashboard();
+
   }
 
-  //private boolean oldPigeonValue = false;
+  private void enableCompressorOnFms() {
+
+    // Ryan N - I don't see a way to check the API on whether the compressor is
+    // enabled/disabled
+    // so make our own variable to track it.
+    boolean b_shouldCompressorBeEnabled = !DriverStation.isFMSAttached();
+
+    if (bHasPneumatics) {
+      // We want the Compressor disabled while attached to FMS to save power
+      if (b_isCompressorEnabled != b_shouldCompressorBeEnabled) {
+
+        if (b_shouldCompressorBeEnabled) {
+          m_pneumaticHub.get().enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+              PneumaticsConstants.kMaxPneumaticsPressure);
+          b_isCompressorEnabled = true;
+        } else {
+          m_pneumaticHub.get().disableCompressor();
+e         b_isCompressorEnabled = false;
+        }
+
+        // TODO: Remove other enableCompressorAnalog instance... check syntax here
+      }
+    }
+  }
+
+  // private boolean oldPigeonValue = false;
   private void UpdateSmartDashboard() {
     // Non-subsystem specific stuff
     if ((m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0) {
@@ -483,8 +519,7 @@ public class RobotContainer {
 
       SmartDashboard.putNumber("Pose X (Meter)", estimatedPos.getX());
       SmartDashboard.putNumber("Pose Y (Meter)", estimatedPos.getY());
-      SmartDashboard.putNumber("Pose Theta (Degrees)", estimatedPos.getRotation().getDegrees());
-    
+
       SmartDashboard.putNumber("Yaw", m_pigeon.getYaw());
       SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
       SmartDashboard.putNumber("Roll", m_pigeon.getRoll());
@@ -493,27 +528,32 @@ public class RobotContainer {
       SmartDashboard.putNumber("Pitch Rate", 0.0);
       SmartDashboard.putNumber("Roll Rate", 0.0);
 
-      //SmartDashboard.putNumber("Limelight robotYaw", m_limelightSubsystem.getRobotYaw());
+      //
+      //
+      // SmartDashboard.putNumber("Limelight robotYaw",
+      // m_limelightSubsystem.getRobotYaw());
       SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, m_isRed));
 
       SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 
+      //
       // boolean pigeonAccuracy = m_pigeon.isAccurate();
-      // boolean dashboardAccuracy = SmartDashboard.getBoolean("Pidgeon Accurate", pigeonAccuracy);
+      //
+      // olean dashboardAccuracy = SmartDashboard.getBoolean("Pidgeon Accurate",
+      // pigeonAccuracy);
 
-      // if (pigeonAccuracy != dashboardAccuracy) {
-      //   if (pigeonAccuracy == oldPigeonValue) {
-      //     m_pigeon.setAccuracy(dashboardAccuracy);
-      //     pigeonAccuracy = dashboardAccuracy;
-      //   } else {
-      //     SmartDashboard.putBoolean("Pidgeon Accurate", pigeonAccuracy);
-      //   }
+      // geonAccuracy != dashboardAccuracy) {
+      // pigeonAccuracy == oldPigeonValue) {
+      // geon.setAccuracy(dashboardAccuracy);
+      // pigeonAccuracy = dashboardAccuracy;
+      // else {
+      // SmartDashboard.putBoolean("Pidgeon Accurate", pigeonAccuracy);
+      // }
       // }
       // oldPigeonValue = pigeonAccuracy;
     }
-
-    // Drive subsystem
-    if(m_driveSubsystem.isPresent() && (m_iTickCount % DrivetrainConstants.kTicksPerUpdate) == 0)
+    // Drive subsystem if(m_driveSubsystem.isPresent() && (m_iTickCount %
+    // DrivetrainConstants.kTicksPerUpdate) == 0)
     {
       DriveSubsystem driveSubsystem = m_driveSubsystem.get();
 
@@ -527,18 +567,14 @@ public class RobotContainer {
 
       SmartDashboard.putNumber("Gyro Degrees", m_pigeon.getYaw());
     }
-
-    // Pneumatics compressor
-    if(m_pneumaticHub.isPresent() && ((m_iTickCount % PneumaticsConstants.kTicksPerUpdate) == 0))
+    // Pneumatics compressor if(m_pneumaticHub.isPresent() && ((m_iTickCount %
+    // PneumaticsConstants.kTicksPerUpdate) == 0))
     {
       PneumaticHub hub = m_pneumaticHub.get();
       SmartDashboard.putNumber("Pressure", hub.getPressure(0));
-      SmartDashboard.putBoolean("Compressor Running", hub.getCompressor());
-    }
-    
-    // Safe-to-shoot indicator.
-    if(m_launcherSubsystem.isPresent() && ((m_iTickCount % LauncherConstants.kTicksPerDistanceUpdate) == 0))
-    {
+
+      // Safe-to-shoot indicator. if(m_launcherSubsystem.isPresent() && ((m_iTickCount
+      // % LauncherConstants.kT {
       Boolean bCanShoot = LauncherUtils.canScoreFromHere(m_PoseEstimator, m_isRed);
       SmartDashboard.putBoolean("Launcher SafeToShoot", bCanShoot);
     }
@@ -558,24 +594,24 @@ public class RobotContainer {
 
   public void autoInit() {
     // This causes issues when auto's do not reset odometry!!
-    // if (m_driveSubsystem.isPresent()) {
-    //   DriveSubsystem driveSubsystem = m_driveSubsystem.get();
+    // (m_driveSubsystem.isPresent()) {
+    // DriveSubsystem driveSubsystem = m_driveSubsystem.get();
 
-    //   m_gyro.reset();
-    //   driveSubsystem.resetPose(new Pose2d());
+    // gyro.reset();
+    // driveSubsystem.resetPose(new Pose2d());
     // }
   }
 
-  //private int disabledTick = 0;
+  // private int disabledTick = 0;
   public void disabledInit() {
-    //disabledTick = 0;
+    // disabledTick = 0;
     LimelightHelpers.SetIMUMode("limelight", 3);
     m_limelightSubsystem.setAllowJumps(true);
 
     // Disable all motors on disabled init
     if (m_driveSubsystem.isPresent()) {
       DriveSubsystem drive = m_driveSubsystem.get();
-      drive.setDifferentialSpeedNoPid(0,0);
+      drive.setDifferentialSpeedNoPid(0, 0);
     }
 
     if (m_intakeSubsystem.isPresent()) {
@@ -593,10 +629,8 @@ public class RobotContainer {
       LiftSubsystem lift = m_liftSubsystem.get();
       lift.stopLift();
     }
-
-    if(m_launcherSubsystem.isPresent())
-    {
-      LauncherSubsystem launcher = m_launcherSubsystem.get();
+  if(m_launcherSubsystem.isPresent())
+    {    LauncherSubsystem launcher = m_launcherSubsystem.get();
       launcher.setTargetSpeedrpm(0.0);
     }
   }
@@ -604,18 +638,21 @@ public class RobotContainer {
   // Gets called every disabled tick.
   private boolean oldIsRed;
   private kStartingNames oldStartEnum;
+  private int disabledTick = 0;
+
   public void disabledPeriodic() {
     // Reset Pidgeon
-    // if ((disabledTick % 20) == 0) {
-    //   Double robotYaw = m_limelightSubsystem.getRobotYaw();
-    //   if (robotYaw != null) {
-    //     Rotation2d currentRotation = m_pigeon.getRotation2d();
-    //     if (Math.abs(robotYaw - currentRotation.getDegrees()) > 1) {
-    //       m_pigeon.reset();
-    //       m_pigeon.setYawOffset(robotYaw);
-    //     }
-    //   }
-    // }
+    disabledTick++;
+    if ((disabledTick % 50) == 0) {
+      Double robotYaw = m_limelightSubsystem.getRobotYaw();
+      if (robotYaw != null) {
+        Rotation2d currentRotation = m_pigeon.getRotation2d();
+        if (Math.abs(robotYaw - currentRotation.getDegrees()) > 5) {
+          m_pigeon.reset();
+          m_pigeon.setYawOffset(robotYaw);
+        }
+      }
+    }
 
     // Check the side
     boolean isRed = m_isRed.getAsBoolean();
@@ -636,19 +673,19 @@ public class RobotContainer {
           DriveSubsystem driveSubsystem = m_driveSubsystem.get();
           driveSubsystem.resetPose(startingPose);
         } else {
-          m_PoseEstimator.resetPosition(
-            m_pigeon.getRotation2d(), 
-            0, 0, 
-            startingPose
-          );
+              m_PoseEstimator.resetPosition(
+              m_pigeon.getRotation2d(),
+                0, 0,
+                startingPose
+              );
         }
 
         System.out.println("Reset starting pose!");
-      }
+      } 
     } else if(startEnum != oldStartEnum) {
       oldStartEnum = null;
-    }
-
+    } 
+ 
     //disabledTick += 1;
   }
 
@@ -665,26 +702,20 @@ public class RobotContainer {
 
   }
 
-  public void testPeriodic() {
-    if (m_indexerBulkSubsystem.isPresent())
+  public void testPeriodic() { if (m_indexerBulkSubsystem.isPresent())
     {
       m_indexerBulkSubsystem.get().testPeriodic();
-    }
-    if (m_climbL1Subsystem.isPresent())
-    {
+    } if (m_climbL1Subsystem.isPresent()) {
       m_climbL1Subsystem.get().testPeriodic();
-    }
-    if (m_intakeSubsystem.isPresent())
-    {
+    } if (m_intakeSubsystem.isPresent())
+    {   
       m_intakeSubsystem.get().testPeriodic();
-    }
-    if (m_launcherSubsystem.isPresent())
+    } if (m_launcherSubsystem.isPresent())
     {
       m_launcherSubsystem.get().testPeriodic();
-    }
-    if (m_liftSubsystem.isPresent())
+    } if (m_liftSubsystem.isPresent())
     {
       m_liftSubsystem.get().testPeriodic();
-    }
+    } 
   }
 }
