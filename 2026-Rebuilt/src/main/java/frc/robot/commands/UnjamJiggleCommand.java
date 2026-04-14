@@ -12,10 +12,10 @@ import frc.robot.subsystems.IndexerBulkSubsystem;
 public class UnjamJiggleCommand extends Command {
   private final DriveSubsystem m_DriveSubsystem;
   private final IndexerBulkSubsystem m_IndexerBulk;
+  private final int m_switchTick = 25; // The frequency of the switch in ticks. (50 = 1 second)
   
-  private int m_switchTick = 50; // Switches every second
+  private boolean m_isForward = true; // forward first
   private int m_executeTick = 0;
-  private boolean m_isForward = false; // switches instantly, so forward first.
 
   /**
    * Creates a new ReverseIndexBulk.
@@ -41,22 +41,22 @@ public class UnjamJiggleCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_executeTick++;
+
     if (m_executeTick % m_switchTick == 0) {
       m_isForward = !m_isForward;
     }
 
     double targetSpeed;
     if(m_isForward) {
-      targetSpeed = 2.0;
+      targetSpeed = 1.0;
     } else {
-      targetSpeed = -2.0;
+      targetSpeed = -1.0;
     }
 
     m_DriveSubsystem.setDifferentialSpeeds(targetSpeed, targetSpeed);
     m_IndexerBulk.reverseBulkTransfer();
     m_IndexerBulk.reverseIndexer();
-
-    m_executeTick++;
   }
 
   // Called once the command ends or is interrupted.
