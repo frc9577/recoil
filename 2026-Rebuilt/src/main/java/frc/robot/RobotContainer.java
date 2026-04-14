@@ -502,7 +502,7 @@ public class RobotContainer {
           b_isCompressorEnabled = true;
         } else {
           m_pneumaticHub.get().disableCompressor();
-e         b_isCompressorEnabled = false;
+          b_isCompressorEnabled = false;
         }
 
         // TODO: Remove other enableCompressorAnalog instance... check syntax here

@@ -129,8 +129,8 @@ public class LauncherSubsystem extends SubsystemBase {
     configs.Slot0.kI = m_I; // No output for integrated error
     configs.Slot0.kD = m_D; // No output for error derivative
     // Peak output of 8 volts
-    configs.Voltage.withPeakForwardVoltage(Volts.of(8))
-      .withPeakReverseVoltage(Volts.of(-8));
+    configs.Voltage.withPeakForwardVoltage(Volts.of(10))
+      .withPeakReverseVoltage(Volts.of(-10));
 
     var motionMagicConfigs = configs.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration = m_MMAccel;
@@ -146,9 +146,9 @@ public class LauncherSubsystem extends SubsystemBase {
 
     // changed from multiplying to dividing 
 
-    double desiredRotationsPerSecond = RPM / 60.0;
+    double desiredRotationsPerSecond = m_targetSpeedrpm / 60.0;
 
-    SmartDashboard.putNumber("Launcher Set RPM", RPM);
+    SmartDashboard.putNumber("Launcher Set RPM", m_targetSpeedrpm);
     SmartDashboard.putNumber("Launcher Set RPS", desiredRotationsPerSecond);
 
     /* Use velocity voltage */
