@@ -216,7 +216,7 @@ public final class Constants {
     public static final double kD = 0.0; // A velocity of 1 rps results in x V output
     public static final double kA_linear = 0.01; // Voltage needed to induce a given accel. in the motor shaft
     public static final double kA_angular = 0.01; 
-    public static final double kPeakVoltage = 8.0;
+    public static final double kPeakVoltage = 10.0;
 
     public static final double kMaxVelocityRPS = 6000.0/60.0;
     public static final double kMaxAccelerationRPS2 = 50.0;

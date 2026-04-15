@@ -129,8 +129,8 @@ public class LauncherSubsystem extends SubsystemBase {
     configs.Slot0.kI = m_I; // No output for integrated error
     configs.Slot0.kD = m_D; // No output for error derivative
     // Peak output of 8 volts
-    configs.Voltage.withPeakForwardVoltage(Volts.of(10))
-      .withPeakReverseVoltage(Volts.of(-10));
+    configs.Voltage.withPeakForwardVoltage(Volts.of(LauncherConstants.kPeakVoltage))
+      .withPeakReverseVoltage(Volts.of(-LauncherConstants.kPeakVoltage));
 
     var motionMagicConfigs = configs.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration = m_MMAccel;
