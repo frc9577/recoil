@@ -472,6 +472,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Auto Wait Time", 0.0);
 
     SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
+    SmartDashboard.putBoolean("Compressor Enabled?", b_isCompressorEnabled);
     // SmartDashboard.putBoolean("Pidgeon Accurate", m_pigeon.isAccurate());
 
     m_startingChooser = new SendableChooser<kStartingNames>();
@@ -497,6 +498,7 @@ public class RobotContainer {
       // Owen - I made the fms connected into a cached varible thats updated every 10
       // seconds so we dont spam the FMS if we decide to run this in a periodic loop.
       boolean b_shouldCompressorBeEnabled = !m_isFMSConnected.get();
+      SmartDashboard.putBoolean("Compressor Enabled?", b_shouldCompressorBeEnabled);
 
       // We want the Compressor disabled while attached to FMS to save power
       if (b_isCompressorEnabled != b_shouldCompressorBeEnabled) {
