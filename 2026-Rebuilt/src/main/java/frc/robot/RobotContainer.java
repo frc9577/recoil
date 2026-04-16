@@ -234,10 +234,9 @@ public class RobotContainer {
                       new WaitCommand(0.5), // Just in-case spped wait
                       new StartIntakeCommand(intakeSubsystem),
                       new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
-                      new WaitCommand(3),
-                      new StopIntakeCommand(intakeSubsystem),
-                      new WaitCommand(4)),
+                      new WaitCommand(7)),
                   new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)),
+              new StopIntakeCommand(intakeSubsystem),
               new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
               new StopLauncherCommand(launcherSubsystem)));
 
