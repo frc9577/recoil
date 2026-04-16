@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -43,11 +42,11 @@ import frc.robot.subsystems.IndexerBulkSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbL1Subsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.utils.CachedBoolean;
 import frc.robot.utils.HubUtils;
 import frc.robot.utils.Pigeon;
 import frc.robot.utils.PneumaticHubWrapper;
 import frc.robot.commands.*;
-import frc.robot.commands.autoCommands.BackupCollectDepoAndShoot;
 import frc.robot.commands.autoCommands.DeadreckonDistance;
 import frc.robot.commands.util.CancelDriveCommand;
 import frc.robot.utils.LauncherUtils;
@@ -130,6 +129,10 @@ public class RobotContainer {
     }
   };
 
+  public CachedBoolean m_isFMSConnected = new CachedBoolean(10, () -> {
+    return DriverStation.isFMSAttached();
+  });
+
   Boolean bHasPneumatics;
   private boolean b_isCompressorEnabled = false;
 
@@ -160,12 +163,12 @@ public class RobotContainer {
     // Init pneumatics system and subsystems that rely upon it.
     m_pneumaticHub = getSubsystem(PneumaticHubWrapper.class);
     bHasPneumatics = m_pneumaticHub.isPresent();
-    if (bHasPneumatics) {
-      PneumaticHub hub = m_pneumaticHub.get();
-      hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
-          PneumaticsConstants.kMaxPneumaticsPressure);
-
-    }
+    enableCompressorOnFms();
+    // if (bHasPneumatics) {
+    //   PneumaticHub hub = m_pneumaticHub.get();
+    //   hub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+    //       PneumaticsConstants.kMaxPneumaticsPressure);
+    // }
 
     // Instantiate subsystems that rely upon pneumatics. We want to run
     // the constructors even if the pneumatic hub is not present so that
@@ -486,26 +489,28 @@ public class RobotContainer {
   }
 
   private void enableCompressorOnFms() {
-
-    // Ryan N - I don't see a way to check the API on whether the compressor is
-    // enabled/disabled
-    // so make our own variable to track it.
-    boolean b_shouldCompressorBeEnabled = !DriverStation.isFMSAttached();
-
     if (bHasPneumatics) {
+      PneumaticHub pneumaticHub = m_pneumaticHub.get();
+
+      // Ryan N - I don't see a way to check the API on whether the compressor is
+      // enabled/disabled, so make our own variable to track it.
+      // Owen - I made the fms connected into a cached varible thats updated every 10
+      // seconds so we dont spam the FMS if we decide to run this in a periodic loop.
+      boolean b_shouldCompressorBeEnabled = !m_isFMSConnected.get();
+
       // We want the Compressor disabled while attached to FMS to save power
       if (b_isCompressorEnabled != b_shouldCompressorBeEnabled) {
 
         if (b_shouldCompressorBeEnabled) {
-          m_pneumaticHub.get().enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+          pneumaticHub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
               PneumaticsConstants.kMaxPneumaticsPressure);
           b_isCompressorEnabled = true;
         } else {
-          m_pneumaticHub.get().disableCompressor();
+          pneumaticHub.disableCompressor();
           b_isCompressorEnabled = false;
         }
 
-        // TODO: Remove other enableCompressorAnalog instance... check syntax here
+        // : Remove other enableCompressorAnalog instance... check syntax here -- Done.
       }
     }
   }
@@ -641,9 +646,14 @@ public class RobotContainer {
   private int disabledTick = 0;
 
   public void disabledPeriodic() {
-    // Reset Pidgeon
+    // Loops we only want to run sometimes.
     disabledTick++;
     if ((disabledTick % 50) == 0) {
+      // Check if the compressor should run or not.
+      enableCompressorOnFms();
+
+      // Reset Pidgeon based off of limelight
+      // Owen - Im worried this might crash us again..
       Double robotYaw = m_limelightSubsystem.getRobotYaw();
       if (robotYaw != null) {
         Rotation2d currentRotation = m_pigeon.getRotation2d();
@@ -684,7 +694,7 @@ public class RobotContainer {
       } 
     } else if(startEnum != oldStartEnum) {
       oldStartEnum = null;
-    } 
+    }
  
     //disabledTick += 1;
   }
