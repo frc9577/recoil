@@ -236,9 +236,10 @@ public class RobotContainer {
                       new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
                       new WaitCommand(7)),
                   new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)),
-              new StopIntakeCommand(intakeSubsystem),
               new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
-              new StopLauncherCommand(launcherSubsystem)));
+              new StopLauncherCommand(launcherSubsystem),
+              new WaitCommand(12.5),
+              new StopIntakeCommand(intakeSubsystem)));
 
       // Warm up Pathfinder
       CommandScheduler.getInstance().schedule(
