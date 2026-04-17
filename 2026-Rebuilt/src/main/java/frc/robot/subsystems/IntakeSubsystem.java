@@ -50,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Spins the shaft on the intake that will move fuel into the robot.
   public void start() {
-    m_motorIntake.set(-m_MotorSpeed);
+    m_motorIntake.set(m_MotorSpeed);
     m_motorRunning = true;
     SmartDashboard.putBoolean("Intake Running", m_motorRunning);
   }
