@@ -234,12 +234,12 @@ public class RobotContainer {
                       new WaitCommand(0.5), // Just in-case spped wait
                       new StartIntakeCommand(intakeSubsystem),
                       new StartShootCommand(liftSubsystem, indexerBulkSubsystem),
-                      new WaitCommand(7)),
+                      new WaitCommand(5),
+                      new StopIntakeCommand(intakeSubsystem),
+                      new WaitCommand(2)),
                   new TrackHubFlywheelCommand(launcherSubsystem, m_PoseEstimator, m_isRed)),
               new StopShootCommand(liftSubsystem, indexerBulkSubsystem),
-              new StopLauncherCommand(launcherSubsystem),
-              new WaitCommand(12.5),
-              new StopIntakeCommand(intakeSubsystem)));
+              new StopLauncherCommand(launcherSubsystem)));
 
       // Warm up Pathfinder
       CommandScheduler.getInstance().schedule(
@@ -346,7 +346,7 @@ public class RobotContainer {
                 new ParallelCommandGroup(
                     new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed),
                     new SequentialCommandGroup(
-                        new SetPidgeonToLimelight(m_pigeon, m_limelightSubsystem),
+                        //new SetPidgeonToLimelight(m_pigeon, m_limelightSubsystem),
                         new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
                         new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
                         new WaitCommand(0.5), // Hard coded wait due to shooting short
