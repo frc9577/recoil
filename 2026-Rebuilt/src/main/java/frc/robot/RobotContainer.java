@@ -346,6 +346,7 @@ public class RobotContainer {
                 new ParallelCommandGroup(
                     new TrackHubFlywheelCommand(launcher, m_PoseEstimator, m_isRed),
                     new SequentialCommandGroup(
+                        new SetPidgeonToLimelight(m_pigeon, m_limelightSubsystem),
                         new AimAtHub(driveSubsystem, m_PoseEstimator, RobotConstants.kRotateToHubSpeed, m_isRed),
                         new WaitForFlywheelAtTarget(launcher, LauncherConstants.kFlywheelToleranceRPM),
                         new WaitCommand(0.5), // Hard coded wait due to shooting short
@@ -537,9 +538,13 @@ public class RobotContainer {
 
       //
       //
-      // SmartDashboard.putNumber("Limelight robotYaw",
-      // m_limelightSubsystem.getRobotYaw());
-      SmartDashboard.putNumber("Hub Distance", HubUtils.getHubDistance(m_PoseEstimator, m_isRed));
+
+      Double yaw = m_limelightSubsystem.getRobotYaw();
+      if (yaw == null) {
+        SmartDashboard.putNumber("Limelight robotYaw", 0);
+      } else {
+        SmartDashboard.putNumber("Limelight robotYaw", yaw);
+      }
 
       SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 

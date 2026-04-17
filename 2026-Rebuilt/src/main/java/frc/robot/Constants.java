@@ -60,6 +60,10 @@ public final class Constants {
     public static final Pose2d kBlueHubCenter = new Pose2d(4.607, 4.035, new Rotation2d());
     public static final Pose2d kRedHubCenter = new Pose2d(11.9284, 4.035, new Rotation2d());
 
+    // Field Diagram Accurate X-axis
+    //public static final Pose2d kBlueHubCenter = new Pose2d(4.626, 4.035, new Rotation2d());
+    //public static final Pose2d kRedHubCenter = new Pose2d(11.915, 4.035, new Rotation2d());
+
     public static final double kFieldWidth = 16.540988; // meters, x axis.
     public static final double kFieldLength = 8.069326; // meters, y axis.
   }
