@@ -504,7 +504,7 @@ public class RobotContainer {
       // We want the Compressor disabled while attached to FMS to save power
       if (b_isCompressorEnabled != b_shouldCompressorBeEnabled) {
 
-        if (b_shouldCompressorBeEnabled) {
+        if (b_shouldCompressorBeEnabled && false) {
           pneumaticHub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
               PneumaticsConstants.kMaxPneumaticsPressure);
           b_isCompressorEnabled = true;

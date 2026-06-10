@@ -64,7 +64,7 @@ public class ArcadeDriveCommand extends Command {
         0
       );
     } else {
-      double saturatedInput = (greaterInput + lesserInput) / greaterInput;
+      double saturatedInput = Math.sqrt(greaterInput*greaterInput + lesserInput*lesserInput);
       leftSpeed /= saturatedInput;
       rightSpeed /= saturatedInput;
 
