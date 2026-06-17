@@ -164,7 +164,7 @@ public final class Constants {
     public static final double kA_angular = 0.01; 
     public static final double kPeakVoltage = 8.0;
 
-    public static final double kMaxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
+    public static final double kMaxVelocityMPS = 0.7; // 6 mps is the max of the motors during zero load.
     public static final double kMaxAccelerationMPS2 = 5.0; // M/S^2
 
     public static final double kMotionMagicAcceleration = 100.0; // Higher number --> Faster (50.0 = ~1s to max)
