@@ -90,6 +90,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() 
   {
      m_Motor.set(0.0);
+     m_MotorRunning = false;
+     SmartDashboard.putBoolean("MotorIsRunning", m_MotorRunning);
+     SmartDashboard.putBoolean("StartMotor", m_MotorRunning);
   }
 
   /** This function is called periodically when disabled. */
@@ -110,6 +113,11 @@ public class Robot extends TimedRobot {
   public void testPeriodic() 
   {
     Boolean start = SmartDashboard.getBoolean("StartMotor", false);
+
+    if(start == m_MotorRunning)
+    {
+      return;
+    }
 
     if(start == true)
     {
