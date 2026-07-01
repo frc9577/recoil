@@ -22,6 +22,8 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final SparkMax m_Motor = new SparkMax(10, MotorType.kBrushless);
   private Boolean m_MotorRunning = false;
+  private Double m_MotorSpeed = 0.0;
+  private Boolean firstTimeStarted = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -34,6 +36,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("StartMotor", false);
     SmartDashboard.putBoolean("MotorIsRunning", m_MotorRunning);
+    SmartDashboard.putNumber("motorSpeed", 0.0);
   }
 
   /**
@@ -93,6 +96,7 @@ public class Robot extends TimedRobot {
      m_MotorRunning = false;
      SmartDashboard.putBoolean("MotorIsRunning", m_MotorRunning);
      SmartDashboard.putBoolean("StartMotor", m_MotorRunning);
+     SmartDashboard.putNumber("motorSpeed", 0.0);
   }
 
   /** This function is called periodically when disabled. */
@@ -113,22 +117,30 @@ public class Robot extends TimedRobot {
   public void testPeriodic() 
   {
     Boolean start = SmartDashboard.getBoolean("StartMotor", false);
+    Double motorSpeed = SmartDashboard.getNumber("motorSpeed", 0.0);
 
-    if(start == m_MotorRunning)
+    if(m_MotorSpeed == motorSpeed)
     {
       return;
     }
 
     if(start == true)
     {
-      /* Run the motor at slightly less than half speed. */
-      m_Motor.set(0.4);
+      /* Run the motor at the speed set by the slider */
+      m_Motor.set(motorSpeed);
+      m_MotorSpeed = motorSpeed;
       m_MotorRunning = true;
+      firstTimeStarted = true;
     }
     else
     {
       m_Motor.set(0.0);
       m_MotorRunning = false;
+      if (firstTimeStarted == true) {
+        SmartDashboard.putNumber("motorSpeed", 0.0);
+        firstTimeStarted = false;
+      }
+      
     }
 
     SmartDashboard.putBoolean("MotorIsRunning", m_MotorRunning);
