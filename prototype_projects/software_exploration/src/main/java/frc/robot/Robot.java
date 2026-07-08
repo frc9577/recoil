@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.*;
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
@@ -23,8 +25,8 @@ public class Robot extends TimedRobot {
   private final SparkMax m_Motor = new SparkMax(10, MotorType.kBrushless);
   private Boolean m_MotorRunning = false;
   private Double m_MotorSpeed = 0.0;
-  private Boolean firstTimeStarted = false;
-
+  private final CommandXboxController m_driverController = new CommandXboxController(
+      OperatorConstants.kDriverControllerPort);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -117,7 +119,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() 
   {
     Boolean start = SmartDashboard.getBoolean("StartMotor", false);
-    Double motorSpeed = SmartDashboard.getNumber("motorSpeed", 0.0);
+    Double motorSpeed = m_driverController.getRightX();
+
+    
 
     if(m_MotorSpeed == motorSpeed)
     {
@@ -126,21 +130,21 @@ public class Robot extends TimedRobot {
 
     if(start == true)
     {
+
+      if (motorSpeed > 0.8) motorSpeed = 0.8;
+      else if (motorSpeed < -0.8) motorSpeed = -0.8;
+
       /* Run the motor at the speed set by the slider */
       m_Motor.set(motorSpeed);
       m_MotorSpeed = motorSpeed;
       m_MotorRunning = true;
-      firstTimeStarted = true;
+      SmartDashboard.putNumber("motorSpeed", m_MotorSpeed*100);
     }
     else
     {
       m_Motor.set(0.0);
       m_MotorRunning = false;
-      if (firstTimeStarted == true) {
-        SmartDashboard.putNumber("motorSpeed", 0.0);
-        firstTimeStarted = false;
-      }
-      
+     
     }
 
     SmartDashboard.putBoolean("MotorIsRunning", m_MotorRunning);
