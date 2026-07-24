@@ -67,7 +67,7 @@ public class DepoSideAutoA extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Get target rotation
+    // Get target rotationve
     Rotation2d targetRotation;
     if (m_isRed.getAsBoolean() == true) {
       targetRotation = new Rotation2d(0); // on red, aim at blue wall
@@ -84,7 +84,7 @@ public class DepoSideAutoA extends Command {
       // Start Pickup \\
       new StartIntakeCommand(null), // Trigger pickup
       new StartLiftCommand(null), // Trigger Lift
-      "DSA_PickupFwd", // ⚠️⚠️ Might have an issue with location being to far from this path ⚠️⚠️
+      "DSA_PickupFwd", // Might have an issue with location being to far from this path
 
       // End Pickup \\
       new StopIntakeCommand(null), // Disable Pickup
@@ -96,7 +96,7 @@ public class DepoSideAutoA extends Command {
       new InstantCommand(), // Spin-up flywheel?? (Might have better location.)
       new InstantCommand(), // Drive over bump bwd
       new InstantCommand(), // Relocate
-      "DSA_ParkAtWall", // ⚠️⚠️ Might have an issue with location being to far from this path ⚠️⚠️
+      "DSA_ParkAtWall", // Might have an issue with location being to far from this path
       new AimAtHub(m_DriveSubsystem, m_PoseEstimator, 2.0, m_isRed), // Aim at hub
 
       // Shoot all balls \\
