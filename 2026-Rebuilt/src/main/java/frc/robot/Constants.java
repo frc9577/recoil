@@ -194,11 +194,6 @@ public final class Constants {
     public static int     kIntakeSolenoidReverse = 13;
     public static DoubleSolenoid.Value kIntakeExtend   = DoubleSolenoid.Value.kForward;
     public static DoubleSolenoid.Value kIntakeRetract  = DoubleSolenoid.Value.kReverse;
-
-    public static int     kIntakeLeftServoChannel  = 1;
-    public static int     kIntakeRightServoChannel = 0;
-    public static double  kIntakeServoExtendAngle  = 90.0;
-    public static double  kIntakeServoRetractAngle = 0.0;
   }
 
   public static class LauncherConstants {

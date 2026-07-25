@@ -570,8 +570,8 @@ public class RobotContainer {
     // Pneumatics compressor if(m_pneumaticHub.isPresent() && ((m_iTickCount %
     // PneumaticsConstants.kTicksPerUpdate) == 0))
     {
-      // PneumaticHub hub = m_pneumaticHub.get();
-      // SmartDashboard.putNumber("Pressure", hub.getPressure(0));
+      PneumaticHub hub = m_pneumaticHub.get();
+      SmartDashboard.putNumber("Pressure", hub.getPressure(0));
 
       // Safe-to-shoot indicator. if(m_launcherSubsystem.isPresent() && ((m_iTickCount
       // % LauncherConstants.kT {
