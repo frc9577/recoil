@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Servo;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;
@@ -14,6 +15,8 @@ import frc.robot.Constants.PneumaticsConstants;
 public class IntakeSubsystem extends SubsystemBase {
   private TalonFX m_motorIntake;
   private DoubleSolenoid m_solenoid;
+  private Servo m_LeftServo;
+  private Servo m_RightServo;
   private boolean m_motorRunning = false;
   private boolean m_Extended = false;
   private double m_MotorSpeed = IntakeConstants.kIntakeMotorSpeed;
@@ -38,13 +41,22 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     m_motorIntake.set(0.0);
 
+    m_LeftServo  = new Servo(IntakeConstants.kIntakeLeftServoChannel);
+    m_RightServo = new Servo(IntakeConstants.kIntakeRightServoChannel);
+    
+    // Make sure the servos start at the right position. We DO NOT want
+    // the servos to move to some default position when PWM starts
+    // generating output so we ensure that the initial PWM is commanding
+    // the correct position.
+    retract();
+
     if(bHasPneumatics) {
       m_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubCANID,
                                       PneumaticsConstants.kHubType, 
                                       IntakeConstants.kIntakeSolenoidForward,
                                       IntakeConstants.kIntakeSolenoidReverse);
     } else {
-      throw new Exception("Intake subsystem requires pneumatics which are not present!");
+      // throw new Exception("Intake subsystem requires pneumatics which are not present!");
     }
   }
 
@@ -62,8 +74,12 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Running", m_motorRunning);
   }
   public void extend() {
-    m_solenoid.set(IntakeConstants.kIntakeExtend);
+   // m_solenoid.set(IntakeConstants.kIntakeExtend);
     m_Extended = true;
+
+    m_LeftServo.setAngle(IntakeConstants.kIntakeServoExtendAngle);
+    m_RightServo.setAngle(180.0 - IntakeConstants.kIntakeServoExtendAngle);
+
     SmartDashboard.putBoolean("Intake Extended", m_Extended);
   }
   public void reverse() {
@@ -74,14 +90,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Retracts the intake mechanism over the bumpers and inside of the robot.
   public void retract() {
-    m_solenoid.set(IntakeConstants.kIntakeRetract);
+    //m_solenoid.set(IntakeConstants.kIntakeRetract);
     m_Extended = false;
+
+    m_LeftServo.setAngle(IntakeConstants.kIntakeServoRetractAngle);
+    m_RightServo.setAngle(180.0 - IntakeConstants.kIntakeServoRetractAngle);
+
     SmartDashboard.putBoolean("Intake Extended", m_Extended);
   }
 
     // Retracts the intake mechanism over the bumpers and inside of the robot.
   public void pneumatics_off() {
-    m_solenoid.set(DoubleSolenoid.Value.kOff);
+    //m_solenoid.set(DoubleSolenoid.Value.kOff);
+    retract();
   }
 
   // Returns true if the intake shaft is spinning.
