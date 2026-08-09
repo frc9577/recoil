@@ -16,6 +16,7 @@
 #include "wpi/math/system/Models.hpp"
 #include "wpi/simulation/DifferentialDrivetrainSim.hpp"
 #include "wpi/simulation/EncoderSim.hpp"
+#include "wpi/simulation/OnboardIMUSim.hpp"
 #include "wpi/smartdashboard/Field2d.hpp"
 #include "wpi/smartdashboard/SmartDashboard.hpp"
 #include "wpi/units/angular_velocity.hpp"
@@ -52,6 +53,8 @@ class Drivetrain {
     rightLeader.SetInverted(true);
 
     wpi::SmartDashboard::PutData("Field", &fieldSim);
+    wpi::SmartDashboard::PutNumber("Speed", 0.0);
+    wpi::SmartDashboard::PutNumber("Rotation", 0.0);
   }
 
   static constexpr wpi::units::meters_per_second_t kMaxVelocity =
@@ -100,6 +103,7 @@ class Drivetrain {
       1_V, 3_V / 1_mps};
 
   // Simulation classes help us simulate our robot
+  wpi::sim::OnboardIMUSim imuSim{};
   wpi::sim::EncoderSim leftEncoderSim{leftEncoder};
   wpi::sim::EncoderSim rightEncoderSim{rightEncoder};
   wpi::Field2d fieldSim;

@@ -43,7 +43,7 @@ class Robot : public wpi::TimedRobot {
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    auto rot = -rotLimiter.Calculate(controller.GetRightX()) *
+    auto rot = -rotLimiter.Calculate(controller.GetLeftX()) *
                Drivetrain::kMaxAngularVelocity;
 
     drive.Drive(xVelocity, rot);
