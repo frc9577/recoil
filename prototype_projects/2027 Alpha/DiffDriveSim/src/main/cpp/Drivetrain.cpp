@@ -21,6 +21,8 @@ void Drivetrain::SetVelocities(
 
 void Drivetrain::Drive(wpi::units::meters_per_second_t xVelocity,
                        wpi::units::radians_per_second_t rot) {
+  wpi::SmartDashboard::PutNumber("Speed", (double)xVelocity);
+  wpi::SmartDashboard::PutNumber("Rotation", (double)rot);
   SetVelocities(kinematics.ToWheelVelocities({xVelocity, 0_mps, rot}));
 }
 
@@ -52,7 +54,7 @@ void Drivetrain::SimulationPeriodic() {
   leftEncoderSim.SetRate(drivetrainSimulator.GetLeftVelocity().value());
   rightEncoderSim.SetDistance(drivetrainSimulator.GetRightPosition().value());
   rightEncoderSim.SetRate(drivetrainSimulator.GetRightVelocity().value());
-  // gyroSim.SetAngle(-drivetrainSimulator.GetHeading().Degrees().value());
+  imuSim.SetYaw(drivetrainSimulator.GetHeading().Radians());
 }
 
 void Drivetrain::Periodic() {
