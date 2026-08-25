@@ -102,3 +102,169 @@ model {
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Desktop toolchain guard
+//
+// Desktop (simulation) builds need a native C++ compiler -- MSVC on Windows.
+// When it is missing, Gradle fails deep inside the compile task with an opaque
+// "No tool chain is available to build for platform" error. Check up front
+// instead, and offer to install the VS Build Tools C++ workload.
+//
+// Nothing is installed without approval:
+//   * -PapproveToolchainInstall approves up front (CI, scripts)
+//   * otherwise the build asks interactively
+//   * with no console attached it fails with instructions
+// ---------------------------------------------------------------------------
+
+def desktopPlatform = wpi.platforms.desktop.toString()
+def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+def vcToolsPackageId = 'Microsoft.VisualStudio.2022.BuildTools'
+def vcToolsWorkload = 'Microsoft.VisualStudio.Workload.VCTools'
+def toolchainInstallPreapproved = project.hasProperty('approveToolchainInstall')
+
+// Install path of a VS instance carrying the x64 C++ tools, or null if absent.
+def findMsvcToolchain = {
+    def programFiles = System.getenv('ProgramFiles(x86)') ?: 'C:/Program Files (x86)'
+    def vswhere = new File(programFiles, 'Microsoft Visual Studio/Installer/vswhere.exe')
+    if (!vswhere.isFile()) {
+        return null
+    }
+    def stdout = new StringBuilder()
+    def stderr = new StringBuilder()
+    def proc = [vswhere.absolutePath, '-latest', '-products', '*',
+                '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
+                '-property', 'installationPath'].execute()
+    proc.consumeProcessOutput(stdout, stderr)
+    proc.waitForOrKill(30000)
+    def path = stdout.toString().trim()
+    return path ?: null
+}
+
+// Yes/no prompt. Returns null when no interactive console is available, so the
+// caller can tell "declined" apart from "could not ask".
+def askApproval = { String question ->
+    try {
+        def handler = project.services.get(
+                Class.forName('org.gradle.api.internal.tasks.userinput.UserInputHandler'))
+        // Gradle has reshaped this API across versions; try newest first.
+        try {
+            def answer = handler.askUser { q -> q.askYesNoQuestion(question) }
+            return answer.getOrNull()
+        } catch (MissingMethodException ignored) {
+            return handler.askYesNoQuestion(question)
+        }
+    } catch (Throwable ignored) {
+        return null
+    }
+}
+
+def installMsvcToolchain = { logger ->
+    logger.lifecycle("Installing ${vcToolsPackageId} (${vcToolsWorkload})...")
+    logger.lifecycle('A Windows UAC prompt will appear -- accept it to continue.')
+    // Every element must be a real String -- a GString here trips ProcessBuilder.
+    def cmd = ['winget', 'install', '--id', vcToolsPackageId, '--exact', '--source', 'winget',
+               '--accept-package-agreements', '--accept-source-agreements',
+               // --override replaces winget's whole default argument string, so
+               // --wait must be repeated here or the bootstrapper returns before
+               // the install has actually finished.
+               '--override', "--add ${vcToolsWorkload} --includeRecommended --passive --norestart --wait"]
+            .collect { it.toString() }
+    // inheritIO() would attach to the Gradle daemon rather than the terminal, so
+    // pump the output through the build log instead.
+    def proc = new ProcessBuilder(cmd).redirectErrorStream(true).start()
+    proc.inputStream.eachLine { line -> logger.lifecycle(line) }
+    def exitCode = proc.waitFor()
+    if (exitCode != 0) {
+        throw new GradleException(
+                "winget exited with ${exitCode}. Install the C++ build tools manually, then re-run.")
+    }
+    if (findMsvcToolchain() == null) {
+        throw new GradleException(
+                'Install finished but no MSVC toolchain was detected. A new terminal may be needed.')
+    }
+    logger.lifecycle('Desktop C++ toolchain installed.')
+}
+
+tasks.register('installDesktopToolchain') {
+    group = 'Toolchains'
+    description = 'Install the MSVC C++ build tools needed for desktop/simulation builds.'
+    doLast {
+        if (!isWindows) {
+            throw new GradleException('Automatic toolchain install is only supported on Windows.')
+        }
+        if (findMsvcToolchain() != null) {
+            logger.lifecycle('Desktop C++ toolchain is already installed.')
+            return
+        }
+        installMsvcToolchain(logger)
+    }
+}
+
+tasks.register('checkDesktopToolchain') {
+    group = 'verification'
+    description = 'Verify a desktop C++ toolchain is present, offering to install it when missing.'
+    doLast {
+        if (!isWindows) {
+            return
+        }
+        def found = findMsvcToolchain()
+        if (found != null) {
+            logger.info("Desktop C++ toolchain found at ${found}")
+            return
+        }
+
+        def problem = "No C++ toolchain was found for the desktop platform '${desktopPlatform}'.\n" +
+                'Desktop and simulation builds cannot run without one.\n'
+
+        def approved = toolchainInstallPreapproved ?: null
+        if (approved == null) {
+            logger.lifecycle(problem)
+            approved = askApproval('Install the Visual Studio C++ build tools now?')
+        }
+
+        if (approved == null) {
+            throw new GradleException(problem +
+                    "\nNo interactive console is attached, so approval could not be requested. Either:\n" +
+                    "  * run './gradlew installDesktopToolchain' to install them, or\n" +
+                    "  * re-run with -PapproveToolchainInstall to approve up front, or\n" +
+                    "  * set 'includeDesktopSupport = false' in build.gradle to skip desktop builds.\n")
+        }
+        if (!approved) {
+            throw new GradleException(problem +
+                    "\nInstall declined. Run './gradlew installDesktopToolchain' when ready.\n")
+        }
+        installMsvcToolchain(logger)
+        // The visualCpp toolchain is wired up during configuration, which already
+        // happened without a toolchain present. This build cannot use what we just
+        // installed, so stop with a clear instruction rather than a compile error.
+        throw new GradleException(
+                "\nC++ build tools installed successfully.\n" +
+                "Re-run your build command to compile against them.\n")
+    }
+}
+
+// Run the guard before anything tries to compile or link for the desktop.
+tasks.matching { t ->
+    t.name.toLowerCase().contains(desktopPlatform.toLowerCase()) &&
+            (t.name.startsWith('compile') || t.name.startsWith('link'))
+}.configureEach {
+    dependsOn 'checkDesktopToolchain'
+}
+
+// Gradle's own Visual Studio locator runs:
+//     vswhere -all -legacy -format json -utf8
+// Note the missing '-products *'. vswhere excludes the standalone Build Tools
+// product by default, so that query returns nothing and Gradle reports
+// "Could not locate a Visual Studio installation" even when cl.exe is present.
+// Point the toolchain at the install directly when we can find one.
+def msvcInstallDir = isWindows ? findMsvcToolchain() : null
+if (msvcInstallDir != null) {
+    model {
+        toolChains {
+            visualCpp(VisualCpp) {
+                installDir = msvcInstallDir
+            }
+        }
+    }
+}
