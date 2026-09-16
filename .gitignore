@@ -24,3 +24,7 @@ hs_err_pid*
 replay_pid*
 .DS_Store
 2026-Rebuilt/src/main/java/frc/robot/BuildConstants.java
+
+# All lower build output directories
+build/
+.gradle/
