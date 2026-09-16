@@ -21,7 +21,7 @@ Robot::Robot() {
    * needed, we can adjust values like the position or velocity conversion
    * factors.
    */
-  motorConfig.encoder.PositionConversionFactor(1).VelocityConversionFactor(1);
+  motorConfig.encoder.PositionConversionFactor(1.0/25.0).VelocityConversionFactor(1.0/25.0);
 
   /*
    * Configure the closed loop controller. We want to make sure we set the

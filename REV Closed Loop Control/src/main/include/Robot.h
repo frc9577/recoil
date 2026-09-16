@@ -16,7 +16,7 @@ private:
    * Initialize the SPARK MAX and get its encoder and closed loop
    * controller objects for later use.
    */
-  SparkMax m_motor{1, SparkMax::MotorType::kBrushless};
+  SparkMax m_motor{10, SparkMax::MotorType::kBrushless};
   SparkClosedLoopController m_closedLoopController =
       m_motor.GetClosedLoopController();
   SparkRelativeEncoder m_encoder = m_motor.GetEncoder();
