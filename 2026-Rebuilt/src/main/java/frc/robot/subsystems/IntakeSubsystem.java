@@ -95,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeSpeed(double speed) {
-    m_MotorSpeed = speed;
+    m_MotorSpeed = 0.0;
     if(m_motorRunning)
     {
       start();

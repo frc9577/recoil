@@ -142,7 +142,7 @@ public class LauncherSubsystem extends SubsystemBase {
   //
   public void setTargetSpeedrpm(double RPM)
   {
-    m_targetSpeedrpm = RPM;
+    m_targetSpeedrpm = 0.5 * RPM;
 
     // changed from multiplying to dividing 
 

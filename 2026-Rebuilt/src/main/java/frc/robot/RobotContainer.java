@@ -493,21 +493,24 @@ public class RobotContainer {
   private void enableCompressorOnFms() {
     if (bHasPneumatics) {
       PneumaticHub pneumaticHub = m_pneumaticHub.get();
+      pneumaticHub.disableCompressor();
 
       // Ryan N - I don't see a way to check the API on whether the compressor is
       // enabled/disabled, so make our own variable to track it.
       // Owen - I made the fms connected into a cached varible thats updated every 10
       // seconds so we dont spam the FMS if we decide to run this in a periodic loop.
-      boolean b_shouldCompressorBeEnabled = !m_isFMSConnected.get();
+      boolean b_shouldCompressorBeEnabled = false; //!m_isFMSConnected.get();
       SmartDashboard.putBoolean("Compressor Enabled?", b_shouldCompressorBeEnabled);
 
       // We want the Compressor disabled while attached to FMS to save power
       if (b_isCompressorEnabled != b_shouldCompressorBeEnabled) {
 
-        if (b_shouldCompressorBeEnabled) {
-          pneumaticHub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
-              PneumaticsConstants.kMaxPneumaticsPressure);
+        if (false && b_shouldCompressorBeEnabled) {
+          //pneumaticHub.enableCompressorAnalog(PneumaticsConstants.kMinPneumaticsPressure,
+          //    PneumaticsConstants.kMaxPneumaticsPressure);
           b_isCompressorEnabled = true;
+          pneumaticHub.disableCompressor();
+
         } else {
           pneumaticHub.disableCompressor();
           b_isCompressorEnabled = false;

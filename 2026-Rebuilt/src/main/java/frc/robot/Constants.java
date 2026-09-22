@@ -100,7 +100,7 @@ public final class Constants {
   }
 
   public static class AutoConstants {
-    public static final double kMaxDriveVelocityMPS = 40.0; // true max speed of the robot mps
+    public static final double kMaxDriveVelocityMPS = 10.0; // true max speed of the robot mps
     public static final double kWheelCOF = 1.0; // no data for this, bsed it
 
     public static final double kMassKG = 15.0;
@@ -164,7 +164,7 @@ public final class Constants {
     public static final double kA_angular = 0.01; 
     public static final double kPeakVoltage = 8.0;
 
-    public static final double kMaxVelocityMPS = 3.0; // 6 mps is the max of the motors during zero load.
+    public static final double kMaxVelocityMPS = 0.5; // 6 mps is the max of the motors during zero load.
     public static final double kMaxAccelerationMPS2 = 5.0; // M/S^2
 
     public static final double kMotionMagicAcceleration = 100.0; // Higher number --> Faster (50.0 = ~1s to max)
@@ -222,7 +222,7 @@ public final class Constants {
     public static final double kA_angular = 0.01; 
     public static final double kPeakVoltage = 10.0;
 
-    public static final double kMaxVelocityRPS = 6000.0/60.0;
+    public static final double kMaxVelocityRPS = 2000.0/60.0;
     public static final double kMaxAccelerationRPS2 = 50.0;
 
     public static final double kMotionMagicAcceleration = 50.0; // Higher number --> Faster (50.0 = ~1s to max)
@@ -240,7 +240,7 @@ public final class Constants {
     public static final int kTicksPerUpdate = 10;
     public static final int kTicksPerDistanceUpdate = 12;
 
-    public static final double kFixedTestSpeed = 3000.0;
+    public static final double kFixedTestSpeed = 1500.0;
     public static final double kFlywheelToleranceRPM = 100.0;
   }
 
@@ -249,8 +249,8 @@ public final class Constants {
     public static int kBulkMoveMotorCANID = 51;
 
     // Raw motor speeds in range [-1.0,1.0]
-    public static final double kBulkMoveMotorSpeed = 0.9;
-    public static final double kIndexerMotorSpeed = 0.7;
+    public static final double kBulkMoveMotorSpeed = 0.6;
+    public static final double kIndexerMotorSpeed = 0.5;
 
     public static final int kJigglePeriod = 50;
     public static final double kJiggleFactor = 0.4; // The factor of the max motor speed to subtract

@@ -45,7 +45,7 @@ public class LiftSubsystem extends SubsystemBase {
   //
   public void startLift()
   {
-    m_motorLift.set(m_liftSpeed);
+    m_motorLift.set(0.5* m_liftSpeed);
     m_liftRunning = true;
   }
 
@@ -60,7 +60,7 @@ public class LiftSubsystem extends SubsystemBase {
 
   public void setLiftSpeed(double speed)
   {
-    m_liftSpeed = speed;
+    m_liftSpeed = 0.5 * speed;
 
     if(m_liftRunning)
     {
