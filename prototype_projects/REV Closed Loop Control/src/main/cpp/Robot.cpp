@@ -31,7 +31,7 @@ Robot::Robot() {
       .SetFeedbackSensor(rev::spark::FeedbackSensor::kPrimaryEncoder)
       // Set PID values for position control. We don't need to pass a closed
       // loop slot, as it will default to slot 0.
-      .P(0.1)
+      .P(0.9)
       .I(0)
       .D(0)
       .OutputRange(-1, 1)
