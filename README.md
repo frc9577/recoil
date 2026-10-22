@@ -3,16 +3,34 @@ This is the main repository for all software produced by FRC 9577 "Recoil" from 
 
 ## Repository Structure
 
-### [year]-[competition]
+The `development` and `main` branches hold only the current season's competition code. Everything else lives on its own branch, listed below.
 
-These directories contain competition code for our FRC robot in the given year. The directory contains a single Java project that, when built, represents the code that runs on the robot for that competition.
+### 2026-Rebuilt
 
-This repository was created at the start of the 2026 season so you will find full history for files in the "2026-Rebuilt" tree. The repo is also seeded with files from our 2024 and 2025 seasons but these are merely snapshots of the "main" and "development" branches from our prior repos, "robot-code-2024" and "robot-code-2025". Visit the original repositories if you need to find history information for these files.
+The competition code for the 2026 season. The directory contains a single Java project that, when built, is the code that runs on the robot. CI builds this directory.
 
-### prototype_projects
+### Where the other projects went
 
-This top-level directory contains prototype, example and experiment projects developed during off-season or while working on a competition robot. Each subdirectory contains a single Java project. Code in this area is not guaranteed to be complete or working.
+| Was | Now | Notes |
+|---|---|---|
+| `2024-Crescendo/` | branch `archive/2024-crescendo` | Snapshot of robot-code-2024. The project sits at the branch root. |
+| `2025-Reefscape/` | branch `archive/2025-reefscape` | Snapshot of robot-code-2025, with Examples/PrototypeBoard and Examples/Shooter. The project sits at the branch root. |
+| `prototype_projects/` | branch `prototypes` | Off-season prototypes, examples and experiments. Each top-level directory is one project. `2027 Alpha` is next season's starter. Code there is not guaranteed to build. |
 
+These branches share no commits with `development` or `main`. Each keeps the commits that touched its tree. The 2024 and 2025 trees were imported as snapshots, so their older history is in the original repos. Never open a PR from these branches into `development` or `main`. Git refuses that merge, and a forced merge would delete `2026-Rebuilt`.
+
+To look at an archived season: `git switch archive/2025-reefscape`. WPILib opens the branch root as the project.
+
+To add or change a prototype: branch from `prototypes`, make the change, and open a PR with base `prototypes`. GitHub sets the PR base to `main` by default, so change it. The feature-branch rules below are for competition code only.
+
+At the end of a season, archive the competition directory the same way and start the next season's directory on `development` from the starter on `prototypes`:
+
+```
+git branch archive/<year>-<game> development
+git filter-branch --subdirectory-filter <year>-<game> archive/<year>-<game>
+git push origin archive/<year>-<game>
+git rm -r <year>-<game>        # on a PR branch into development, and again on one into main
+```
 
 ## Branching Strategy and Commit Rules
 
