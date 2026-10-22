@@ -13,7 +13,7 @@ The competition code for the 2026 season. The directory contains a single Java p
 
 | Was | Now | Notes |
 |---|---|---|
-| `2024-Crescendo/` | branch `archive/2024-crescendo` | Snapshot of robot-code-2024. The project sits at the branch root. |
+| `2024-Crescendo/` | branch `archive/2024-crescendo` | Snapshot of robot_code_2024. The project sits at the branch root. |
 | `2025-Reefscape/` | branch `archive/2025-reefscape` | Snapshot of robot-code-2025, with Examples/PrototypeBoard and Examples/Shooter. The project sits at the branch root. |
 | `prototype_projects/` | branch `prototypes` | Off-season prototypes, examples and experiments. Each top-level directory is one project. `2027 Alpha` is next season's starter. Code there is not guaranteed to build. |
 
