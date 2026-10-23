@@ -48,7 +48,8 @@ jobs:
             echo "AI review config from $(git -C .ai-review-base rev-parse --short HEAD)"
             echo "dir=.ai-review-base" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::No AI review config on development yet; no review ran."
+            echo "::error::No AI review config on development; nothing was reviewed."
+            exit 1
           fi
       # The decision model (DECISION_MODEL, Jev-like) picks the review profiles and the tier; see .github/scripts/ai-review-route.py.
       # Routing and judging never fail the check; a failure skips or ends the review instead.
