@@ -6,6 +6,7 @@ package frc.robot.commands.DriveCommands;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -66,6 +67,9 @@ public class ArcadeDriveCommand extends Command {
       double saturatedInput = (greaterInput + lesserInput) / greaterInput;
       leftSpeed /= saturatedInput;
       rightSpeed /= saturatedInput;
+
+      leftSpeed = MathUtil.copyDirectionPow(leftSpeed, 2.0);
+      rightSpeed = MathUtil.copyDirectionPow(rightSpeed, 2.0);
 
       m_subsystem.setDifferentialSpeeds(
         leftSpeed * DrivetrainConstants.kMaxVelocityMPS, 

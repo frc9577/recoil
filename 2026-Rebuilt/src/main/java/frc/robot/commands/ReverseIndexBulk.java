@@ -39,6 +39,8 @@ public class ReverseIndexBulk extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_IndexerBulk.stopBulkTransfer();
+    m_IndexerBulk.stopIndexer();
   }
 
   // This command only ends when another command is scheduled on the

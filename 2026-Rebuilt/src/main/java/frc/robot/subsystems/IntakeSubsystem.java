@@ -66,6 +66,11 @@ public class IntakeSubsystem extends SubsystemBase {
     m_Extended = true;
     SmartDashboard.putBoolean("Intake Extended", m_Extended);
   }
+  public void reverse() {
+    m_motorIntake.set(m_MotorSpeed);
+    m_motorRunning = true;
+    SmartDashboard.putBoolean("Intake Running", m_motorRunning);
+  }
 
   // Retracts the intake mechanism over the bumpers and inside of the robot.
   public void retract() {

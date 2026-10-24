@@ -63,7 +63,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     Pose2d estimatedPose = poseEst.pose;
-    Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
+    //Pose2d currentPose = m_poseEstimator.getEstimatedPosition();
 
     // If detected tags are not enough
     SmartDashboard.putNumber("Tag Count", poseEst.tagCount);
@@ -79,10 +79,11 @@ public class LimelightSubsystem extends SubsystemBase {
       return;
     }
 
-    double distanceDiff = currentPose.getTranslation().getDistance(estimatedPose.getTranslation());
-    if (m_allowJumps == false && distanceDiff > 2.0) {
-      return;
-    }
+    // If the estimated position is too off of the position.
+    // double distanceDiff = currentPose.getTranslation().getDistance(estimatedPose.getTranslation());
+    // if (m_allowJumps == false && distanceDiff > 2.0) {
+    //   return;
+    // }
 
     // Make sure that the abiguity of the primary target is not to high
     Double bestTargetAmbiguity = poseEst.rawFiducials[0].ambiguity;

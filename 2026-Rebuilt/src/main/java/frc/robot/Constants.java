@@ -187,7 +187,7 @@ public final class Constants {
     public static int kIntakeMotorCANID = 30;
 
     // Raw intake motor speed in range [-1.0,1.0]
-    public static double kIntakeMotorSpeed = 0.6;
+    public static double kIntakeMotorSpeed = 1.0; // 0.7 used at dripping
 
     // Solenoid states required to extend and retract the intake mechanism.
     public static int     kIntakeSolenoidForward = 15;
@@ -216,7 +216,7 @@ public final class Constants {
     public static final double kD = 0.0; // A velocity of 1 rps results in x V output
     public static final double kA_linear = 0.01; // Voltage needed to induce a given accel. in the motor shaft
     public static final double kA_angular = 0.01; 
-    public static final double kPeakVoltage = 8.0;
+    public static final double kPeakVoltage = 10.0;
 
     public static final double kMaxVelocityRPS = 6000.0/60.0;
     public static final double kMaxAccelerationRPS2 = 50.0;
@@ -245,8 +245,11 @@ public final class Constants {
     public static int kBulkMoveMotorCANID = 51;
 
     // Raw motor speeds in range [-1.0,1.0]
-    public static final double kBulkMoveMotorSpeed = 0.5;
-    public static final double kIndexerMotorSpeed = 0.5;
+    public static final double kBulkMoveMotorSpeed = 0.9;
+    public static final double kIndexerMotorSpeed = 0.7;
+
+    public static final int kJigglePeriod = 50;
+    public static final double kJiggleFactor = 0.4; // The factor of the max motor speed to subtract
   }
 
   public static class ClimbL1Constants {

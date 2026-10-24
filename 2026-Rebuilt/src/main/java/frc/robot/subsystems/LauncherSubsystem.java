@@ -101,20 +101,22 @@ public class LauncherSubsystem extends SubsystemBase {
   public void applyMotorConfigs(TalonFXConfiguration configs)
   {
     /* Retry config apply up to 5 times, report if failure */
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    StatusCode statusLeader = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_motorLeader.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      statusLeader = m_motorLeader.getConfigurator().apply(configs);
+      if (statusLeader.isOK()) break;
     }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs 1, error code: " + status.toString());
+    if (!statusLeader.isOK()) {
+      System.out.println("Could not apply configs 1, error code: " + statusLeader.toString());
     }
+
+    StatusCode statusFollower = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_motorFollower.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      statusFollower = m_motorFollower.getConfigurator().apply(configs);
+      if (statusFollower.isOK()) break;
     }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs 2, error code: " + status.toString());
+    if (!statusFollower.isOK()) {
+      System.out.println("Could not apply configs 2, error code: " + statusFollower.toString());
     }
   }
 
@@ -127,8 +129,8 @@ public class LauncherSubsystem extends SubsystemBase {
     configs.Slot0.kI = m_I; // No output for integrated error
     configs.Slot0.kD = m_D; // No output for error derivative
     // Peak output of 8 volts
-    configs.Voltage.withPeakForwardVoltage(Volts.of(8))
-      .withPeakReverseVoltage(Volts.of(-8));
+    configs.Voltage.withPeakForwardVoltage(Volts.of(LauncherConstants.kPeakVoltage))
+      .withPeakReverseVoltage(Volts.of(-LauncherConstants.kPeakVoltage));
 
     var motionMagicConfigs = configs.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration = m_MMAccel;
@@ -144,9 +146,9 @@ public class LauncherSubsystem extends SubsystemBase {
 
     // changed from multiplying to dividing 
 
-    double desiredRotationsPerSecond = RPM / 60.0;
+    double desiredRotationsPerSecond = m_targetSpeedrpm / 60.0;
 
-    SmartDashboard.putNumber("Launcher Set RPM", RPM);
+    SmartDashboard.putNumber("Launcher Set RPM", m_targetSpeedrpm);
     SmartDashboard.putNumber("Launcher Set RPS", desiredRotationsPerSecond);
 
     /* Use velocity voltage */
