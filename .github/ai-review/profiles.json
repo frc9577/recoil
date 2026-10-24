@@ -1,0 +1,14 @@
+[
+ {"name": "robot-safety", "paths": ["**/src/main/java/frc/robot/subsystems/**"],
+  "instructions": "Mechanism code. Check that every motor stops or holds safely on disable, current limits and soft limits suit the mechanism, idle mode (brake or coast) is set on purpose, limit switches and encoders are read before driving toward a hard stop, and a missing or unplugged sensor cannot leave a motor running."},
+ {"name": "drive", "paths": ["**/src/main/java/frc/robot/subsystems/DriveSubsystem.java", "**/src/main/java/frc/robot/commands/DriveCommands/**"],
+  "instructions": "Drivetrain. Check field-relative versus robot-relative driving, gyro reset and alliance orientation, joystick deadband and slew limiting, maximum speeds against the constants, and odometry updates every loop."},
+ {"name": "autonomous", "paths": ["**/src/main/java/frc/robot/commands/autoCommands/**", "**/src/main/java/frc/robot/utils/AutoCommands.java", "**/src/main/deploy/pathplanner/**"],
+  "instructions": "Autonomous. Named commands registered in code must match the names used in PathPlanner files; auto names in the chooser must match files that exist; alliance flipping must be handled; every wait or sensor condition needs a timeout so auto cannot stall for the whole period."},
+ {"name": "vision", "paths": ["**/src/main/java/frc/robot/subsystems/LimelightSubsystem.java", "**/src/main/java/frc/robot/LimelightHelpers.java", "**/src/main/java/frc/robot/utils/HubUtils.java", "**/src/main/java/frc/robot/utils/LauncherUtils.java"],
+  "instructions": "Vision and aiming. Check that stale or missing targets are handled, pose estimates are only fused when they are trustworthy (tag count, distance, latency), and the aiming math uses consistent units and the right alliance's targets."},
+ {"name": "constants-and-wiring", "paths": ["**/src/main/java/frc/robot/Constants.java", "**/src/main/java/frc/robot/RobotContainer.java"],
+  "instructions": "Constants and bindings. CAN IDs, PWM and DIO ports must be unique; changed IDs must match the wiring the PR describes; controller bindings must not assign two commands to the same button and mode."},
+ {"name": "build-and-deps", "paths": ["**/build.gradle", "**/vendordeps/**", "**/settings.gradle", ".github/**", "**/.wpilib/**"],
+  "instructions": "Build and dependencies. Vendor dependency versions must match the season's WPILib year and each other; GradleRIO and the WPILib project year must agree; CI changes must keep building the current season's project."}
+]
