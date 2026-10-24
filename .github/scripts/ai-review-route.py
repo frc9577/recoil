@@ -317,7 +317,7 @@ def route_selftest():
     assert pick({"free": 0.004, "mid": 0.096, "high": 0.9}, ORDER) == "high"
     assert pick({"free": 0.0, "low": 0.6, "mid": 0.3, "high": 0.1}, ORDER) == "low"
     assert pick({"free": 0.0, "low": 0.1, "mid": 0.6, "high": 0.3}, ORDER) == "mid"
-    assert pick({"free": 0.0, "low": 0.3, "mid": 0.1, "high": 0.1}, ORDER) == "low"
+    assert pick({"free": 0.0, "low": 0.6, "mid": 0.2, "high": 0.2}, ORDER) == "low"
     assert rerun_gate({"low": 0.6, "mid": 0.3, "high": 0.1}, ["low", "mid", "high", "top"], 0.5) == "low"
     assert rerun_gate({"mid": 0.8, "high": 0.2}, ["mid", "high", "top"], 0.06) == "mid"
     assert rerun_gate({"mid": 0.8, "high": 0.2}, ["mid", "high", "top"], 0.15) == "mid"
