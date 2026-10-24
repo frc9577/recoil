@@ -24,7 +24,7 @@ LADDER = [
     # Medium effort keeps the free endpoint from idling out mid-reasoning.
     # A comma-separated model is several review lanes (the action's `models:` input); the action's judge merges them.
     ("free", "nvidia/nemotron-3-ultra-550b-a55b:free,recursive/flint-v1.0:free", "50", "300",
-     "Costs nothing. Routine changes: docs, tests, small refactors, config, renames.", "medium"),
+     "A cent or two a review (two lanes plus a judge). Routine changes: docs, tests, small refactors, config, renames.", "medium"),
     ("low", "nvidia/nemotron-3.5-lightning", "30", "300",
      "A few cents a review. For routine code changes when the free tier is likely to miss something but the mid tier is not needed.", ""),
     ("mid", "z-ai/glm-5.3", "30", "300",
