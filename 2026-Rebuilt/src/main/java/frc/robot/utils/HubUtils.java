@@ -25,7 +25,6 @@ public class HubUtils {
         PoseDiff dPose = new PoseDiff(currentPose, hubPose);
 
         Rotation2d targetRotation = new Rotation2d(Math.atan2(dPose.y, dPose.x));
-        System.out.println("Angle to hub: " + String.valueOf(targetRotation.getDegrees()) + ", Current Pos: " + currentPose.toString() + ", Hub Pos: " + hubPose.toString());
         return targetRotation;
     }
 

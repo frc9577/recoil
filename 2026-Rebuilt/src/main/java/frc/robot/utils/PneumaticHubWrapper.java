@@ -36,9 +36,4 @@ public class PneumaticHubWrapper extends PneumaticHub {
 
         return (Version.firmwareMajor == 0) ? false : true;
     }
-
-    public void disableCompressor()
-    {
-        m_Hub.disableCompressor();
-    }
 }

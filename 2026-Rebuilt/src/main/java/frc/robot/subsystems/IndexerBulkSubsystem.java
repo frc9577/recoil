@@ -10,7 +10,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IndexerBulkConstants;
 
@@ -19,7 +18,6 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
 public class IndexerBulkSubsystem extends SubsystemBase {
@@ -27,12 +25,9 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   private TalonFXS m_motorBulk;
   private TalonFX m_motorIndexer;
   private Boolean m_bulkStarted = false;
-  private Boolean m_bulkReversed = false;
   private Boolean m_indexerStarted = false;
   private double m_bulkSpeed = IndexerBulkConstants.kBulkMoveMotorSpeed;
   private double m_indexerSpeed = IndexerBulkConstants.kIndexerMotorSpeed;
-  
-  private int m_tickCount = 0;
 
   /** Creates a new IndexerBulkSubsystem. */
   public IndexerBulkSubsystem() throws Exception {
@@ -43,8 +38,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("IndexerBulk IndexerStarted", m_indexerStarted);
     SmartDashboard.putNumber("IndexerBulk BulkSpeed", m_bulkSpeed);
     SmartDashboard.putNumber("IndexerBulk IndexerSpeed", m_indexerSpeed);
-
-    SmartDashboard.putNumber("Minion Temp (C)", -1000.0); // clearly bad data just for clarity
 
     // Test mode controls
     SmartDashboard.putBoolean("IndexerBulk TestBulk", false);
@@ -69,10 +62,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
     TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
     motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
-    motorConfig.CurrentLimits.SupplyCurrentLimit = 20.0;
-    motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = m_motorBulk.getConfigurator().apply(motorConfig);
@@ -86,18 +75,14 @@ public class IndexerBulkSubsystem extends SubsystemBase {
 
 // Runs the belts that transfer the fuel from bulk storage to the indexer.
   public void startBulkTransfer() {
-    // Bulk runs in the negative direction when operating normally so we negate the commanded speed.
-    m_motorBulk.set(-m_bulkSpeed);
+    m_motorBulk.set(m_bulkSpeed);
     m_bulkStarted = true;
-    m_bulkReversed = false;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
   public void reverseBulkTransfer() {
-    // Bulk runs in the negative direction when operating normally so we dont negate the commanded speed.
-    m_motorBulk.set(m_bulkSpeed/2);
+    m_motorBulk.set(-m_bulkSpeed/2);
     m_bulkStarted = true;
-    m_bulkReversed = true;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
@@ -105,7 +90,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   public void stopBulkTransfer() {
     m_motorBulk.set(0.0);
     m_bulkStarted = false;
-    m_bulkReversed = false;
     SmartDashboard.putBoolean("IndexerBulk BulkStarted", m_bulkStarted);
   }
 
@@ -153,26 +137,6 @@ public class IndexerBulkSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (DriverStation.isDisabled() == false) {
-      if (m_bulkStarted == true && m_bulkReversed == false) {
-        if (m_tickCount % IndexerBulkConstants.kJigglePeriod == 0) {
-          double newSpeed;
-          if (m_bulkSpeed == IndexerBulkConstants.kBulkMoveMotorSpeed) {
-            newSpeed = m_bulkSpeed - (m_indexerSpeed*IndexerBulkConstants.kJiggleFactor);
-          } else {
-            newSpeed = IndexerBulkConstants.kBulkMoveMotorSpeed;
-          }
-
-          setBulkTransferSpeed(newSpeed);
-        }
-      }
-    }
-
-    if (m_tickCount % 20 == 0) {
-      SmartDashboard.putNumber("Minion Temp (C)", m_motorBulk.getDeviceTemp().getValueAsDouble());
-    }
-
-    m_tickCount++;
   }
 
   @Override
