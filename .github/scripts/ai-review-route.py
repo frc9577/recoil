@@ -22,8 +22,11 @@ JEV = os.environ.get("DECISION_MODEL", "typesafe/jev-1.14")
 LADDER = [
     # Fields: name, model, max tool rounds, max diff KB, description for the decision model, reasoning effort.
     # Medium effort keeps the free endpoint from idling out mid-reasoning.
-    ("free", "nvidia/nemotron-3.5-super-vl:free", "50", "300",
+    # A comma-separated model is several review lanes (the action's `models:` input); the action's judge merges them.
+    ("free", "nvidia/nemotron-3-ultra-550b-a55b:free,recursive/flint-v1.0:free", "50", "300",
      "Costs nothing. Routine changes: docs, tests, small refactors, config, renames.", "medium"),
+    ("low", "nvidia/nemotron-3.5-lightning", "30", "300",
+     "A few cents a review. For routine code changes when the free tier is likely to miss something but the mid tier is not needed.", ""),
     ("mid", "z-ai/glm-5.3", "30", "300",
      "Quarters a review. Real logic changes, one risky area, or a large diff. The default for anything beyond routine.", ""),
     # ponytail: per-review spend caps via tool rounds and diff size on the two costliest rungs.
@@ -33,9 +36,9 @@ LADDER = [
      "Dollars a review, roughly double the high tier, and reserved for the rare case. Only when a missed bug would mean lost money, leaked personal data or a broken production deploy, AND the logic is subtle enough that the high tier would likely miss it. Choose this almost never.", ""),
 ]
 # Leave the free rung only when P(any paid rung) >= FREE_EXIT. Among paid rungs, and for
-# reruns, move to a rung only when P(this rung or higher) clears its bar: odds 1:1, 4:1, 39:1.
+# reruns, move to a rung only when P(this rung or higher) clears its bar: odds 1:3, 1:1, 4:1, 39:1.
 FREE_EXIT = 0.985
-BARS = {"free": 0.0, "mid": 0.5, "high": 0.8, "top": 0.975}
+BARS = {"free": 0.0, "low": 0.25, "mid": 0.5, "high": 0.8, "top": 0.975}
 RUNG = {r[0]: r for r in LADDER}
 ORDER = [r[0] for r in LADDER]
 PROFILE_THRESHOLD = 0.5
@@ -312,6 +315,10 @@ def route_selftest():
     assert pick({"free": 0.05, "mid": 0.03, "high": 0.92}, ORDER) == "free"  # was high
     assert pick({"free": 0.006, "mid": 0.594, "high": 0.4}, ORDER) == "mid"  # was free
     assert pick({"free": 0.004, "mid": 0.096, "high": 0.9}, ORDER) == "high"
+    assert pick({"free": 0.0, "low": 0.6, "mid": 0.3, "high": 0.1}, ORDER) == "low"
+    assert pick({"free": 0.0, "low": 0.1, "mid": 0.6, "high": 0.3}, ORDER) == "mid"
+    assert pick({"free": 0.0, "low": 0.3, "mid": 0.1, "high": 0.1}, ORDER) == "low"
+    assert rerun_gate({"low": 0.6, "mid": 0.3, "high": 0.1}, ["low", "mid", "high", "top"], 0.5) == "low"
     assert rerun_gate({"mid": 0.8, "high": 0.2}, ["mid", "high", "top"], 0.06) == "mid"
     assert rerun_gate({"mid": 0.8, "high": 0.2}, ["mid", "high", "top"], 0.15) == "mid"
     assert round_pairs(["a", "b", "b", "c"], "main") == [("main", "a"), ("a", "b"), ("b", "b"), ("b", "c")]
