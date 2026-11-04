@@ -14,7 +14,7 @@ using namespace ctre::phoenix6;
 class Robot : public frc::TimedRobot {
 private:
 
-//initilizes the kraken x44 moter's s1 to canbus id 50 and s2 to canbus id 51
+//Initilizes the kraken x44 moter's s1 to canbus id 50 and s2 to canbus id 51.
   CANBus m_canBus{"rio"};
   hardware::TalonFX m_motor_squid1{50, m_canBus};
   hardware::TalonFX m_motor_squid2{51, m_canBus};

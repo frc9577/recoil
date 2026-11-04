@@ -69,7 +69,7 @@ Robot::Robot() {
     if (status1.IsOK() && status2.IsOK()) break;
   }
 
-  //creates smartdashbourd variables for motor 1 and 2 for thier states
+  //creates smartdashbourd variables for motor 1 and 2 for thier states.
   frc::SmartDashboard::PutBoolean("Config s1 OK", status1.IsOK());
   frc::SmartDashboard::PutBoolean("Config s2 OK", status2.IsOK());
   frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
@@ -83,7 +83,7 @@ Robot::Robot() {
 
 void Robot::RobotPeriodic() {
 
-//updates motor 1 and 2's status based on the current state of the motors
+//Updates motor 1 and 2's status based on the current state of the motors.
   frc::SmartDashboard::PutNumber("Actual Position s1",
                                  m_motor_squid1.GetPosition().GetValue().value());
   frc::SmartDashboard::PutNumber("Actual Velocity s1",
@@ -101,13 +101,13 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Temperature",
                                  m_motor_squid1.GetDeviceTemp().GetValue().value());
 
-   //resets the encoder for motor s1                              
+   //Resets the encoder for motor s1.                              
   if (frc::SmartDashboard::GetBoolean("Reset Encoder s1", false)) {
     frc::SmartDashboard::PutBoolean("Reset Encoder s1", false);
     // Reset the encoder position to 0
     m_motor_squid1.SetPosition(0_tr);
   }
-  //resets the encoder for moter s2
+  //Resets the encoder for moter s2.
     if (frc::SmartDashboard::GetBoolean("Reset Encoder s2", false)) {
     frc::SmartDashboard::PutBoolean("Reset Encoder s2", false);
     // Reset the encoder position to 0
@@ -121,10 +121,11 @@ void Robot::AutonomousPeriodic() {}
 void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic() {
 
-  //changes between velocity and position for moters s1 and s2
+  //Changes between velocity and position for moters s1 and s2.
   if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
     double targetVelocity =
         frc::SmartDashboard::GetNumber("Target Velocity", 0);
+        printf("target velocity is %f",targetVelocity);
     m_motor_squid1.SetControl(m_velocityRequest.WithVelocity(
         units::turns_per_second_t{targetVelocity}));
     m_motor_squid2.SetControl(m_velocityRequest.WithVelocity(
