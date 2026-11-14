@@ -5,7 +5,7 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
-
+#include <frc/XboxController.h>
 #include <ctre/phoenix6/CANBus.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
 
@@ -18,6 +18,7 @@ private:
   CANBus m_canBus{"rio"};
   hardware::TalonFX m_motor_squid1{50, m_canBus};
   hardware::TalonFX m_motor_squid2{51, m_canBus};
+  frc::XboxController gamepad1{1};
   /*
    * Create the control requests once and reuse them every loop. Position
    * control uses gain slot 0 and velocity control uses gain slot 1.

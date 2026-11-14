@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
-
+#include <frc/XboxController.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
 Robot::Robot() {
@@ -119,20 +119,45 @@ void Robot::RobotPeriodic() {
 
 void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
-
 void Robot::TeleopInit() {
-
+ m_motor_squid1.SetControl(m_neutralRequest);
+ m_motor_squid2.SetControl(m_neutralRequest);
+}
+void Robot::TeleopPeriodic() {
+  double speeds1 = 0;
+  double speeds2 = 0;
+  speeds1 = -gamepad1.GetLeftY();
+  speeds2 = -gamepad1.GetRightY();
+   m_motor_squid1.SetControl(m_velocityRequest.WithVelocity(
+        units::turns_per_second_t {300/60 * speeds1}));
+   m_motor_squid2.SetControl(m_velocityRequest.WithVelocity(
+        units::turns_per_second_t {300/60 * speeds2}));
+} 
+void Robot::DisabledInit() {
+  /*
+   * Stop the motor and turn the Motor Enabled switch off whenever the robot
+   * is disabled, so it doesn't move the moment the robot is re-enabled.
+   */
   m_motor_squid1.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
   m_motor_squid2.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
 }
-void Robot::TeleopPeriodic() {
-
+void Robot::DisabledPeriodic() {}
+void Robot::TestInit() {
+// insures that bothe motor s1 and s2 are set to off when test mode is turned on.
+  m_motor_squid1.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
+  m_motor_squid2.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
+}
+void Robot::TestPeriodic() {
+// Creates and updates the motor diriction variables for s1 and s2 motors.
 float Direction1 = (frc::SmartDashboard::GetBoolean("motor diriction s1", false)) ? -1.0f : 1.0f;
 float Direction2 = (frc::SmartDashboard::GetBoolean("motor diriction s2", false)) ? -1.0f : 1.0f;
+// only runs moter s1 when motor enabled s1 is true else it sets it to neutrual.
 if (frc::SmartDashboard::GetBoolean("Motor Enabled s1", false)){
-  //Changes between velocity and position for moters s1 and s2.
+// switches between velocity control and position control based on user imput.
   if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
     double targetVelocity =
         frc::SmartDashboard::GetNumber("Target Velocity", 0);
@@ -147,9 +172,9 @@ if (frc::SmartDashboard::GetBoolean("Motor Enabled s1", false)){
    m_motor_squid1.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
 }
-
+// only runs moter s2 when motor enabled s2 is true else it sets it to neutrual.
 if (frc::SmartDashboard::GetBoolean("Motor Enabled s2", false)){
-  //Changes between velocity and position for moters s1 and s2.
+// switches between velocity control and position control based on user imput.
   if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
     double targetVelocity =
         frc::SmartDashboard::GetNumber("Target Velocity", 0);
@@ -164,22 +189,7 @@ if (frc::SmartDashboard::GetBoolean("Motor Enabled s2", false)){
    m_motor_squid2.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
 }
-
-} 
-void Robot::DisabledInit() {
-  /*
-   * Stop the motor and turn the Motor Enabled switch off whenever the robot
-   * is disabled, so it doesn't move the moment the robot is re-enabled.
-   */
-  m_motor_squid1.SetControl(m_neutralRequest);
-  frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
-  m_motor_squid2.SetControl(m_neutralRequest);
-  frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
 }
-void Robot::DisabledPeriodic() {}
-
-void Robot::TestInit() {}
-void Robot::TestPeriodic() {}
 
 void Robot::SimulationInit() {}
 void Robot::SimulationPeriodic() {}
