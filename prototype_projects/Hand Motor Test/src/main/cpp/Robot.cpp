@@ -79,6 +79,8 @@ Robot::Robot() {
   frc::SmartDashboard::SetDefaultBoolean("Control Mode", false);
   frc::SmartDashboard::SetDefaultBoolean("Reset Encoder s1", false);
   frc::SmartDashboard::SetDefaultBoolean("Reset Encoder s2", false);
+  frc::SmartDashboard::SetDefaultBoolean("motor diriction s1", false);
+  frc::SmartDashboard::SetDefaultBoolean("motor diriction s2", false);
 }
 
 void Robot::RobotPeriodic() {
@@ -127,30 +129,42 @@ void Robot::TeleopInit() {
 }
 void Robot::TeleopPeriodic() {
 
-if (frc::SmartDashboard::GetBoolean("Motor enabled s1", false) || frc::SmartDashboard::GetBoolean("Motor enabled s2", false)){
+float Direction1 = (frc::SmartDashboard::GetBoolean("motor diriction s1", false)) ? -1.0f : 1.0f;
+float Direction2 = (frc::SmartDashboard::GetBoolean("motor diriction s2", false)) ? -1.0f : 1.0f;
+if (frc::SmartDashboard::GetBoolean("Motor Enabled s1", false)){
   //Changes between velocity and position for moters s1 and s2.
   if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
     double targetVelocity =
         frc::SmartDashboard::GetNumber("Target Velocity", 0);
-        printf("target velocity is %f",targetVelocity);
     m_motor_squid1.SetControl(m_velocityRequest.WithVelocity(
-        units::turns_per_second_t{targetVelocity}));
-    m_motor_squid2.SetControl(m_velocityRequest.WithVelocity(
-        units::turns_per_second_t{-targetVelocity}));
+        units::turns_per_second_t{Direction1 * targetVelocity}));
   } else {
     double targetPosition =
         frc::SmartDashboard::GetNumber("Target Position", 0);
     m_motor_squid1.SetControl(
-        m_positionRequest.WithPosition(units::turn_t{targetPosition}));
-    m_motor_squid2.SetControl(
-        m_positionRequest.WithPosition(units::turn_t{-targetPosition}));
-  }
+        m_positionRequest.WithPosition(units::turn_t{Direction1 * targetPosition}));}
 } else {
    m_motor_squid1.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
-  m_motor_squid2.SetControl(m_neutralRequest);
+}
+
+if (frc::SmartDashboard::GetBoolean("Motor Enabled s2", false)){
+  //Changes between velocity and position for moters s1 and s2.
+  if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
+    double targetVelocity =
+        frc::SmartDashboard::GetNumber("Target Velocity", 0);
+    m_motor_squid2.SetControl(m_velocityRequest.WithVelocity(
+        units::turns_per_second_t{Direction2 * targetVelocity}));
+  } else {
+    double targetPosition =
+        frc::SmartDashboard::GetNumber("Target Position", 0);
+    m_motor_squid2.SetControl(
+        m_positionRequest.WithPosition(units::turn_t{Direction2 * targetPosition}));}
+} else {
+   m_motor_squid2.SetControl(m_neutralRequest);
   frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
 }
+
 } 
 void Robot::DisabledInit() {
   /*
