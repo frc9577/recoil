@@ -118,9 +118,16 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+
+  m_motor_squid1.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
+  m_motor_squid2.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
+}
 void Robot::TeleopPeriodic() {
 
+if (frc::SmartDashboard::GetBoolean("Motor enabled s1", false) || frc::SmartDashboard::GetBoolean("Motor enabled s2", false)){
   //Changes between velocity and position for moters s1 and s2.
   if (frc::SmartDashboard::GetBoolean("Control Mode", false)) {
     double targetVelocity =
@@ -138,8 +145,13 @@ void Robot::TeleopPeriodic() {
     m_motor_squid2.SetControl(
         m_positionRequest.WithPosition(units::turn_t{-targetPosition}));
   }
+} else {
+   m_motor_squid1.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s1", false);
+  m_motor_squid2.SetControl(m_neutralRequest);
+  frc::SmartDashboard::PutBoolean("Motor Enabled s2", false);
 }
-
+} 
 void Robot::DisabledInit() {
   /*
    * Stop the motor and turn the Motor Enabled switch off whenever the robot
